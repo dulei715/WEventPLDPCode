@@ -25,10 +25,10 @@ public class PersonalizedFrequencyOracleTools {
         return pList;
     }
 
-    public static List<Double> getEstimation(List<Double> obfuscatedCountList, List<Integer> distinctBudgetCount, List<Double> qList, List<Double> pList) {
+    public static List<Double> getEstimation(List<Double> obfuscatedCountList, List<Double> distinctBudgetCount, List<Double> qList, List<Double> pList) {
         Double paramA = 0D, paramB = 0D;
         int size = distinctBudgetCount.size();
-        Integer tempG;
+        Double tempG;
         Double tempQ;
         int sizeRes = obfuscatedCountList.size();
         List<Double> result = new ArrayList<>(sizeRes);
@@ -44,13 +44,13 @@ public class PersonalizedFrequencyOracleTools {
         return result;
     }
 
-    public static Double getPLDPVariance(Integer valueSize, List<Integer> distinctBudgetCountList, List<Double> qList, List<Double> pList, Integer sampleSize) {
+    public static Double getPLDPVariance(Integer valueSize, List<Double> distinctBudgetFrequencyList, List<Double> qList, List<Double> pList, Integer sampleSize) {
         Double result = 0D, paramA = 0D, paramB = 0D;
-        int size = distinctBudgetCountList.size();
-        Integer tempG;
+        int size = distinctBudgetFrequencyList.size();
+        Double tempG;
         Double tempQ;
         for (int i = 0; i < size; i++) {
-            tempG = distinctBudgetCountList.get(i);
+            tempG = distinctBudgetFrequencyList.get(i);
             tempQ = qList.get(i);
             paramA += tempG * (1 - tempQ) * tempQ;
             paramB += tempG * (pList.get(i) - tempQ);
@@ -60,26 +60,27 @@ public class PersonalizedFrequencyOracleTools {
         return paramA / paramB;
     }
 
-    public static Double getVariance(List<Double> distinctEpsilonList, List<Integer> distinctBudgetCount, Integer userSize, Integer sampleSize, Integer valueDomainSize) {
+    public static Double getVariance(List<Double> distinctEpsilonList, List<Double> distinctBudgetFrequency, Integer userSize, Integer sampleSize, Integer valueDomainSize) {
         List<Double> qList = getGeneralRandomResponseParameterQ(distinctEpsilonList, valueDomainSize);
         List<Double> pList = getGeneralRandomResponseParameterP(qList, distinctEpsilonList);
         Double sampleVariance = (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
-        Double pldpVariance = getPLDPVariance(valueDomainSize, distinctBudgetCount, qList, pList, sampleSize);
+        Double pldpVariance = getPLDPVariance(valueDomainSize, distinctBudgetFrequency, qList, pList, sampleSize);
         return sampleVariance + pldpVariance;
     }
 
     public static void main(String[] args) {
         List<Double> distinctEpsilonList = Arrays.asList(0.2, 0.4, 0.5, 0.6, 0.8);
-        List<Integer> distinctBudgetCount = Arrays.asList(6, 2, 2, 4, 2);
+//        List<Integer> distinctBudgetCount = Arrays.asList(6, 2, 2, 4, 2);
+        List<Double> distinctBudgetFrequency = Arrays.asList(6.0/16, 2.0/16, 2.0/16, 4.0/16, 2.0/16);
         Integer userSize = 16;
         Integer sampleSize = 2;
         Integer valueDomainSize = 2;
-        Double variance = getVariance(distinctEpsilonList, distinctBudgetCount, userSize, sampleSize, valueDomainSize);
+        Double variance = getVariance(distinctEpsilonList, distinctBudgetFrequency, userSize, sampleSize, valueDomainSize);
         System.out.println(variance);
         List<Double> obfuscatedList = Arrays.asList(0.5,0.0,0.0,0.5,0.0);
         List<Double> qList = getGeneralRandomResponseParameterQ(distinctEpsilonList, valueDomainSize);
         List<Double> pList = getGeneralRandomResponseParameterP(qList, distinctEpsilonList);
-        List<Double> estimationList = getEstimation(obfuscatedList, distinctBudgetCount, qList, pList);
+        List<Double> estimationList = getEstimation(obfuscatedList, distinctBudgetFrequency, qList, pList);
         MyPrint.showList(estimationList);
 
     }
