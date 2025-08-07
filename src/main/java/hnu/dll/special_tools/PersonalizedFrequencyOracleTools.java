@@ -20,7 +20,7 @@ public class PersonalizedFrequencyOracleTools {
         int size = qList.size();
         List<Double> pList = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            pList.add(privacyBudgetList.get(i) * qList.get(i));
+            pList.add(Math.exp(privacyBudgetList.get(i)) * qList.get(i));
         }
         return pList;
     }
