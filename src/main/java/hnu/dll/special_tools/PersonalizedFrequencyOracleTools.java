@@ -69,15 +69,15 @@ public class PersonalizedFrequencyOracleTools {
     }
 
     public static void main(String[] args) {
-        List<Double> distinctEpsilonList = Arrays.asList(0.2, 0.4, 0.5, 0.6, 0.8);
+        List<Double> distinctEpsilonList = Arrays.asList(0.2,0.4,0.6,0.8);
 //        List<Integer> distinctBudgetCount = Arrays.asList(6, 2, 2, 4, 2);
-        List<Double> distinctBudgetFrequency = Arrays.asList(6.0/16, 2.0/16, 2.0/16, 4.0/16, 2.0/16);
-        Integer userSize = 16;
-        Integer sampleSize = 2;
-        Integer valueDomainSize = 2;
+        List<Double> distinctBudgetFrequency = Arrays.asList(0.35,0.25,0.25,0.15);
+        Integer userSize = 1000;
+        Integer sampleSize = 125;
+        Integer valueDomainSize = 5;
         Double variance = getVariance(distinctEpsilonList, distinctBudgetFrequency, userSize, sampleSize, valueDomainSize);
         System.out.println(variance);
-        List<Double> obfuscatedList = Arrays.asList(0.5,0.0,0.0,0.5,0.0);
+        List<Double> obfuscatedList = Arrays.asList(0.22,0.2,0.18,0.22,0.18);
         List<Double> qList = getGeneralRandomResponseParameterQ(distinctEpsilonList, valueDomainSize);
         List<Double> pList = getGeneralRandomResponseParameterP(qList, distinctEpsilonList);
         List<Double> estimationList = getEstimation(obfuscatedList, distinctBudgetFrequency, qList, pList);
