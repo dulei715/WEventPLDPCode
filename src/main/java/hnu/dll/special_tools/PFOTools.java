@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PersonalizedFrequencyOracleTools {
+public class PFOTools {
     public static List<Double> getGeneralRandomResponseParameterQ(List<Double> privacyBudgetList, Integer valueDomainSize) {
         int size = privacyBudgetList.size();
         List<Double> qList = new ArrayList<>(size);
