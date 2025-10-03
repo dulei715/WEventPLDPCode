@@ -1,30 +1,59 @@
 package hnu.dll.special_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
 import cn.edu.dll.io.print.MyPrint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+@Deprecated
 public class PFOTools {
-    public static List<Double> getGeneralRandomResponseParameterQ(List<Double> privacyBudgetList, Integer valueDomainSize) {
-        int size = privacyBudgetList.size();
-        List<Double> qList = new ArrayList<>(size);
-        for (Double budget : privacyBudgetList) {
-            qList.add(1.0 / (Math.exp(budget) + valueDomainSize - 1));
+    public static Map<Double, Double> getGeneralRandomResponseParameterQ(Set<Double> privacyBudgetSet, Integer valueDomainSize) {
+        Map<Double, Double> qMap = new TreeMap<>();
+        for (Double budget : privacyBudgetSet) {
+            qMap.put(budget, 1.0 / (Math.exp(budget) + valueDomainSize - 1));
         }
-        return qList;
+        return qMap;
     }
 
-    public static List<Double> getGeneralRandomResponseParameterP(List<Double> qList, List<Double> privacyBudgetList) {
-        int size = qList.size();
-        List<Double> pList = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            pList.add(Math.exp(privacyBudgetList.get(i)) * qList.get(i));
+    public static Map<Double, Double> getGeneralRandomResponseParameterP(Map<Double, Double> qMap) {
+        Map<Double, Double> pMap = new TreeMap<>();
+        Double budget;
+        for (Map.Entry<Double, Double> entry : qMap.entrySet()) {
+            budget = entry.getKey();
+            pMap.put(budget, Math.exp(budget) * entry.getValue());
         }
-        return pList;
+        return pMap;
     }
+
+    public static Double getGeneralizedRandomResponseApproximateVariance(Double epsilon, Integer userSize, Integer domainSize) {
+        Double ePowEpsilon = Math.exp(epsilon);
+        return userSize * (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2);
+    }
+
+    public static Map<Double, Double> getAggregationWeightMap(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
+        TreeMap<Double, Double> distinctVarianceMap = new TreeMap<>();
+        Double epsilon, variance;
+        Integer userSize;
+        Double totalVariance = 0D;
+        Map<Double, Double> aggregationWeightMap;
+        for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
+            epsilon = entry.getKey();
+            userSize = distinctBudgetCountMap.get(epsilon);
+            variance = getGeneralizedRandomResponseApproximateVariance(epsilon, userSize, domainSize);
+            distinctVarianceMap.put(epsilon, variance);
+            totalVariance += variance;
+        }
+        aggregationWeightMap = new TreeMap<>();
+        for (Map.Entry<Double, Double> entry : distinctVarianceMap.entrySet()) {
+            epsilon = entry.getKey();
+            variance = entry.getValue();
+            aggregationWeightMap.put(epsilon, variance / totalVariance);
+        }
+        return aggregationWeightMap;
+    }
+
+
 
     public static List<Double> getEstimation(List<Double> obfuscatedCountList, List<Double> distinctBudgetCount, List<Double> qList, List<Double> pList) {
         Double paramA = 0D, paramB = 0D;
@@ -45,46 +74,48 @@ public class PFOTools {
         return result;
     }
 
-    public static Double getPLDPVarianceSum(Integer valueSize, List<Double> distinctBudgetFrequencyList, List<Double> qList, List<Double> pList, Integer userSize) {
+    public static Double getPLDPVarianceSum(Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap, Integer userSize, Integer domainSize) {
         Double paramA = 0D, paramB = 0D, paramC = 0D;
-        int size = distinctBudgetFrequencyList.size();
-        Double tempG;
+        Double tempG, budget, personalizedWeight, result;
         Double tempQ, tempP;
-        for (int i = 0; i < size; i++) {
-            tempG = distinctBudgetFrequencyList.get(i);
-            tempQ = qList.get(i);
-            tempP = pList.get(i);
-            paramA += tempG * (1 - tempQ) * tempQ;
-            paramB += tempG * (tempP - tempQ);
-            paramC += tempG * (1 - tempP - tempQ) * (tempP - tempQ);
+        for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
+            tempG = entry.getValue() * 1.0 / userSize;
+            budget = entry.getKey();
+            tempQ = distinctQMap.get(budget);
+            tempP = distinctPMap.get(budget);
+            personalizedWeight = aggregationWeightMap.get(budget);
+            paramA += personalizedWeight * personalizedWeight * tempG * (1 - tempQ) * tempQ;
+            paramB += personalizedWeight * tempG * (tempP - tempQ);
+            paramC += personalizedWeight * personalizedWeight * tempG * (1 - tempP - tempQ) * (tempP - tempQ);
         }
-        paramA *= valueSize;
         paramB = userSize * paramB * paramB;
-        return (paramA + paramC) / paramB;
+        result = (domainSize * paramA + paramC) / paramB;
+        return result;
     }
 
-    public static Double getPLDPVarianceSumStar(Integer valueSize, List<Double> distinctBudgetFrequencyList, List<Double> qList, List<Double> pList, Integer sampleSize) {
-        Double result = 0D, paramA = 0D, paramB = 0D;
-        int size = distinctBudgetFrequencyList.size();
-        Double tempG;
-        Double tempQ;
-        for (int i = 0; i < size; i++) {
-            tempG = distinctBudgetFrequencyList.get(i);
-            tempQ = qList.get(i);
-            paramA += tempG * (1 - tempQ) * tempQ;
-            paramB += tempG * (pList.get(i) - tempQ);
-        }
-        paramA *= valueSize;
-        paramB = sampleSize * paramB * paramB;
-        return paramA / paramB;
-    }
+//    public static Double getPLDPVarianceSumStar(Integer valueSize, List<Double> distinctBudgetFrequencyList, List<Double> qList, List<Double> pList, Integer sampleSize) {
+//        Double result = 0D, paramA = 0D, paramB = 0D;
+//        int size = distinctBudgetFrequencyList.size();
+//        Double tempG;
+//        Double tempQ;
+//        for (int i = 0; i < size; i++) {
+//            tempG = distinctBudgetFrequencyList.get(i);
+//            tempQ = qList.get(i);
+//            paramA += tempG * (1 - tempQ) * tempQ;
+//            paramB += tempG * (pList.get(i) - tempQ);
+//        }
+//        paramA *= valueSize;
+//        paramB = sampleSize * paramB * paramB;
+//        return paramA / paramB;
+//    }
 
-    public static Double getError(List<Double> distinctEpsilonList, List<Double> distinctBudgetFrequency, Integer userSize, Integer sampleSize, Integer valueDomainSize) {
-        List<Double> qList = getGeneralRandomResponseParameterQ(distinctEpsilonList, valueDomainSize);
-        List<Double> pList = getGeneralRandomResponseParameterP(qList, distinctEpsilonList);
+    public static Double getGPRRError(Map<Double, Integer> distinctBudgetCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+        Map<Double, Double> distinctQMap = getGeneralRandomResponseParameterQ(distinctBudgetCountMap.keySet(), domainSize);
+        Map<Double, Double> distinctPMap = getGeneralRandomResponseParameterP(distinctQMap);
+        Map<Double, Double> aggregationWeightMap = getAggregationWeightMap(distinctBudgetCountMap, domainSize);
         Double sampleVariance = (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
-        Double pldpVariance = getPLDPVarianceSum(valueDomainSize, distinctBudgetFrequency, qList, pList, sampleSize);
-        return (sampleVariance + pldpVariance) / valueDomainSize;
+        Double pldpVariance = getPLDPVarianceSum(distinctBudgetCountMap, distinctPMap, distinctQMap, aggregationWeightMap, sampleSize, domainSize);
+        return (sampleVariance + pldpVariance) / domainSize;
     }
 
     public static Double getDissimilarity(List<Double> estimationList, List<Double> lastEstimationList, Double pldpVarianceSum) {
@@ -97,33 +128,6 @@ public class PFOTools {
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException {
-        List<Double> distinctEpsilonList = Arrays.asList(0.2,0.4,0.6,0.8);
-//        List<Integer> distinctBudgetCount = Arrays.asList(6, 2, 2, 4, 2);
-        List<Double> distinctBudgetFrequency = Arrays.asList(0.35,0.25,0.25,0.15);
-        Integer userSize = 1000;
-        Integer sampleSize = 125;
-//        Integer sampleSize = 2;
-        Integer valueDomainSize = 5;
-//        Integer valueDomainSize = 2;
-        Double variance = getError(distinctEpsilonList, distinctBudgetFrequency, userSize, sampleSize, valueDomainSize);
-        System.out.println(variance);
-        List<Double> obfuscatedListA = Arrays.asList(0.22,0.2,0.18,0.22,0.18);
-        List<Double> obfuscatedListB = Arrays.asList(0.23,0.19,0.19,0.21,0.18);
-        List<Double> qList = getGeneralRandomResponseParameterQ(distinctEpsilonList, valueDomainSize);
-        List<Double> pList = getGeneralRandomResponseParameterP(qList, distinctEpsilonList);
-        Double pldpVarianceSum = getPLDPVarianceSum(valueDomainSize, distinctBudgetFrequency, qList, pList, userSize);
-        List<Double> estimationListA = getEstimation(obfuscatedListA, distinctBudgetFrequency, qList, pList);
-        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0.0, estimationListA.size());
-        MyPrint.showList(estimationListA);
-        Integer sampleSizeForError = userSize / 2 / 2;
-        Double error = getError(distinctEpsilonList, distinctBudgetFrequency, userSize, sampleSizeForError, valueDomainSize);
-        System.out.println(error);
-
-        Double dissimilarity = getDissimilarity(estimationListA, lastEstimationList, pldpVarianceSum);
-        System.out.println(dissimilarity);
-
-        List<Double> estimationListB = getEstimation(obfuscatedListB, distinctBudgetFrequency, qList, pList);
-        MyPrint.showList(estimationListB);
 
     }
 }

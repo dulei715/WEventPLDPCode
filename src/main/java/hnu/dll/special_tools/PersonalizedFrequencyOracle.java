@@ -17,7 +17,8 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
     protected TreeMap<Double, FrequencyOracle<Integer, Integer>> distinctFrequencyOracleMap;
     protected TreeMap<Double, Double> distinctQMap;
     protected TreeMap<Double, Double> distinctPMap;
-    protected TreeMap<Double, Double> distinctVarianceMap;
+//    protected TreeMap<Double, Double> distinctVarianceMap;
+    protected TreeMap<Double, Double> aggregationWeightMap;
 
     Random random = new Random();
 
@@ -37,17 +38,25 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         }
     }
 
-    protected void initializeVarianceMap() {
-        this.distinctVarianceMap = new TreeMap<>();
+    protected void initializeAggregationWeightMap() {
+        TreeMap<Double, Double> distinctVarianceMap = new TreeMap<>();
         Double epsilon, variance;
         Integer userSize;
+        Double totalVariance = 0D;
         FrequencyOracle<Integer, Integer> frequencyOracle;
         for (Map.Entry<Double, FrequencyOracle<Integer, Integer>> entry : this.distinctFrequencyOracleMap.entrySet()) {
             epsilon = entry.getKey();
             frequencyOracle = entry.getValue();
             userSize = this.distinctBudgetCountMap.get(epsilon);
             variance = frequencyOracle.getApproximateVariance(userSize);
-            this.distinctVarianceMap.put(epsilon, variance);
+            distinctVarianceMap.put(epsilon, variance);
+            totalVariance += variance;
+        }
+        this.aggregationWeightMap = new TreeMap<>();
+        for (Map.Entry<Double, Double> entry : distinctVarianceMap.entrySet()) {
+            epsilon = entry.getKey();
+            variance = entry.getValue();
+            this.aggregationWeightMap.put(epsilon, variance / totalVariance);
         }
     }
 
@@ -59,11 +68,36 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
 //            this.totalUserSize += count;
 //        }
         initializeFrequencyOracleMap(frequencyOracleClass);
-        initializeVarianceMap();
+        initializeAggregationWeightMap();
     }
 
-    public abstract void initializeQPListByBudgetList();
-    public abstract Double getPLDPVarianceSum();
+    public Integer getDomainSize() {
+        return domainSize;
+    }
+
+    public TreeMap<Double, Integer> getDistinctBudgetCountMap() {
+        return distinctBudgetCountMap;
+    }
+
+    public TreeMap<Double, FrequencyOracle<Integer, Integer>> getDistinctFrequencyOracleMap() {
+        return distinctFrequencyOracleMap;
+    }
+
+    public TreeMap<Double, Double> getDistinctQMap() {
+        return distinctQMap;
+    }
+
+    public TreeMap<Double, Double> getDistinctPMap() {
+        return distinctPMap;
+    }
+
+    public TreeMap<Double, Double> getAggregationWeightMap() {
+        return aggregationWeightMap;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
 
     public Map<Double, List<Integer>> perturb(Map<Double, List<Integer>> originalDataMap) {
         Double epsilon;
@@ -97,7 +131,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         FrequencyOracle<Integer, Integer> smallFO, largeFO;
         Double smallEpsilon, largeEpsilon, smallP, smallQ, largeP, largeQ;
         BasicPair<Double, Double> tempPair;
-        Double alpha, beta, paramA, paramB;
+        Double alpha;
         Integer rePerturbIndex;
         List<Integer> currentObfuscatedList;
         TreeMap<Double, List<Integer>> enhancedMap = new TreeMap<>();
@@ -107,7 +141,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
             smallEpsilon = epsilonSortedList.get(i);
             smallFO = this.distinctFrequencyOracleMap.get(smallEpsilon);
             smallP = smallFO.getP();
-            smallQ = smallFO.getQ();
+//            smallQ = smallFO.getQ();
             currentObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(i));
             enhancedIndexList.addAll(currentObfuscatedList);
             for (int j = i + 1; j < epsilonListSize; ++j) {
@@ -118,7 +152,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
                 // todo:这里只实现了GRR的enhancement
                 tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallP, largeP, largeQ, domainSize);
                 alpha = tempPair.getKey();
-                beta = tempPair.getValue();
+//                beta = tempPair.getValue();
                 rePerturbIndex = PerturbUtils.grrPerturb(domainSize, i, alpha, random);
                 enhancedIndexList.add(rePerturbIndex);
             }
@@ -129,7 +163,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
     }
 
     public List<Double> aggregate(Map<Double, List<Integer>> obfuscatedReportData, Integer totalUserSize) {
-        Double epsilon, variance, frequency;
+        Double epsilon, tempWeight, frequency;
         Integer domainIndex, tempCount;
         List<Integer> obfuscatedReportDataList;
         FrequencyOracle<Integer, Integer> frequencyOracle;
@@ -138,14 +172,14 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         for (Map.Entry<Double, List<Integer>> entry : obfuscatedReportData.entrySet()) {
             epsilon = entry.getKey();
             obfuscatedReportDataList = entry.getValue();
-            variance = this.distinctVarianceMap.get(epsilon);
+            tempWeight = this.aggregationWeightMap.get(epsilon);
             frequencyOracle = this.distinctFrequencyOracleMap.get(epsilon);
             aggregateMap = frequencyOracle.aggregate(obfuscatedReportDataList);
             for (Map.Entry<Integer, Integer> innerEntry : aggregateMap.entrySet()) {
                 domainIndex = innerEntry.getKey();
                 tempCount = innerEntry.getValue();
                 frequency = domainFrequencyList.get(domainIndex);
-                frequency += tempCount * variance;
+                frequency += tempCount * tempWeight;
                 domainFrequencyList.set(domainIndex, frequency);
             }
         }
@@ -161,20 +195,25 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         Double paramA = 0D, paramB = 0D;
         Double tempG;
         Double tempQ, tempP;
-        Double tempVariance;
+        Double tempWeight;
         Set<Double> distinctEpsilonSet = this.distinctBudgetCountMap.keySet();
         List<Double> result = new ArrayList<>(distinctEpsilonSet.size());
         for (Double epsilon : distinctEpsilonSet) {
             tempG = this.distinctBudgetCountMap.get(epsilon) * 1.0 / totalUserSize;
             tempQ = this.distinctQMap.get(epsilon);
             tempP = this.distinctPMap.get(epsilon);
-            tempVariance = this.distinctVarianceMap.get(epsilon);
-            paramA += tempVariance * tempG * tempQ;
-            paramB += tempVariance * tempG * (tempP - tempQ);
+            tempWeight = this.aggregationWeightMap.get(epsilon);
+            paramA += tempWeight * tempG * tempQ;
+            paramB += tempWeight * tempG * (tempP - tempQ);
         }
         for (Double tempObfuscatedEstimation : obfucatedEstimationList) {
             result.add((tempObfuscatedEstimation-paramA) / paramB);
         }
         return result;
     }
+
+    public abstract void initializeQPMapByBudgetList();
+    public abstract Double getPLDPVarianceSum(Integer userSize);
+//    public abstract Double getPLDPVarianceSumStar();
+    public abstract Double getError(Integer userSize, Integer sampleSize);
 }

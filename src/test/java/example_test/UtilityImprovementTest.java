@@ -3,20 +3,30 @@ package example_test;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.BasicPair;
 import hnu.dll.special_tools.PerturbUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PLPDExampleTest {
-    @Test
-    public void alphaBetaTest() {
-        List<Double> epsilonList = new ArrayList<>();
+public class UtilityImprovementTest {
+
+    public List<Double> epsilonList = new ArrayList<>();
+
+    @Before
+    public void initialize() {
         epsilonList.add(0.2);
         epsilonList.add(0.3);
         epsilonList.add(0.5);
         epsilonList.add(0.6);
         epsilonList.add(0.8);
+
+    }
+
+
+    @Test
+    public void alphaBetaTest() {
+
 
         Integer domainSize = 2;
 
@@ -36,8 +46,8 @@ public class PLPDExampleTest {
         System.out.println("q_3 = " + smallQ);
         System.out.println("p_4 = " + largeP);
         System.out.println("q_4 = " + largeQ);
-        System.out.println("alpha_{3,4} = " + result.getKey());
-        System.out.println("beta_{3,4} = " + result.getValue());
+        System.out.println("alpha_{4,3} = " + result.getKey());
+        System.out.println("beta_{4,3} = " + result.getValue());
 
         largeP = pList.get(4);
         largeQ = qList.get(4);
@@ -49,8 +59,14 @@ public class PLPDExampleTest {
         System.out.println("q_3 = " + smallQ);
         System.out.println("p_5 = " + largeP);
         System.out.println("q_5 = " + largeQ);
-        System.out.println("alpha_{3,5} = " + result.getKey());
-        System.out.println("beta_{3,5} = " + result.getValue());
+        System.out.println("alpha_{5,3} = " + result.getKey());
+        System.out.println("beta_{5,3} = " + result.getValue());
 
     }
+
+    @Test
+    public void optimalPopulationTest() {
+
+    }
+
 }
