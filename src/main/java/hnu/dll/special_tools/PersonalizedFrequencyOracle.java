@@ -13,12 +13,12 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
     protected Integer domainSize;
 //    protected Integer totalUserSize;
     // 统计不同budget的频率
-    protected TreeMap<Double, Integer> distinctBudgetCountMap;
-    protected TreeMap<Double, FrequencyOracle<Integer, Integer>> distinctFrequencyOracleMap;
-    protected TreeMap<Double, Double> distinctQMap;
-    protected TreeMap<Double, Double> distinctPMap;
+    protected Map<Double, Integer> distinctBudgetCountMap;
+    protected Map<Double, FrequencyOracle<Integer, Integer>> distinctFrequencyOracleMap;
+    protected Map<Double, Double> distinctQMap;
+    protected Map<Double, Double> distinctPMap;
 //    protected TreeMap<Double, Double> distinctVarianceMap;
-    protected TreeMap<Double, Double> aggregationWeightMap;
+    protected Map<Double, Double> aggregationWeightMap;
 
     Random random = new Random();
 
@@ -60,7 +60,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         }
     }
 
-    public PersonalizedFrequencyOracle(Integer domainSize, TreeMap<Double, Integer> distinctBudgetCountMap, Class<T> frequencyOracleClass) {
+    public PersonalizedFrequencyOracle(Integer domainSize, Map<Double, Integer> distinctBudgetCountMap, Class<T> frequencyOracleClass) {
         this.domainSize = domainSize;
 //        this.totalUserSize = 0;
         this.distinctBudgetCountMap = distinctBudgetCountMap;
@@ -75,23 +75,23 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         return domainSize;
     }
 
-    public TreeMap<Double, Integer> getDistinctBudgetCountMap() {
+    public Map<Double, Integer> getDistinctBudgetCountMap() {
         return distinctBudgetCountMap;
     }
 
-    public TreeMap<Double, FrequencyOracle<Integer, Integer>> getDistinctFrequencyOracleMap() {
+    public Map<Double, FrequencyOracle<Integer, Integer>> getDistinctFrequencyOracleMap() {
         return distinctFrequencyOracleMap;
     }
 
-    public TreeMap<Double, Double> getDistinctQMap() {
+    public Map<Double, Double> getDistinctQMap() {
         return distinctQMap;
     }
 
-    public TreeMap<Double, Double> getDistinctPMap() {
+    public Map<Double, Double> getDistinctPMap() {
         return distinctPMap;
     }
 
-    public TreeMap<Double, Double> getAggregationWeightMap() {
+    public Map<Double, Double> getAggregationWeightMap() {
         return aggregationWeightMap;
     }
 

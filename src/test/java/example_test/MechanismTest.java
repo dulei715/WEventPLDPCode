@@ -180,7 +180,7 @@ public class MechanismTest {
 
     @Test
     public void pLBDTest() {
-        GeneralizedPersonalizedRandomResponse gprr = new GeneralizedPersonalizedRandomResponse(this.domainSize, this.budgetCountMap,);
+        GeneralizedPersonalizedRandomResponse gprr = new GeneralizedPersonalizedRandomResponse(this.domainSize, this.budgetCountMap, GeneralizedPersonalizedRandomResponse.class);
     }
 
 
