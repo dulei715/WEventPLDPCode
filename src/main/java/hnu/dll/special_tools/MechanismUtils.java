@@ -10,21 +10,20 @@ public class MechanismUtils {
         LinkedHashMap<Integer, Integer> uniqueSamplingSizeMap = BasicArrayUtil.getUniqueListWithCountList(samplingSizeRequirementList);
         Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
         int userSize = samplingSizeRequirementList.size();
-        List<Double> tempBudgetList, finalBudgetList;
+        List<Double> tempBudgetList, finalBudgetList = null;
         Integer originalSamplingSize;
         Double originalBudget;
         LinkedHashMap<Double, Integer> newUniqueBudgetCountMap, finalUniqueBudgetCountMap = null;
-        Map<Double, Double> newUniqueBudgetStatisticMap;
         Double tempError, finalError = Double.MAX_VALUE;
         Integer finalSamplingSize = null;
-        Double finalEpsilon;
         for (Integer uniqueSamplingSize : uniqueSamplingSizeSet) {
             tempBudgetList = new ArrayList<>();
             for (int i = 0; i < userSize; ++i) {
                 originalSamplingSize = samplingSizeRequirementList.get(i);
                 originalBudget = privacyBudgetList.get(i);
                 if (originalSamplingSize < uniqueSamplingSize) {
-                    tempBudgetList.add(originalBudget * originalSamplingSize / uniqueSamplingSize);
+//                    tempBudgetList.add(originalBudget * originalSamplingSize / uniqueSamplingSize);
+                    tempBudgetList.add(originalBudget / Math.ceil(uniqueSamplingSize * 1.0 / originalSamplingSize));
                 } else {
                     tempBudgetList.add(originalBudget);
                 }
@@ -40,11 +39,11 @@ public class MechanismUtils {
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;
-                finalUniqueBudgetCountMap = newUniqueBudgetCountMap;
+                finalBudgetList = tempBudgetList;
             }
         }
-        finalBudgetList = new ArrayList<>();
-        finalBudgetList.addAll(finalUniqueBudgetCountMap.keySet());
         return new OptimalSelectionStruct(finalSamplingSize, finalError, finalBudgetList);
     }
+
+
 }
