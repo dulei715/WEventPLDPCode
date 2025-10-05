@@ -4,7 +4,6 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRandomizedResponse;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.BasicPair;
-import hnu.dll.special_tools.MechanismUtils;
 import hnu.dll.special_tools.PFOTools;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
@@ -13,14 +12,14 @@ import hnu.dll.utils.BasicUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class MechanismTest {
+    public Random random;
     public List<Integer> windowSizeList;
     public List<Double> budgetList;
     public List<Integer> samplingSizeList;
-    public List<String> positionList;
+    public List<Integer> positionIndexList;
 
     public Map<Double, Integer> budgetCountMap;
     public Map<Integer, Integer> windowSizeCountMap;
@@ -100,7 +99,7 @@ public class MechanismTest {
 
     @Before
     public void init() {
-        Random random = new Random(2);
+        this.random = new Random(2);
         this.windowSizeList = new ArrayList<>();
         Integer userSize = 2000;
         this.budgetList = new ArrayList<>();
@@ -124,10 +123,10 @@ public class MechanismTest {
         }
         initializeParameters();
 
-        positionList = new ArrayList<>();
+        positionIndexList = new ArrayList<>();
         for (int i = 0; i < userSize; ++i) {
             tempInteger = random.nextInt(positionCandidateSize);
-            positionList.add(PositionCandidate[tempInteger]);
+            positionIndexList.add(tempInteger);
         }
     }
 
@@ -198,15 +197,16 @@ public class MechanismTest {
 
     @Test
     public void positionTest() {
-        System.out.println(this.positionList);
-        LinkedHashMap<String, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(this.positionList);
+        System.out.println(this.positionIndexList);
+        LinkedHashMap<Integer, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(this.positionIndexList);
         MyPrint.showMap(positionCountMap);
     }
 
     @Test
     public void positionSubsetStatisticTest() {
         Integer samplingSize = 333;
-        List<String> subPositionList = this.positionList.subList(0, samplingSize);
+        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, samplingSize);
+        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
         System.out.println(subPositionList);
         LinkedHashMap<String, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(subPositionList);
         MyPrint.showMap(positionCountMap);
@@ -288,8 +288,8 @@ public class MechanismTest {
 //        MyPrint.showSplitLine("*", 150);
 
         OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-        MyPrint.showSplitLine("*", 150);
+//        System.out.println(optimalSelectionStruct);
+//        MyPrint.showSplitLine("*", 150);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
@@ -299,16 +299,20 @@ public class MechanismTest {
 
         // time slot 1
         Integer samplingSize = 333;
-        List<String> subPositionList = this.positionList.subList(0, samplingSize);
+        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, samplingSize);
+        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
         List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, samplingSize);
 //        System.out.println(subPositionList);
 //        System.out.println(subNewPrivacyBudgetList);
         TreeMap<String, Integer> positionCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionList));
         TreeMap<Double, Integer> budgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
         MyPrint.showMap(positionCountMap, "; ");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(positionCountMap));
-        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap));
+        MyPrint.showMap(BasicUtils.getStatisticByCount(positionCountMap), "; ");
+        MyPrint.showMap(budgetCountMap, "; ");
+        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap), "; ");
         MyPrint.showSplitLine("*", 150);
+
+//        PFOTools.perturb(positionCountMap, domainSize, this.random);
 
     }
 

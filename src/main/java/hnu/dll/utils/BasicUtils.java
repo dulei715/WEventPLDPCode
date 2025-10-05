@@ -2,6 +2,7 @@ package hnu.dll.utils;
 
 import cn.edu.dll.struct.BasicPair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,6 +37,21 @@ public class BasicUtils {
         }
         for (Map.Entry<T, Integer> entry : data.entrySet()) {
             result.put(entry.getKey(), entry.getValue() * 1.0 / totalCount);
+        }
+        return result;
+    }
+
+    public static <T> List<T> getElementListByIndex(List<T> elementList, List<Integer> indexList) {
+        List<T> result = new ArrayList<>(indexList.size());
+        for (Integer index : indexList) {
+            result.add(elementList.get(index));
+        }
+        return result;
+    }
+    public static <T> List<T> getElementListByIndex(T[] data, List<Integer> indexList) {
+        List<T> result = new ArrayList<>(indexList.size());
+        for (Integer index : indexList) {
+            result.add(data[index]);
         }
         return result;
     }

@@ -214,7 +214,7 @@ public class PFOTools {
      * @param originalDataMap
      * @return
      */
-    public Map<Double, List<Integer>> perturb(Map<Double, List<Integer>> originalDataMap, Integer domainSize, Random random) {
+    public static Map<Double, List<Integer>> perturb(Map<Double, List<Integer>> originalDataMap, Integer domainSize, Random random) {
         Double epsilon;
         List<Integer> originalDataList;
         List<Integer> obfuscatedDataList;
