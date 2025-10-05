@@ -28,5 +28,10 @@ public class BasicUtils {
         return result;
     }
 
-    public 
+    public <T> Map<T, Double> getStatisticByCount(Map<T, Integer> data) {
+        Integer totalCount = 0;
+        for (Integer count : data.values()) {
+            totalCount += count;
+        }
+    }
 }
