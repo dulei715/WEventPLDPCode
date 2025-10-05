@@ -212,7 +212,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
         return result;
     }
 
-    public abstract void initializeQPMapByBudgetList();
+    protected abstract void initializeQPMapByBudgetList();
     public abstract Double getPLDPVarianceSum(Integer userSize);
 //    public abstract Double getPLDPVarianceSumStar();
     public abstract Double getError(Integer userSize, Integer sampleSize);

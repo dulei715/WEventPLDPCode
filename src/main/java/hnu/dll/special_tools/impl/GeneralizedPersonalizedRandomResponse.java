@@ -15,7 +15,7 @@ public class GeneralizedPersonalizedRandomResponse extends PersonalizedFrequency
     }
 
     @Override
-    public void initializeQPMapByBudgetList() {
+    protected void initializeQPMapByBudgetList() {
         Double budget, q, p;
         this.distinctQMap = new TreeMap<>();
         this.distinctPMap = new TreeMap<>();

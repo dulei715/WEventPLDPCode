@@ -5,6 +5,7 @@ import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRan
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.BasicPair;
 import hnu.dll.special_tools.MechanismUtils;
+import hnu.dll.special_tools.PFOTools;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
 import hnu.dll.structure.OptimalSelectionStruct;
@@ -128,8 +129,8 @@ public class MechanismTest {
     }
     @Test
     public void parametersTest() {
-        TreeMap<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
-        TreeMap<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
         MyPrint.showMap(distinctQMap);
         MyPrint.showSplitLine("*", 150);
         MyPrint.showMap(distinctPMap);
@@ -159,6 +160,11 @@ public class MechanismTest {
         }
         MyPrint.showMap(windowSizeStatisticMap);
     }
+    @Test
+    public void dataStatisticTest() {
+//        List<Integer> countList = new ArrayList<>(this.domainSize);
+
+    }
 
     @Test
     public void samplingSizeTest() {
@@ -179,8 +185,52 @@ public class MechanismTest {
     }
 
     @Test
+    public void dissimilarityTest() {
+        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
+
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        System.out.println(optimalSelectionStruct);
+        MyPrint.showSplitLine("*", 150);
+
+        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+        Double newError = optimalSelectionStruct.getError();
+
+        Map<Double, Integer> newBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList);
+        Map<Double, Double> newDistinctQMap = PFOTools.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
+        Map<Double, Double> newDistinctPMap = PFOTools.getGeneralRandomResponseParameterP(newDistinctQMap);
+        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(newBudgetCountMap, domainSize);
+
+        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSum(budgetCountMap, distinctPMap, distinctQMap, aggregationWeightMap, userSize, domainSize);
+        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSum(newBudgetCountMap, newDistinctPMap, newDistinctQMap, newAggregationWeightMap, userSize, domainSize);
+
+
+//        MyPrint.showMap(distinctPMap);
+//        MyPrint.showMap(distinctQMap);
+        System.out.println(originalPLDPVarianceSum);
+        System.out.println(newPLDPVarianceSum);
+
+
+
+        MyPrint.showSplitLine("*", 120);
+        List<Double> estimationList = new ArrayList<>();
+        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, this.domainSize);
+        estimationList.add(0.22);
+        estimationList.add(0.2);
+        estimationList.add(0.18);
+        estimationList.add(0.22);
+        estimationList.add(0.18);
+        Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
+        System.out.println(dissimilarity);
+//        PFOTools.getGPRRError()
+    }
+
+    @Test
     public void pLBDTest() {
-        GeneralizedPersonalizedRandomResponse gprr = new GeneralizedPersonalizedRandomResponse(this.domainSize, this.budgetCountMap, GeneralizedPersonalizedRandomResponse.class);
+        GeneralizedPersonalizedRandomResponse gprr = new GeneralizedPersonalizedRandomResponse(this.domainSize, this.budgetCountMap, GeneralizedRandomizedResponse.class);
+
     }
 
 

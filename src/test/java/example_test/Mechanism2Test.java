@@ -50,8 +50,8 @@ public class Mechanism2Test {
     }
     @Test
     public void parametersTest() {
-        TreeMap<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
-        TreeMap<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
         MyPrint.showMap(distinctQMap);
         MyPrint.showSplitLine("*", 150);
         MyPrint.showMap(distinctPMap);
