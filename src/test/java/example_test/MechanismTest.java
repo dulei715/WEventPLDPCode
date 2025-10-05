@@ -283,6 +283,9 @@ public class MechanismTest {
         MyPrint.showMap(distinctPMap);
         MyPrint.showSplitLine("*", 150);
 
+        MyPrint.showMap(this.budgetCountMap);
+        MyPrint.showSplitLine("*", 150);
+
 
         // time slot 1
         Integer samplingSize = 333;
