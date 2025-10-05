@@ -224,10 +224,12 @@ public class MechanismTest {
     }
 
     @Test
-    public void pLBDTest() {
+    public void pLBDOriginTest() {
         Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
         Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
         Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
+
+
 
         OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
@@ -268,6 +270,27 @@ public class MechanismTest {
         Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
         System.out.println(dissimilarity);
 //        PFOTools.getGPRRError()
+    }
+
+    @Test
+    public void pLBDTest() {
+        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
+        System.out.println("q map: ");
+        MyPrint.showMap(distinctQMap);
+        System.out.println("p map: ");
+        MyPrint.showMap(distinctPMap);
+        MyPrint.showSplitLine("*", 150);
+
+
+        // time slot 1
+        Integer samplingSize = 333;
+        List<String> subPositionList = this.positionList.subList(0, samplingSize);
+        System.out.println(subPositionList);
+        TreeMap<String, Integer> positionCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionList));
+        MyPrint.showMap(positionCountMap, "; ");
+        MyPrint.showSplitLine("*", 150);
     }
 
 }
