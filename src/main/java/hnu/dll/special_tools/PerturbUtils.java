@@ -22,16 +22,7 @@ public class PerturbUtils {
         return new BasicPair<>(alpha, beta);
     }
 
-    public static Integer grrPerturb(Integer domainSize, Integer currentIndex, Double probabilityP, Random random) {
-        if (RandomUtil.isChosen(probabilityP)) {
-            return currentIndex;
-        }
-        Integer index = RandomUtil.getRandomInteger(0, domainSize - 2, random);
-        if (index >= currentIndex) {
-            index += 1;
-        }
-        return index;
-    }
+
 
 
 }

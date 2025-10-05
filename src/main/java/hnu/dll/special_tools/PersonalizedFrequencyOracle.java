@@ -124,42 +124,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
 
 
     public CombinePair<Map<Double, List<Integer>>, Integer> rePerturb(TreeMap<Double, List<Integer>> perturbedDataMap) {
-        Integer totalSize = 0;
-        // 保证 epsilon 从小到大排列
-        List<Double> epsilonSortedList = new ArrayList<>(perturbedDataMap.keySet());
-        Integer epsilonListSize = epsilonSortedList.size();
-        FrequencyOracle<Integer, Integer> smallFO, largeFO;
-        Double smallEpsilon, largeEpsilon, smallP, smallQ, largeP, largeQ;
-        BasicPair<Double, Double> tempPair;
-        Double alpha;
-        Integer rePerturbIndex;
-        List<Integer> currentObfuscatedList;
-        TreeMap<Double, List<Integer>> enhancedMap = new TreeMap<>();
-        List<Integer> enhancedIndexList;
-        for (int i = 0; i < epsilonListSize; ++i) {
-            enhancedIndexList = new ArrayList<>();
-            smallEpsilon = epsilonSortedList.get(i);
-            smallFO = this.distinctFrequencyOracleMap.get(smallEpsilon);
-            smallP = smallFO.getP();
-//            smallQ = smallFO.getQ();
-            currentObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(i));
-            enhancedIndexList.addAll(currentObfuscatedList);
-            for (int j = i + 1; j < epsilonListSize; ++j) {
-                largeEpsilon = epsilonSortedList.get(j);
-                largeFO = this.distinctFrequencyOracleMap.get(largeEpsilon);
-                largeP = largeFO.getP();
-                largeQ = largeFO.getQ();
-                // todo:这里只实现了GRR的enhancement
-                tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallP, largeP, largeQ, domainSize);
-                alpha = tempPair.getKey();
-//                beta = tempPair.getValue();
-                rePerturbIndex = PerturbUtils.grrPerturb(domainSize, i, alpha, random);
-                enhancedIndexList.add(rePerturbIndex);
-            }
-            enhancedMap.put(smallEpsilon, enhancedIndexList);
-            totalSize += enhancedIndexList.size();
-        }
-        return new CombinePair<>(enhancedMap, totalSize);
+        return PFOTools.rePerturb(perturbedDataMap, domainSize, random);
     }
 
     public List<Double> aggregate(Map<Double, List<Integer>> obfuscatedReportData, Integer totalUserSize) {

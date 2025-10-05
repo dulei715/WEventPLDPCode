@@ -20,6 +20,7 @@ public class MechanismTest {
     public List<Integer> windowSizeList;
     public List<Double> budgetList;
     public List<Integer> samplingSizeList;
+    public List<String> positionList;
 
     public Map<Double, Integer> budgetCountMap;
     public Map<Integer, Integer> windowSizeCountMap;
@@ -32,6 +33,10 @@ public class MechanismTest {
 
     public static final Double[] BudgetCandidate = new Double[]{
             0.2, 0.4, 0.6, 0.8
+    };
+
+    public static final String[] PositionCandidate = new String[] {
+            "A", "B", "C", "D", "E"
     };
 
     public void initializeParameters() {
@@ -96,13 +101,14 @@ public class MechanismTest {
     @Before
     public void init() {
         Random random = new Random(2);
-        Integer domainSize = 5;
         this.windowSizeList = new ArrayList<>();
         Integer userSize = 2000;
         this.budgetList = new ArrayList<>();
         Integer tempInteger;
+        Integer budgetCandidateSize = BudgetCandidate.length;
+        Integer positionCandidateSize = PositionCandidate.length;
         for (int i = 0; i < userSize; ++i) {
-            tempInteger = random.nextInt(4) + 1;
+            tempInteger = random.nextInt(budgetCandidateSize) + 1;
             if (tempInteger == 4) {
                 tempInteger = random.nextDouble() < 0.01 ? 4 : 3;
             }
@@ -110,13 +116,19 @@ public class MechanismTest {
 //                tempInteger = RandomUtil.isChosen(0.01) ? 1 : 2;
 //            }
             windowSizeList.add(tempInteger);
-            tempInteger = random.nextInt(4);
+            tempInteger = random.nextInt(budgetCandidateSize);
             if (tempInteger == 0) {
                 tempInteger = random.nextDouble() < 0.5 ? 0 : 1;
             }
             budgetList.add(BudgetCandidate[tempInteger]);
         }
         initializeParameters();
+
+        positionList = new ArrayList<>();
+        for (int i = 0; i < userSize; ++i) {
+            tempInteger = random.nextInt(positionCandidateSize);
+            positionList.add(PositionCandidate[tempInteger]);
+        }
     }
 
     @Test
@@ -185,7 +197,34 @@ public class MechanismTest {
     }
 
     @Test
-    public void dissimilarityTest() {
+    public void positionTest() {
+        System.out.println(this.positionList);
+        LinkedHashMap<String, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(this.positionList);
+        MyPrint.showMap(positionCountMap);
+    }
+
+    @Test
+    public void positionSubsetStatisticTest() {
+        Integer samplingSize = 333;
+        List<String> subPositionList = this.positionList.subList(0, samplingSize);
+        System.out.println(subPositionList);
+        LinkedHashMap<String, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(subPositionList);
+        MyPrint.showMap(positionCountMap);
+        MyPrint.showSplitLine("*", 150);
+//        Integer totalUserSize = 0;
+//        for (Integer count : positionCountMap.values()) {
+//            totalUserSize += count;
+//        }
+//        System.out.println("total subset user size: " + totalUserSize);
+        Map<String, Double> positionStatisticMap = new TreeMap<>();
+        for (Map.Entry<String, Integer> entry : positionCountMap.entrySet()) {
+            positionStatisticMap.put(entry.getKey(), entry.getValue() * 1.0 / samplingSize);
+        }
+        MyPrint.showMap(positionStatisticMap);
+    }
+
+    @Test
+    public void pLBDTest() {
         Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
         Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
         Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
@@ -194,11 +233,15 @@ public class MechanismTest {
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
+        // todo: add xxx
+
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
         Double newError = optimalSelectionStruct.getError();
 
         Map<Double, Integer> newBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList);
+//        PFOTools.rePerturb()
+        // todo: add rePerturb
         Map<Double, Double> newDistinctQMap = PFOTools.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
         Map<Double, Double> newDistinctPMap = PFOTools.getGeneralRandomResponseParameterP(newDistinctQMap);
         Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(newBudgetCountMap, domainSize);
@@ -226,12 +269,5 @@ public class MechanismTest {
         System.out.println(dissimilarity);
 //        PFOTools.getGPRRError()
     }
-
-    @Test
-    public void pLBDTest() {
-        GeneralizedPersonalizedRandomResponse gprr = new GeneralizedPersonalizedRandomResponse(this.domainSize, this.budgetCountMap, GeneralizedRandomizedResponse.class);
-
-    }
-
 
 }

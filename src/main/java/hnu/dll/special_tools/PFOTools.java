@@ -1,8 +1,6 @@
 package hnu.dll.special_tools;
 
-import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
-import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.BasicPair;
 import cn.edu.dll.struct.CombinePair;
 
@@ -228,7 +226,7 @@ public class PFOTools {
 //            frequencyOracle = this.distinctFrequencyOracleMap.get(epsilon);
             for (Integer data : originalDataList) {
 //                obfuscatedData = frequencyOracle.perturb(data);
-                obfuscatedData = FOTools.perturb(epsilon, data, domainSize, random);
+                obfuscatedData = FOTools.gRRPerturb(epsilon, data, domainSize, random);
                 obfuscatedDataList.add(obfuscatedData);
             }
             result.put(epsilon, obfuscatedDataList);
@@ -242,38 +240,47 @@ public class PFOTools {
      * @param perturbedDataMap
      * @return
      */
-    public CombinePair<Map<Double, List<Integer>>, Integer> rePerturb(TreeMap<Double, List<Integer>> perturbedDataMap) {
+    public static CombinePair<Map<Double, List<Integer>>, Integer> rePerturb(TreeMap<Double, List<Integer>> perturbedDataMap, Integer domainSize, Random random) {
         Integer totalSize = 0;
         // 保证 epsilon 从小到大排列
         List<Double> epsilonSortedList = new ArrayList<>(perturbedDataMap.keySet());
         Integer epsilonListSize = epsilonSortedList.size();
-        FrequencyOracle<Integer, Integer> smallFO, largeFO;
+//        FrequencyOracle<Integer, Integer> smallFO, largeFO;
         Double smallEpsilon, largeEpsilon, smallP, smallQ, largeP, largeQ;
         BasicPair<Double, Double> tempPair;
         Double alpha;
         Integer rePerturbIndex;
-        List<Integer> currentObfuscatedList;
+        List<Integer> currentObfuscatedList, tempObfuscatedList;
         TreeMap<Double, List<Integer>> enhancedMap = new TreeMap<>();
         List<Integer> enhancedIndexList;
         for (int i = 0; i < epsilonListSize; ++i) {
             enhancedIndexList = new ArrayList<>();
             smallEpsilon = epsilonSortedList.get(i);
-            smallFO = this.distinctFrequencyOracleMap.get(smallEpsilon);
-            smallP = smallFO.getP();
+//            smallFO = this.distinctFrequencyOracleMap.get(smallEpsilon);
+//            smallP = smallFO.getP();
+            smallP = FOTools.getGRRP(smallEpsilon, domainSize);
 //            smallQ = smallFO.getQ();
+            smallQ = FOTools.getGRRQ(smallEpsilon, domainSize);
             currentObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(i));
             enhancedIndexList.addAll(currentObfuscatedList);
             for (int j = i + 1; j < epsilonListSize; ++j) {
                 largeEpsilon = epsilonSortedList.get(j);
-                largeFO = this.distinctFrequencyOracleMap.get(largeEpsilon);
-                largeP = largeFO.getP();
-                largeQ = largeFO.getQ();
+//                largeFO = this.distinctFrequencyOracleMap.get(largeEpsilon);
+//                largeP = largeFO.getP();
+//                largeQ = largeFO.getQ();
+                largeP = FOTools.getGRRP(largeEpsilon, domainSize);
+                largeQ = FOTools.getGRRQ(largeEpsilon, domainSize);
                 // todo:这里只实现了GRR的enhancement
-                tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallP, largeP, largeQ, domainSize);
+                tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallQ, largeP, largeQ, domainSize);
                 alpha = tempPair.getKey();
 //                beta = tempPair.getValue();
-                rePerturbIndex = PerturbUtils.grrPerturb(domainSize, i, alpha, random);
-                enhancedIndexList.add(rePerturbIndex);
+//                rePerturbIndex = PerturbUtils.grrPerturb(domainSize, i, alpha, random);
+                tempObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(j));
+                for (Integer tempIndex : tempObfuscatedList) {
+                    rePerturbIndex = FOTools.gRRPerturb(alpha, tempIndex, domainSize, random);
+                    enhancedIndexList.add(rePerturbIndex);
+                }
+
             }
             enhancedMap.put(smallEpsilon, enhancedIndexList);
             totalSize += enhancedIndexList.size();
