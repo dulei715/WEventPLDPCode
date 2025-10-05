@@ -188,7 +188,7 @@ public class MechanismTest {
 
     @Test
     public void optimalSamplingSizeTest() {
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
@@ -231,7 +231,7 @@ public class MechanismTest {
 
 
 
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
@@ -277,23 +277,39 @@ public class MechanismTest {
         Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
         Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
         Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
-        System.out.println("q map: ");
-        MyPrint.showMap(distinctQMap);
-        System.out.println("p map: ");
-        MyPrint.showMap(distinctPMap);
+//        System.out.println("q map: ");
+//        MyPrint.showMap(distinctQMap);
+//        System.out.println("p map: ");
+//        MyPrint.showMap(distinctPMap);
+//        MyPrint.showSplitLine("*", 150);
+
+//        MyPrint.showMap(new TreeMap<>(this.budgetCountMap));
+//        MyPrint.showMap(BasicUtils.getStatisticByCount(this.budgetCountMap));
+//        MyPrint.showSplitLine("*", 150);
+
+        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
-        MyPrint.showMap(this.budgetCountMap);
-        MyPrint.showSplitLine("*", 150);
+        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+        Double optimalError = optimalSelectionStruct.getError();
+
 
 
         // time slot 1
         Integer samplingSize = 333;
         List<String> subPositionList = this.positionList.subList(0, samplingSize);
-        System.out.println(subPositionList);
+        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, samplingSize);
+//        System.out.println(subPositionList);
+//        System.out.println(subNewPrivacyBudgetList);
         TreeMap<String, Integer> positionCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionList));
+        TreeMap<Double, Integer> budgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
         MyPrint.showMap(positionCountMap, "; ");
+        MyPrint.showMap(BasicUtils.getStatisticByCount(positionCountMap));
+        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap));
         MyPrint.showSplitLine("*", 150);
+
     }
 
 }

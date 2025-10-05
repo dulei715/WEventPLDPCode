@@ -28,10 +28,15 @@ public class BasicUtils {
         return result;
     }
 
-    public <T> Map<T, Double> getStatisticByCount(Map<T, Integer> data) {
+    public static  <T> Map<T, Double> getStatisticByCount(Map<T, Integer> data) {
+        Map<T, Double> result = new TreeMap<>();
         Integer totalCount = 0;
         for (Integer count : data.values()) {
             totalCount += count;
         }
+        for (Map.Entry<T, Integer> entry : data.entrySet()) {
+            result.put(entry.getKey(), entry.getValue() * 1.0 / totalCount);
+        }
+        return result;
     }
 }
