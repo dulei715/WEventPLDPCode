@@ -4,6 +4,7 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRandomizedResponse;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.BasicPair;
+import cn.edu.dll.struct.CombinePair;
 import hnu.dll.special_tools.PFOTools;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
@@ -304,16 +305,62 @@ public class MechanismTest {
         List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, samplingSize);
 //        System.out.println(subPositionList);
 //        System.out.println(subNewPrivacyBudgetList);
-        TreeMap<String, Integer> positionCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionList));
-        TreeMap<Double, Integer> budgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
-        MyPrint.showMap(positionCountMap, "; ");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(positionCountMap), "; ");
-        MyPrint.showMap(budgetCountMap, "; ");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap), "; ");
+        TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
+        TreeMap<Double, Integer> subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
+        System.out.println("positionIndexCountMap:");
+        MyPrint.showMap(positionIndexCountMap, "; ");
+        System.out.println("position index statistic map:");
+        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
+//        System.out.println("budgetCountMap:");
+//        MyPrint.showMap(budgetCountMap, "; ");
+//        System.out.println("budget statistic map:");
+//        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap), "; ");
+        Set<Double> newBudgetSet = subBudgetCountMap.keySet();
+
         MyPrint.showSplitLine("*", 150);
 
-//        PFOTools.perturb(positionCountMap, domainSize, this.random);
+        Map<Double, List<Integer>> groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
+//        System.out.println("groupDataMap:");
+//        MyPrint.showMap(groupDataMap);
+        Map<Double, List<Integer>> perturbedData = PFOTools.perturb(groupDataMap, domainSize, this.random);
+//        System.out.println("perturbedData:");
+//        MyPrint.showMap(perturbedData);
+        Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
+        System.out.println("perturbedCountMap:");
+        MyPrint.showMap(perturbedCountMap, "; ");
+        Map<Integer, Double> perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
+        MyPrint.showMap(perturbedStatisticMap, "; ");
+        MyPrint.showSplitLine("*", 150);
 
+        TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
+        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOTools.rePerturb(sortedPerturbedData, domainSize, random);
+        Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
+        Integer newTotalUserSize = rePerturbResult.getValue();
+//        System.out.println("rePerturbMap");
+//        MyPrint.showMap(rePerturbMap);
+        System.out.println("totalUserSize: " + newTotalUserSize);
+        Map<Integer, Integer> rePerturbCountMap = BasicUtils.getCountMapByGroup(rePerturbMap);
+        Map<Integer, Double> rePerturbStatisticMap = BasicUtils.getStatisticByCount(rePerturbCountMap);
+        MyPrint.showMap(rePerturbStatisticMap);
+
+        MyPrint.showSplitLine("*", 150);
+
+
+        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
+        System.out.println("newParameterQ:");
+        MyPrint.showMap(newParameterQ);
+        System.out.println("newParameterP:");
+        MyPrint.showMap(newParameterP);
+        Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbMap);
+        System.out.println("rePerturbedEpsilonCount:");
+        MyPrint.showMap(rePerturbedEpsilonCount);
+        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
+        System.out.println("newAggregationWeightedMap:");
+        MyPrint.showMap(newAggregationWeightMap);
+        Map<Integer, Double> estimationMap = PFOTools.getEstimation(rePerturbStatisticMap, newTotalUserSize, rePerturbedEpsilonCount, newParameterP, newParameterQ, newAggregationWeightMap);
+        System.out.println("estimationMap:");
+        MyPrint.showMap(estimationMap);
     }
 
 }

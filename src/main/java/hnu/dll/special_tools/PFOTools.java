@@ -102,7 +102,7 @@ public class PFOTools {
 
     /**
      * 5. 获取估计值
-     * @param obfucatedEstimationList
+     * @param obfuscatedEstimationList
      * @param totalUserSize
      * @param distinctBudgetCountMap
      * @param distinctPMap
@@ -110,13 +110,13 @@ public class PFOTools {
      * @param aggregationWeightMap
      * @return
      */
-    public static List<Double> getEstimation(List<Double> obfucatedEstimationList, Integer totalUserSize, Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
+    public static List<Double> getEstimation(List<Double> obfuscatedEstimationList, Integer totalUserSize, Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
         Double paramA = 0D, paramB = 0D;
         Double tempG;
         Double tempQ, tempP;
         Double tempWeight;
         Set<Double> distinctEpsilonSet = distinctBudgetCountMap.keySet();
-        List<Double> result = new ArrayList<>(distinctEpsilonSet.size());
+        List<Double> result = new ArrayList<>();
         for (Double epsilon : distinctEpsilonSet) {
             tempG = distinctBudgetCountMap.get(epsilon) * 1.0 / totalUserSize;
             tempQ = distinctQMap.get(epsilon);
@@ -125,8 +125,31 @@ public class PFOTools {
             paramA += tempWeight * tempG * tempQ;
             paramB += tempWeight * tempG * (tempP - tempQ);
         }
-        for (Double tempObfuscatedEstimation : obfucatedEstimationList) {
+        for (Double tempObfuscatedEstimation : obfuscatedEstimationList) {
             result.add((tempObfuscatedEstimation-paramA) / paramB);
+        }
+        return result;
+    }
+    public static Map<Integer, Double> getEstimation(Map<Integer, Double> obfuscatedEstimationMap, Integer totalUserSize, Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
+        Double paramA = 0D, paramB = 0D;
+        Double tempG;
+        Double tempQ, tempP;
+        Double tempWeight;
+        Set<Double> distinctEpsilonSet = distinctBudgetCountMap.keySet();
+        Map<Integer, Double> result = new TreeMap<>();
+        for (Double epsilon : distinctEpsilonSet) {
+            tempG = distinctBudgetCountMap.get(epsilon) * 1.0 / totalUserSize;
+            tempQ = distinctQMap.get(epsilon);
+            tempP = distinctPMap.get(epsilon);
+            tempWeight = aggregationWeightMap.get(epsilon);
+            paramA += tempWeight * tempG * tempQ;
+            paramB += tempWeight * tempG * (tempP - tempQ);
+        }
+        for (Map.Entry<Integer, Double> entry : obfuscatedEstimationMap.entrySet()) {
+            Integer dataIndex = entry.getKey();
+            Double tempObfuscatedEstimation = entry.getValue();
+            Double value = (tempObfuscatedEstimation-paramA) / paramB;
+            result.put(dataIndex, value);
         }
         return result;
     }
@@ -326,7 +349,7 @@ public class PFOTools {
 //                newUniqueBudgetStatisticMap.put(entry.getKey(), entry.getValue() * 1.0 / userSize);
 //            }
             tempError = PFOTools.getGPRRError(newUniqueBudgetCountMap, userSize, uniqueSamplingSize, domainSize);
-            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
+//            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;

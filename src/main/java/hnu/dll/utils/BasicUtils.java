@@ -55,4 +55,41 @@ public class BasicUtils {
         }
         return result;
     }
+    public static Map<Double, List<Integer>> groupByEpsilon(List<Double> epsilonList, List<Integer> dataList) {
+        int size = epsilonList.size();
+        Map<Double, List<Integer>> result = new TreeMap<>();
+        if (size != dataList.size()) {
+            throw new RuntimeException("传入数据长度不一致！");
+        }
+        for (int i = 0; i < size; ++i) {
+            result.computeIfAbsent(epsilonList.get(i), k->new ArrayList<>()).add(dataList.get(i));
+        }
+        return result;
+    }
+
+    public static <T> Map<T, Integer> getCountMapByGroup(Map<Double, List<T>> groupData) {
+        Map<T, Integer> result = new TreeMap<>();
+        Integer tempCount;
+        for (List<T> dataInGroup : groupData.values()) {
+            for (T element : dataInGroup) {
+                tempCount = result.getOrDefault(element, 0);
+                ++tempCount;
+                result.put(element, tempCount);
+            }
+        }
+        return result;
+    }
+
+    public static <K,V> Map<K, Integer> getGroupDataCount(Map<K, List<V>> data) {
+        K tempK;
+        Integer tempSize;
+        Map<K, Integer> result = new TreeMap<>();
+        for (Map.Entry<K, List<V>> entry : data.entrySet()) {
+            tempK = entry.getKey();
+            tempSize = entry.getValue().size();
+            result.put(tempK, tempSize);
+        }
+        return result;
+    }
+
 }
