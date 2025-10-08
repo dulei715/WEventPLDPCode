@@ -19,6 +19,12 @@
             <artifactId>ejml-all</artifactId>
             <version>0.41</version> <!-- 请检查最新版本 -->
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <properties>
