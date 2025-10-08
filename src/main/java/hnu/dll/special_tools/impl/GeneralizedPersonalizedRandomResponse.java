@@ -1,6 +1,5 @@
 package hnu.dll.special_tools.impl;
 
-import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRandomizedResponse;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Deprecated
 public class GeneralizedPersonalizedRandomResponse extends PersonalizedFrequencyOracle<GeneralizedRandomizedResponse> {
     public GeneralizedPersonalizedRandomResponse(Integer domainSize, Map<Double, Integer> distinctBudgetCountMap, Class<GeneralizedRandomizedResponse> frequencyOracleClass) {
         super(domainSize, distinctBudgetCountMap, frequencyOracleClass);

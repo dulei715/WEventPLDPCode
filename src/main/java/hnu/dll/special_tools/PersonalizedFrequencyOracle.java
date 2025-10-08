@@ -2,13 +2,12 @@ package hnu.dll.special_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
-import cn.edu.dll.struct.BasicPair;
 import cn.edu.dll.struct.CombinePair;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-
+@Deprecated
 public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Integer, Integer>> {
     protected Integer domainSize;
 //    protected Integer totalUserSize;

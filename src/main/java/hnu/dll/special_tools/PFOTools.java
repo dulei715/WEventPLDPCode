@@ -47,9 +47,19 @@ public class PFOTools {
      * @param domainSize
      * @return
      */
+//    public static Double getGeneralizedRandomResponseApproximateVariance(Double epsilon, Integer userSize, Integer domainSize) {
+//        Double ePowEpsilon = Math.exp(epsilon);
+//        return userSize * (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2);
+//    }
     public static Double getGeneralizedRandomResponseApproximateVariance(Double epsilon, Integer userSize, Integer domainSize) {
         Double ePowEpsilon = Math.exp(epsilon);
         return userSize * (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2);
+    }
+    public static Double getGeneralizedRandomResponseTotalVariance(Double epsilon, Integer userSize, Integer domainSize) {
+        Double ePowEpsilon = Math.exp(epsilon);
+        Double q = 1 / (ePowEpsilon + domainSize - 1);
+        Double p = q * ePowEpsilon;
+        return userSize * domainSize * q * (1 - q) / Math.pow(p - q, 2) + userSize * (1 - p - q) / (p - q);
     }
 
     /**
@@ -67,7 +77,7 @@ public class PFOTools {
         for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
             epsilon = entry.getKey();
             userSize = distinctBudgetCountMap.get(epsilon);
-            variance = getGeneralizedRandomResponseApproximateVariance(epsilon, userSize, domainSize);
+            variance = getGeneralizedRandomResponseUpperBoundVariance(epsilon, userSize, domainSize);
             distinctVarianceMap.put(epsilon, variance);
             totalVariance += variance;
         }
