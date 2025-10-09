@@ -16,8 +16,9 @@ public class PersonalizedLocalWindowSizeMechanism {
 //        LinkedHashMap<Double, Double> uniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(privacyBudgetRequirementList);
 //        List<Double> uniqueBudgetList = BasicArrayUtil.toList(uniqueBudgetStatisticMap.keySet());
 //        List<Double> uniqueBudgetStatistic = BasicArrayUtil.toList(uniqueBudgetStatisticMap.values());
-        List<Double> newBudgetList, newUniqueBudgetList, newUniqueBudgetStatistic;
-        LinkedHashMap<Double, Double> newUniqueBudgetStatisticMap;
+        List<Double> newBudgetList, newUniqueBudgetList;
+        List<Integer> newUniqueBudgetCount;
+        LinkedHashMap<Double, Integer> newUniqueBudgetCountMap;
         Integer currentSamplingSize, currentUniqueSamplingSize;
         Double currentPrivacyBudget, tempError;
 
@@ -49,10 +50,10 @@ public class PersonalizedLocalWindowSizeMechanism {
             // for test
             MyPrint.showList(newBudgetList);
 
-            newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(newBudgetList);
-            newUniqueBudgetList = BasicArrayUtil.toList(newUniqueBudgetStatisticMap.keySet());
-            newUniqueBudgetStatistic = BasicArrayUtil.toList(newUniqueBudgetStatisticMap.values());
-            tempError = PersonalizedFrequencyOracleTools.getError(newUniqueBudgetList, newUniqueBudgetStatistic, userSize, currentUniqueSamplingSize, domainSize);
+            newUniqueBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newBudgetList);
+            newUniqueBudgetList = BasicArrayUtil.toList(newUniqueBudgetCountMap.keySet());
+            newUniqueBudgetCount = BasicArrayUtil.toList(newUniqueBudgetCountMap.values());
+            tempError = PFOTools.getGPRRError(newUniqueBudgetCountMap, userSize, currentUniqueSamplingSize, domainSize);
 
             // for test
             System.out.println("current error: " + tempError);

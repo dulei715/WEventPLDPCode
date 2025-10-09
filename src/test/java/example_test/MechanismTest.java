@@ -10,6 +10,7 @@ import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,61 +43,14 @@ public class MechanismTest {
     public void initializeParameters() {
         this.domainSize = 5;
         this.userSize = 2000;
-        budgetCountMap = BasicArrayUtil.getUniqueListWithCountList(this.budgetList);
-        windowSizeCountMap = BasicArrayUtil.getUniqueListWithCountList(this.windowSizeList);
+        budgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.budgetList));
+        windowSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.windowSizeList));
         this.pfo = new GeneralizedPersonalizedRandomResponse(domainSize, new TreeMap<>(budgetCountMap), GeneralizedRandomizedResponse.class);
         samplingSizeList = new ArrayList<>(userSize);
         for (Integer windowSize : windowSizeList) {
             samplingSizeList.add((int)Math.floor(userSize * 1.0 / (2 * windowSize)));
         }
     }
-
-//    @Before
-//    public void init() {
-//        this.windowSizeList = new ArrayList<>();
-//        this.budgetList = new ArrayList<>();
-//        this.samplingSizeList = new ArrayList<>();
-//        int userRepeatSize = 125;
-//        this.userSize = userRepeatSize * 16;
-//        for (int i = 0; i < userRepeatSize; ++i) {
-//            this.windowSizeList.add(3);     // 1 *
-//            this.windowSizeList.add(2);     // 2
-//            this.windowSizeList.add(3);     // 3
-//            this.windowSizeList.add(3);     // 4
-//            this.windowSizeList.add(1);     // 5
-//            this.windowSizeList.add(2);     // 6
-//            this.windowSizeList.add(4);     // 7
-//            this.windowSizeList.add(2);     // 8
-//            this.windowSizeList.add(3);     // 9
-//            this.windowSizeList.add(1);     // 10
-//            this.windowSizeList.add(2);     // 11
-//            this.windowSizeList.add(3);     // 12 *
-//            this.windowSizeList.add(2);     // 13
-//            this.windowSizeList.add(2);     // 14
-//            this.windowSizeList.add(3);     // 15
-//            this.windowSizeList.add(3);     // 16 *
-//
-//            this.budgetList.add(0.2);
-//            this.budgetList.add(0.4);
-//            this.budgetList.add(0.6);
-//            this.budgetList.add(0.2);
-//            this.budgetList.add(0.2);
-//            this.budgetList.add(0.8);
-//            this.budgetList.add(0.6);
-//            this.budgetList.add(0.2);
-//            this.budgetList.add(0.4);
-//            this.budgetList.add(0.6);
-//            this.budgetList.add(0.4);
-//            this.budgetList.add(0.2);
-//            this.budgetList.add(0.6);
-//            this.budgetList.add(0.8);
-//            this.budgetList.add(0.6);
-//            this.budgetList.add(0.2);
-//        }
-//
-//        initializeParameters();
-//
-//    }
 
     @Before
     public void init() {
@@ -182,7 +136,7 @@ public class MechanismTest {
     public void samplingSizeTest() {
         MyPrint.showList(samplingSizeList);
         MyPrint.showSplitLine("*", 150);
-        LinkedHashMap<Integer, Integer> samplingSizeCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingSizeList);
+        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(samplingSizeList));
         MyPrint.showMap(samplingSizeCountMap);
     }
 
@@ -190,7 +144,6 @@ public class MechanismTest {
     public void optimalSamplingSizeTest() {
         OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
-
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
         Map<BasicPair<Integer, Double>, Integer> newPairCount = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
         MyPrint.showMap(newPairCount);
@@ -209,7 +162,7 @@ public class MechanismTest {
         List<Integer> subPositionIndexList = this.positionIndexList.subList(0, samplingSize);
         List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
         System.out.println(subPositionList);
-        LinkedHashMap<String, Integer> positionCountMap = BasicArrayUtil.getUniqueListWithCountList(subPositionList);
+        TreeMap<String, Integer> positionCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionList));
         MyPrint.showMap(positionCountMap);
         MyPrint.showSplitLine("*", 150);
 //        Integer totalUserSize = 0;
@@ -242,15 +195,23 @@ public class MechanismTest {
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
         Double newError = optimalSelectionStruct.getError();
 
-        Map<Double, Integer> newBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList);
+        Map<Double, Integer> newBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+        System.out.println("newBudgetCountMap:");
+        MyPrint.showMap(newBudgetCountMap);
+        MyPrint.showSplitLine("*", 150);
 //        PFOTools.rePerturb()
         // todo: add rePerturb
         Map<Double, Double> newDistinctQMap = PFOTools.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
         Map<Double, Double> newDistinctPMap = PFOTools.getGeneralRandomResponseParameterP(newDistinctQMap);
         Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(newBudgetCountMap, domainSize);
 
-        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSum(budgetCountMap, distinctPMap, distinctQMap, aggregationWeightMap, userSize, domainSize);
-        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSum(newBudgetCountMap, newDistinctPMap, newDistinctQMap, newAggregationWeightMap, userSize, domainSize);
+        System.out.println("newAggregationWeightedMap:");
+        MyPrint.showMap(newAggregationWeightMap);
+
+        MyPrint.showSplitLine("*", 150);
+
+        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSum(budgetCountMap, domainSize);
+        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSum(newBudgetCountMap, domainSize);
 
 
 //        MyPrint.showMap(distinctPMap);
@@ -273,6 +234,20 @@ public class MechanismTest {
 //        PFOTools.getGPRRError()
     }
 
+    private void showPositionBudgetInformation(List<Integer> positionIndexList, List<Double> privacyBudgetList) {
+        MyPrint.showSplitLine("*", 150);
+        TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(positionIndexList));
+        TreeMap<Double, Integer> subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(privacyBudgetList));
+        System.out.println("positionIndexCountMap:");
+        MyPrint.showMap(positionIndexCountMap, "; ");
+        System.out.println("position index statistic map:");
+        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
+        System.out.println("subBudgetCountMap:");
+        MyPrint.showMap(subBudgetCountMap);
+        System.out.println("subBudgetStatisticMap:");
+        MyPrint.showMap(BasicUtils.getStatisticByCount(subBudgetCountMap), "; ");
+    }
+
     @Test
     public void pLBDTest() {
         Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
@@ -289,8 +264,8 @@ public class MechanismTest {
 //        MyPrint.showSplitLine("*", 150);
 
         OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-//        System.out.println(optimalSelectionStruct);
-//        MyPrint.showSplitLine("*", 150);
+        System.out.println(optimalSelectionStruct);
+        MyPrint.showSplitLine("*", 150);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
@@ -300,9 +275,10 @@ public class MechanismTest {
 
         // time slot 1
         Integer samplingSize = 333;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, samplingSize);
+        Integer rightIndexExclude = samplingSize;
+        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, rightIndexExclude);
         List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, samplingSize);
+        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, rightIndexExclude);
 //        System.out.println(subPositionList);
 //        System.out.println(subNewPrivacyBudgetList);
         TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
@@ -320,8 +296,11 @@ public class MechanismTest {
         MyPrint.showSplitLine("*", 150);
 
         Map<Double, List<Integer>> groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
-//        System.out.println("groupDataMap:");
-//        MyPrint.showMap(groupDataMap);
+        System.out.println("groupDataMap:");
+        MyPrint.showMap(groupDataMap);
+        System.out.println("groupDataCount:");
+        Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
+        MyPrint.showMap(groupDataCount);
         Map<Double, List<Integer>> perturbedData = PFOTools.perturb(groupDataMap, domainSize, this.random);
 //        System.out.println("perturbedData:");
 //        MyPrint.showMap(perturbedData);
@@ -341,6 +320,7 @@ public class MechanismTest {
         System.out.println("totalUserSize: " + newTotalUserSize);
         Map<Integer, Integer> rePerturbCountMap = BasicUtils.getCountMapByGroup(rePerturbMap);
         Map<Integer, Double> rePerturbStatisticMap = BasicUtils.getStatisticByCount(rePerturbCountMap);
+        System.out.println("rePerturbStatisticMap:");
         MyPrint.showMap(rePerturbStatisticMap);
 
         MyPrint.showSplitLine("*", 150);
@@ -358,9 +338,42 @@ public class MechanismTest {
         Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap:");
         MyPrint.showMap(newAggregationWeightMap);
-        Map<Integer, Double> estimationMap = PFOTools.getEstimation(rePerturbStatisticMap, newTotalUserSize, rePerturbedEpsilonCount, newParameterP, newParameterQ, newAggregationWeightMap);
+        Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap);
+        MyPrint.showSplitLine("*", 150);
+
+        Double pldpVarianceSum = PFOTools.getPLDPVarianceSum(rePerturbedEpsilonCount, domainSize);
+        System.out.println("pldpVarianceSum: " + pldpVarianceSum);
+        List<Double> estimationList = new ArrayList<>(estimationMap.values());
+        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
+        Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
+        System.out.println("dissimilarity: " + dissimilarity);
+        MyPrint.showSplitLine("*", 150);
+
+
+
+        Integer leftIndex = samplingSize;
+        samplingSize = (int)Math.floor(userSize/2/2);
+        rightIndexExclude += samplingSize;
+        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+        System.out.println("n_pp,opt = " + samplingSize);
+        System.out.println("leftIndex = " + leftIndex);
+        System.out.println("rightIndexExclude = " + rightIndexExclude);
+        positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
+        subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
+//        MyPrint.showMap(positionIndexCountMap);
+//        MyPrint.showMap(subBudgetCountMap);
+        showPositionBudgetInformation(subPositionIndexList, subNewPrivacyBudgetList);
+//        PFOTools.
+        Double gprrError = PFOTools.getGPRRError(subBudgetCountMap, userSize, samplingSize, domainSize);
+        System.out.println(gprrError);
+        MyPrint.showSplitLine("*", 150);
+
+
     }
 
 }

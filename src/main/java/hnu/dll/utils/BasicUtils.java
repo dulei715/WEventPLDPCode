@@ -29,7 +29,7 @@ public class BasicUtils {
         return result;
     }
 
-    public static  <T> Map<T, Double> getStatisticByCount(Map<T, Integer> data) {
+    public static <T> Map<T, Double> getStatisticByCount(Map<T, Integer> data) {
         Map<T, Double> result = new TreeMap<>();
         Integer totalCount = 0;
         for (Integer count : data.values()) {
@@ -37,6 +37,20 @@ public class BasicUtils {
         }
         for (Map.Entry<T, Integer> entry : data.entrySet()) {
             result.put(entry.getKey(), entry.getValue() * 1.0 / totalCount);
+        }
+        return result;
+    }
+
+    public static <T,S> Map<T, Map<S, Double>> getGroupStatisticByCount(Map<T, Map<S, Integer>> data) {
+        Map<T, Map<S, Double>> result = new TreeMap<>();
+        T tempT;
+        Map<S, Integer> tempCountMap;
+        Map<S, Double> tempStatisticMap;
+        for (Map.Entry<T, Map<S, Integer>> entry : data.entrySet()) {
+            tempT = entry.getKey();
+            tempCountMap = entry.getValue();
+            tempStatisticMap = getStatisticByCount(tempCountMap);
+            result.put(tempT, tempStatisticMap);
         }
         return result;
     }

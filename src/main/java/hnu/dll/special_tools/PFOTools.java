@@ -5,6 +5,7 @@ import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
 import cn.edu.dll.struct.BasicPair;
 import cn.edu.dll.struct.CombinePair;
 import hnu.dll.structure.OptimalSelectionStruct;
+import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
@@ -42,6 +43,8 @@ public class PFOTools {
 
     /**
      * 3. 获取GRR的方差
+     * 第一个是获取近似方差，即，假设f_i很小可以忽略
+     * 第二个是获取平均方差，即，假设f_i = 1/d，这个用来计算聚合权重alpha的
      * @param epsilon
      * @param userSize
      * @param domainSize
@@ -51,178 +54,166 @@ public class PFOTools {
 //        Double ePowEpsilon = Math.exp(epsilon);
 //        return userSize * (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2);
 //    }
-    public static Double getGeneralizedRandomResponseApproximateVariance(Double epsilon, Integer userSize, Integer domainSize) {
+    public static Double getGeneralizedRandomResponseApproximateFrequencyVariance(Double epsilon, Integer userSize, Integer domainSize) {
         Double ePowEpsilon = Math.exp(epsilon);
-        return userSize * (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2);
+        return (ePowEpsilon + domainSize - 2) / Math.pow(ePowEpsilon - 1, 2) / userSize;
     }
-    public static Double getGeneralizedRandomResponseTotalVariance(Double epsilon, Integer userSize, Integer domainSize) {
+    @Deprecated
+    public static Double getGeneralizedRandomResponseAverageVariance(Double epsilon, Integer userSize, Integer domainSize) {
         Double ePowEpsilon = Math.exp(epsilon);
         Double q = 1 / (ePowEpsilon + domainSize - 1);
         Double p = q * ePowEpsilon;
-        return userSize * domainSize * q * (1 - q) / Math.pow(p - q, 2) + userSize * (1 - p - q) / (p - q);
+        return q * (1 - q) / Math.pow(p - q, 2) / userSize + (1 - p - q) / (p - q) / userSize / domainSize;
+    }
+    private static BasicPair<Double, Double> getLambdaMuParameters(Double epsilon, Integer userSize, Integer domainSize) {
+        Double ePowEpsilon = Math.exp(epsilon);
+        Double q = 1 / (ePowEpsilon + domainSize - 1);
+        Double p = q * ePowEpsilon;
+        return new BasicPair<>(q * (1 - q) / Math.pow(p - q, 2) / userSize, (1 - p - q) / (p - q) / userSize);
     }
 
     /**
-     * 4. 获取个性化聚合参数
+     * 4.1 计算单类epsilon_k中的GRR方差的两个参数
+     * 对于任意一个f_j，方差是 q_k(1-q_k)/(n_k(p_k-q_k)^2) + (1-p_k-q_k)/(n_k(p_k-q_k))f_j
+     * lamda = q_k(1-q_k)/(n_k(p_k-q_k)^2)
+     * mu = (1-p_k-q_k)/(n_k(p_k-q_k))
+     * @return
+     */
+    public static Map<Double, BasicPair<Double, Double>> getLambdaMuPairMap(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
+        Double epsilon;
+        Integer groupUserSize;
+        BasicPair<Double, Double> tempPair;
+        Map<Double, BasicPair<Double, Double>> result = new TreeMap<>();
+        for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
+            epsilon = entry.getKey();
+            groupUserSize = entry.getValue();
+            tempPair = getLambdaMuParameters(epsilon, groupUserSize, domainSize);
+            result.put(epsilon, tempPair);
+        }
+        return result;
+    }
+
+    /**
+     * 4.2 获取个性化聚合参数（alpha）
      * @param distinctBudgetCountMap
      * @param domainSize
      * @return
      */
     public static Map<Double, Double> getAggregationWeightMap(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
-        TreeMap<Double, Double> distinctVarianceMap = new TreeMap<>();
-        Double epsilon, variance;
+        TreeMap<Double, Double> distinctVarianceReciprocalMap = new TreeMap<>();
+        Double epsilon, varianceReciprocal;
         Integer userSize;
-        Double totalVariance = 0D;
+        Double totalVarianceReciprocal = 0D;
         Map<Double, Double> aggregationWeightMap;
         for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
             epsilon = entry.getKey();
             userSize = distinctBudgetCountMap.get(epsilon);
-            variance = getGeneralizedRandomResponseUpperBoundVariance(epsilon, userSize, domainSize);
-            distinctVarianceMap.put(epsilon, variance);
-            totalVariance += variance;
+            varianceReciprocal = 1.0 / getGeneralizedRandomResponseAverageVariance(epsilon, userSize, domainSize);
+            distinctVarianceReciprocalMap.put(epsilon, varianceReciprocal);
+            totalVarianceReciprocal += varianceReciprocal;
         }
         aggregationWeightMap = new TreeMap<>();
-        for (Map.Entry<Double, Double> entry : distinctVarianceMap.entrySet()) {
+        for (Map.Entry<Double, Double> entry : distinctVarianceReciprocalMap.entrySet()) {
             epsilon = entry.getKey();
-            variance = entry.getValue();
-            aggregationWeightMap.put(epsilon, variance / totalVariance);
+            varianceReciprocal = entry.getValue();
+            aggregationWeightMap.put(epsilon, varianceReciprocal / totalVarianceReciprocal);
         }
         return aggregationWeightMap;
     }
 
+    public static Map<Double, Map<Integer, Double>> getAggregation(Map<Double, Integer> distinctBudgetMap, Map<Double, List<Integer>> obfuscatedMap, Integer domainSize) {
+        Double epsilon;
+        List<Integer> obfuscatedReportList;
+        Map<Double, Map<Integer, Double>> result = new TreeMap<>();
+        Map<Integer, Integer> personalziedCountMap;
+        Map<Integer, Double> personalizedStatisticMap;
+        List<Integer> dataIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, domainSize - 1);
+        for (Map.Entry<Double, List<Integer>> entry : obfuscatedMap.entrySet()) {
+            epsilon = entry.getKey();
+            obfuscatedReportList = entry.getValue();
+            personalziedCountMap = BasicArrayUtil.getUniqueListWithCountList(obfuscatedReportList, dataIndexList);
+            personalizedStatisticMap = BasicUtils.getStatisticByCount(personalziedCountMap);
+            result.put(epsilon, personalizedStatisticMap);
+        }
+        return result;
+    }
 
-//    public static List<Double> getEstimation(List<Double> obfuscatedCountList, List<Double> distinctBudgetCount, List<Double> qList, List<Double> pList) {
-//        Double paramA = 0D, paramB = 0D;
-//        int size = distinctBudgetCount.size();
-//        Double tempG;
-//        Double tempQ;
-//        int sizeRes = obfuscatedCountList.size();
-//        List<Double> result = new ArrayList<>(sizeRes);
-//        for (int i = 0; i < size; i++) {
-//            tempG = distinctBudgetCount.get(i);
-//            tempQ = qList.get(i);
-//            paramA += tempG * tempQ;
-//            paramB += tempG * (pList.get(i) - tempQ);
-//        }
-//        for (Double tempFrequency : obfuscatedCountList) {
-//            result.add((tempFrequency-paramA) / paramB);
-//        }
-//        return result;
-//    }
 
     /**
      * 5. 获取估计值
-     * @param obfuscatedEstimationList
-     * @param totalUserSize
-     * @param distinctBudgetCountMap
+     * @param obfuscatedEstimationMap
      * @param distinctPMap
      * @param distinctQMap
      * @param aggregationWeightMap
      * @return
      */
-    public static List<Double> getEstimation(List<Double> obfuscatedEstimationList, Integer totalUserSize, Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
-        Double paramA = 0D, paramB = 0D;
-        Double tempG;
+    public static Map<Integer, Double> getEstimation(Map<Double, Map<Integer, Double>> obfuscatedEstimationMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
         Double tempQ, tempP;
-        Double tempWeight;
-        Set<Double> distinctEpsilonSet = distinctBudgetCountMap.keySet();
-        List<Double> result = new ArrayList<>();
-        for (Double epsilon : distinctEpsilonSet) {
-            tempG = distinctBudgetCountMap.get(epsilon) * 1.0 / totalUserSize;
-            tempQ = distinctQMap.get(epsilon);
-            tempP = distinctPMap.get(epsilon);
-            tempWeight = aggregationWeightMap.get(epsilon);
-            paramA += tempWeight * tempG * tempQ;
-            paramB += tempWeight * tempG * (tempP - tempQ);
-        }
-        for (Double tempObfuscatedEstimation : obfuscatedEstimationList) {
-            result.add((tempObfuscatedEstimation-paramA) / paramB);
-        }
-        return result;
-    }
-    public static Map<Integer, Double> getEstimation(Map<Integer, Double> obfuscatedEstimationMap, Integer totalUserSize, Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap) {
-        Double paramA = 0D, paramB = 0D;
-        Double tempG;
-        Double tempQ, tempP;
-        Double tempWeight;
-        Set<Double> distinctEpsilonSet = distinctBudgetCountMap.keySet();
+        Double epsilon, tempStatistic, alreadyStatistic, tempWeighted;
+        Integer valueIndex;
+        Map<Integer, Double> groupStatisticMap;
         Map<Integer, Double> result = new TreeMap<>();
-        for (Double epsilon : distinctEpsilonSet) {
-            tempG = distinctBudgetCountMap.get(epsilon) * 1.0 / totalUserSize;
-            tempQ = distinctQMap.get(epsilon);
+
+        for (Map.Entry<Double, Map<Integer, Double>> entry : obfuscatedEstimationMap.entrySet()) {
+            epsilon = entry.getKey();
+            groupStatisticMap = entry.getValue();
+            tempWeighted = aggregationWeightMap.get(epsilon);
             tempP = distinctPMap.get(epsilon);
-            tempWeight = aggregationWeightMap.get(epsilon);
-            paramA += tempWeight * tempG * tempQ;
-            paramB += tempWeight * tempG * (tempP - tempQ);
-        }
-        for (Map.Entry<Integer, Double> entry : obfuscatedEstimationMap.entrySet()) {
-            Integer dataIndex = entry.getKey();
-            Double tempObfuscatedEstimation = entry.getValue();
-            Double value = (tempObfuscatedEstimation-paramA) / paramB;
-            result.put(dataIndex, value);
+            tempQ = distinctQMap.get(epsilon);
+            for (Map.Entry<Integer, Double> innerEntry : groupStatisticMap.entrySet()) {
+                valueIndex = innerEntry.getKey();
+                tempStatistic = innerEntry.getValue();
+                alreadyStatistic = result.getOrDefault(valueIndex, 0D);
+                alreadyStatistic += tempWeighted * (tempStatistic - tempQ) / (tempP - tempQ);
+                result.put(valueIndex, alreadyStatistic);
+            }
         }
         return result;
     }
 
     /**
-     * 获取每个取值的方差之和
-     * @param distinctBudgetCountMap
-     * @param distinctPMap
-     * @param distinctQMap
-     * @param aggregationWeightMap
-     * @param userSize
+     * 6.1. 获取每个取值的方差之和
      * @param domainSize
      * @return
      */
-    public static Double getPLDPVarianceSum(Map<Double, Integer> distinctBudgetCountMap, Map<Double, Double> distinctPMap, Map<Double, Double> distinctQMap, Map<Double, Double> aggregationWeightMap, Integer userSize, Integer domainSize) {
-        Double paramA = 0D, paramB = 0D, paramC = 0D;
-        Double tempG, budget, personalizedWeight, result;
-        Double tempQ, tempP;
+    public static Double getPLDPVarianceSum(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
+        Double lambda, mu, totalVariance = 0D;
+        BasicPair<Double, Double> tempPair;
+        Double epsilon;
+        Integer userSize;
         for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
-            tempG = entry.getValue() * 1.0 / userSize;
-            budget = entry.getKey();
-            tempQ = distinctQMap.get(budget);
-            tempP = distinctPMap.get(budget);
-            personalizedWeight = aggregationWeightMap.get(budget);
-            paramA += personalizedWeight * personalizedWeight * tempG * (1 - tempQ) * tempQ;
-            paramB += personalizedWeight * tempG * (tempP - tempQ);
-            paramC += personalizedWeight * personalizedWeight * tempG * (1 - tempP - tempQ) * (tempP - tempQ);
+            epsilon = entry.getKey();
+            userSize = entry.getValue();
+            tempPair = getLambdaMuParameters(epsilon, userSize, domainSize);
+            lambda = tempPair.getKey();
+            mu = tempPair.getValue();
+            totalVariance += 1.0 / (domainSize * lambda + mu);
         }
-        paramB = userSize * paramB * paramB;
-        result = (domainSize * paramA + paramC) / paramB;
-        return result;
+        totalVariance = 1.0 / totalVariance;
+        return totalVariance;
     }
 
-//    public static Double getPLDPVarianceSumStar(Integer valueSize, List<Double> distinctBudgetFrequencyList, List<Double> qList, List<Double> pList, Integer sampleSize) {
-//        Double result = 0D, paramA = 0D, paramB = 0D;
-//        int size = distinctBudgetFrequencyList.size();
-//        Double tempG;
-//        Double tempQ;
-//        for (int i = 0; i < size; i++) {
-//            tempG = distinctBudgetFrequencyList.get(i);
-//            tempQ = qList.get(i);
-//            paramA += tempG * (1 - tempQ) * tempQ;
-//            paramB += tempG * (pList.get(i) - tempQ);
-//        }
-//        paramA *= valueSize;
-//        paramB = sampleSize * paramB * paramB;
-//        return paramA / paramB;
-//    }
+    /**
+     * 6.2 获取采样误差
+     * @param userSize
+     * @param sampleSize
+     * @return
+     */
+    public static Double getSamplingVariance(Integer userSize, Integer sampleSize) {
+        return (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
+    }
 
     /**
-     * 6. 计算Error
-     * @param distinctBudgetCountMap
+     * 6.3. 计算Error
+     * @param distinctBudgetSamplingCountMap 传入的必须是sample过后的user关于budget的统计值
      * @param userSize
      * @param sampleSize
      * @param domainSize
      * @return
      */
-    public static Double getGPRRError(Map<Double, Integer> distinctBudgetCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
-        Map<Double, Double> distinctQMap = getGeneralRandomResponseParameterQ(distinctBudgetCountMap.keySet(), domainSize);
-        Map<Double, Double> distinctPMap = getGeneralRandomResponseParameterP(distinctQMap);
-        Map<Double, Double> aggregationWeightMap = getAggregationWeightMap(distinctBudgetCountMap, domainSize);
-        Double sampleVariance = (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
-        Double pldpVariance = getPLDPVarianceSum(distinctBudgetCountMap, distinctPMap, distinctQMap, aggregationWeightMap, sampleSize, domainSize);
+    public static Double getGPRRError(Map<Double, Integer> distinctBudgetSamplingCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+        Double sampleVariance = getSamplingVariance(userSize, sampleSize);
+        Double pldpVariance = getPLDPVarianceSum(distinctBudgetSamplingCountMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
     }
 
@@ -237,7 +228,7 @@ public class PFOTools {
         int size = estimationList.size();
         Double differSum = 0D;
         for (int i = 0; i < size; i++) {
-            differSum += estimationList.get(i) - lastEstimationList.get(i);
+            differSum += Math.pow(estimationList.get(i) - lastEstimationList.get(i), 2);
         }
         return (differSum - pldpVarianceSum) / size;
     }
@@ -291,25 +282,17 @@ public class PFOTools {
         for (int i = 0; i < epsilonListSize; ++i) {
             enhancedIndexList = new ArrayList<>();
             smallEpsilon = epsilonSortedList.get(i);
-//            smallFO = this.distinctFrequencyOracleMap.get(smallEpsilon);
-//            smallP = smallFO.getP();
             smallP = FOTools.getGRRP(smallEpsilon, domainSize);
-//            smallQ = smallFO.getQ();
             smallQ = FOTools.getGRRQ(smallEpsilon, domainSize);
             currentObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(i));
             enhancedIndexList.addAll(currentObfuscatedList);
             for (int j = i + 1; j < epsilonListSize; ++j) {
                 largeEpsilon = epsilonSortedList.get(j);
-//                largeFO = this.distinctFrequencyOracleMap.get(largeEpsilon);
-//                largeP = largeFO.getP();
-//                largeQ = largeFO.getQ();
                 largeP = FOTools.getGRRP(largeEpsilon, domainSize);
                 largeQ = FOTools.getGRRQ(largeEpsilon, domainSize);
                 // todo:这里只实现了GRR的enhancement
                 tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallQ, largeP, largeQ, domainSize);
                 alpha = tempPair.getKey();
-//                beta = tempPair.getValue();
-//                rePerturbIndex = PerturbUtils.grrPerturb(domainSize, i, alpha, random);
                 tempObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(j));
                 for (Integer tempIndex : tempObfuscatedList) {
                     rePerturbIndex = FOTools.gRRPerturb(alpha, tempIndex, domainSize, random);
@@ -322,6 +305,8 @@ public class PFOTools {
         }
         return new CombinePair<>(enhancedMap, totalSize);
     }
+
+
 
     /**
      * 10. 选择最优 sampling size
@@ -354,11 +339,7 @@ public class PFOTools {
             }
 
             newUniqueBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(tempBudgetList);
-//            newUniqueBudgetStatisticMap = new HashMap<>();
-//            for (Map.Entry<Double, Integer> entry : newUniqueBudgetCountMap.entrySet()) {
-//                newUniqueBudgetStatisticMap.put(entry.getKey(), entry.getValue() * 1.0 / userSize);
-//            }
-            tempError = PFOTools.getGPRRError(newUniqueBudgetCountMap, userSize, uniqueSamplingSize, domainSize);
+            tempError = getGPRRError(newUniqueBudgetCountMap, userSize, uniqueSamplingSize, domainSize);
 //            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
             if (tempError < finalError) {
                 finalError = tempError;

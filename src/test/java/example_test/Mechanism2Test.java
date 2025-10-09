@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
+@Deprecated
 public class Mechanism2Test {
     public List<Integer> windowSizeList;
     public List<Double> budgetList;
