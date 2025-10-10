@@ -95,6 +95,7 @@ public class PFOTools {
 
     /**
      * 4.2 获取个性化聚合参数（alpha）
+     * 这里g是z的g
      * @param distinctBudgetCountMap
      * @param domainSize
      * @return
@@ -173,8 +174,8 @@ public class PFOTools {
 
     /**
      * 6.1. 获取每个取值的方差之和
-     * 第一个函数根据具体的用户估计信息计算精确的方差和（用于dis计算）, 其第一个参数是已经抽样后的用户分组结果
-     * 第二个函数根据用户分组占比计算近似的方差和 （用于error计算），其一个参数是所有用户的分组结果，第二个参数是对应的抽样用户占比
+     * 第一个函数根据具体的用户估计信息计算精确的方差和（用于dis计算和error计算）, 其第一个参数是已经抽样后的用户分组结果
+     * 第二个函数根据用户分组占比计算近似的方差和 （用于optimal sampling selection计算），其一个参数是所有用户的分组结果，第二个参数是对应的抽样用户占比
      * @param domainSize
      * @return
      */
@@ -194,6 +195,7 @@ public class PFOTools {
         totalVariance = 1.0 / totalVariance;
         return totalVariance;
     }
+
     public static Double getPLDPVarianceSumByGroupUserRatio(Integer totalUserSize, Map<Double, Double> groupRatioMap, Integer domainSize) {
         Double lambda, mu, totalVariance = 0D;
         BasicPair<Double, Double> tempPair;
@@ -229,13 +231,14 @@ public class PFOTools {
      * @param domainSize
      * @return
      */
-    @Deprecated
     public static Double getGPRRErrorBySpecificUsers(Map<Double, Integer> distinctBudgetSamplingCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+        // 假设重扰动不影响sampling带来的误差。那么传入的userSize是重扰动前的userSize
         Double sampleVariance = getSamplingVariance(userSize, sampleSize);
         Double pldpVariance = getPLDPVarianceSumBySpecificUsers(distinctBudgetSamplingCountMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
     }
     public static Double getGPRRErrorByGroupUserRatio(Map<Double, Double> distinctBudgetRatioMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+        // 该方法只用于optimal population selection，这里假设不考虑重扰动。那么传入的userSize就是整体的userSize
         Double sampleVariance = getSamplingVariance(userSize, sampleSize);
         Double pldpVariance = getPLDPVarianceSumByGroupUserRatio(sampleSize, distinctBudgetRatioMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
@@ -340,7 +343,7 @@ public class PFOTools {
      * @return
      */
     public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, Integer domainSize) {
-        LinkedHashMap<Integer, Integer> uniqueSamplingSizeMap = BasicArrayUtil.getUniqueListWithCountList(samplingSizeRequirementList);
+        Map<Integer, Integer> uniqueSamplingSizeMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(samplingSizeRequirementList));
         Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
         int userSize = samplingSizeRequirementList.size();
         List<Double> tempBudgetList, finalBudgetList = null;

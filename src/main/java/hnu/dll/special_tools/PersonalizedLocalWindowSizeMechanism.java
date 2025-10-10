@@ -18,7 +18,7 @@ public class PersonalizedLocalWindowSizeMechanism {
 //        List<Double> uniqueBudgetStatistic = BasicArrayUtil.toList(uniqueBudgetStatisticMap.values());
         List<Double> newBudgetList, newUniqueBudgetList;
         List<Integer> newUniqueBudgetCount;
-        LinkedHashMap<Double, Double> newUniqueBudgetStatisticMap;
+        LinkedHashMap<Double, Integer> newUniqueBudgetCountMap;
         Integer currentSamplingSize, currentUniqueSamplingSize;
         Double currentPrivacyBudget, tempError;
 
@@ -50,8 +50,8 @@ public class PersonalizedLocalWindowSizeMechanism {
             // for test
             MyPrint.showList(newBudgetList);
 
-            newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(newBudgetList);
-            tempError = PFOTools.getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, currentUniqueSamplingSize, domainSize);
+            newUniqueBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newBudgetList);
+            tempError = PFOTools.getGPRRErrorBySpecificUsers(newUniqueBudgetCountMap, userSize, currentUniqueSamplingSize, domainSize);
 
             // for test
             System.out.println("current error: " + tempError);

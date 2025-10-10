@@ -1,6 +1,8 @@
 package hnu.dll.utils;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.basic.BasicCalculation;
+import cn.edu.dll.differential_privacy.ldp.consistent.Normalization;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.CombinePair;
 import hnu.dll.special_tools.PFOTools;
@@ -8,15 +10,18 @@ import hnu.dll.special_tools.PFOTools;
 import java.util.*;
 
 public class TestUtils {
-    public static Double showSMechanismInformation(List<Integer> subPositionIndexList, List<Double> subNewPrivacyBudgetList, Integer domainSize, Random random) {
+    public static Double showSMechanismInformation(List<Integer> subPositionIndexList, List<Double> subNewPrivacyBudgetList, Integer totalUserSize, Integer domainSize, Random random) {
         MyPrint.showSplitLine("*", 150);
         TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
         TreeMap<Double, Integer> subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
+        Integer samplingSize = subPositionIndexList.size();
         System.out.println("1.1. 抽样出来的用户位置数据的实际信息:");
         System.out.println("positionIndexCountMap:");
         MyPrint.showMap(positionIndexCountMap, "; ");
         System.out.println("position index statistic map:");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
+        Map<Integer, Double> realIndexStatistic = BasicUtils.getStatisticByCount(positionIndexCountMap);
+        ArrayList<Double> realIndexList = new ArrayList<>(realIndexStatistic.values());
+        MyPrint.showMap(realIndexStatistic, "; ");
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("1.2. 抽样出来的用户隐私预算的统计信息:");
@@ -41,6 +46,27 @@ public class TestUtils {
         Map<Integer, Double> perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
         MyPrint.showMap(perturbedStatisticMap, "; ");
 
+//        MyPrint.showSplitLine("*", 150);
+        System.out.println("如果不重扰动，直接进行估计:");
+        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
+        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOTools.getAggregationWeightMap(subBudgetCountMap, domainSize);
+        Double errorWithoutRePerturb = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOTools.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Integer, Double> estimationWithoutRePerturb = PFOTools.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
+        System.out.println("aggregation weighted map without re-perturb:");
+        MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
+        System.out.println("error without re-perturb: " + errorWithoutRePerturb);
+        ArrayList<Double> estimationWithoutRePerturbList = new ArrayList<>(estimationWithoutRePerturb.values());
+        Double twoNorm = BasicCalculation.get2Norm(estimationWithoutRePerturbList, realIndexList);
+        System.out.println("two norm without re-perturb: " + twoNorm);
+        List<Double> normalizedEstimationWithoutRePerturbList = Normalization.normalizedBySimplexProjection(estimationWithoutRePerturbList);
+        twoNorm = BasicCalculation.get2Norm(normalizedEstimationWithoutRePerturbList, realIndexList);
+        System.out.println("two norm (normalized) without re-perturb: " + twoNorm);
+        System.out.println("estimation without re-perturb:");
+        MyPrint.showMap(estimationWithoutRePerturb, "; ");
+        System.out.println("normalized estimation list without re-perturb:");
+        MyPrint.showList(normalizedEstimationWithoutRePerturbList, "; ");
 
 
         MyPrint.showSplitLine("*", 150);
@@ -65,8 +91,7 @@ public class TestUtils {
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("1.5. 无偏统计信息:");
-        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
+
 //        System.out.println("newParameterQ:");
 //        MyPrint.showMap(newParameterQ);
 //        System.out.println("newParameterP:");
@@ -75,16 +100,27 @@ public class TestUtils {
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
         Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Double grrError = PFOTools.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
+        System.out.println("grrError: " + grrError);
         Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+        ArrayList<Double> estimationList = new ArrayList<>(estimationMap.values());
+        twoNorm = BasicCalculation.get2Norm(estimationList, realIndexList);
+        System.out.println("two norm: " + twoNorm);
+        List<Double> normalizedEstimationList = Normalization.normalizedBySimplexProjection(estimationList);
+        MyPrint.showList(normalizedEstimationList, "; ");
+        twoNorm = BasicCalculation.get2Norm(normalizedEstimationList, realIndexList);
+        System.out.println("two norm (normalized): " + twoNorm);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap, "; ");
+        System.out.println("normalized estimation list:");
+        MyPrint.showList(normalizedEstimationList, "; ");
 
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("1.6. dissimilarity相关计算");
         Double pldpVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
         System.out.println("pldpVarianceSum: " + pldpVarianceSum);
-        List<Double> estimationList = new ArrayList<>(estimationMap.values());
+        estimationList = new ArrayList<>(estimationMap.values());
         List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
         Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
         System.out.println("dissimilarity: " + dissimilarity);
@@ -94,16 +130,8 @@ public class TestUtils {
     }
 
 
-    public static void showRMechanismInformation(Double dissimilarity, List<Integer> subPositionIndexList, List<Double> subNewPrivacyBudgetList, Integer originalTotalUserSize, Map<Double, Double> originalGroupRatioMap, Integer domainSize, Random random) {
-        MyPrint.showSplitLine("*", 150);
-        System.out.println("2.1. Error信息:");
-        Integer samplingSize = subPositionIndexList.size();
-        System.out.println("sampling size (n_pp,opt): " + samplingSize);
-        Double gprrError = PFOTools.getGPRRErrorByGroupUserRatio(originalGroupRatioMap, originalTotalUserSize, samplingSize, domainSize);
-        System.out.println("dissimilarity: " + dissimilarity);
-        System.out.println("grrError: " + gprrError);
-        String judge = dissimilarity > gprrError ? "dis > err" : "dis > err";
-        System.out.println(judge);
+    public static void showRMechanismInformation(Double dissimilarity, List<Integer> subPositionIndexList, List<Double> subNewPrivacyBudgetList, Integer totalUserSize, Integer domainSize, Random random) {
+
 
         MyPrint.showSplitLine("*", 150);
         TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
@@ -112,7 +140,10 @@ public class TestUtils {
         System.out.println("positionIndexCountMap:");
         MyPrint.showMap(positionIndexCountMap, "; ");
         System.out.println("position index statistic map:");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
+        Map<Integer, Double> realIndexStatistic = BasicUtils.getStatisticByCount(positionIndexCountMap);
+        MyPrint.showMap(realIndexStatistic, "; ");
+        ArrayList<Double> realIndexList = new ArrayList<>(realIndexStatistic.values());
+        MyPrint.showList(realIndexList, "; ");
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("2.3. 抽样出来的用户隐私预算的统计信息:");
@@ -122,6 +153,16 @@ public class TestUtils {
         MyPrint.showMap(BasicUtils.getStatisticByCount(subBudgetCountMap), "; ");
 
 
+        MyPrint.showSplitLine("*", 150);
+        System.out.println("2.1. Error信息:");
+        Integer samplingSize = subPositionIndexList.size();
+        System.out.println("sampling size (n_pp,opt): " + samplingSize);
+//        Double gprrError = PFOTools.getGPRRErrorByGroupUserRatio(originalGroupRatioMap, originalTotalUserSize, samplingSize, domainSize);
+        Double gprrError = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        System.out.println("dissimilarity: " + dissimilarity);
+        System.out.println("grrError: " + gprrError);
+        String judge = dissimilarity > gprrError ? "dis > err" : "dis <= err";
+        System.out.println(judge);
 
 
         MyPrint.showSplitLine("*", 150);
@@ -139,6 +180,27 @@ public class TestUtils {
         MyPrint.showMap(perturbedCountMap, "; ");
         Map<Integer, Double> perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
         MyPrint.showMap(perturbedStatisticMap, "; ");
+
+        System.out.println("如果不重扰动，直接进行估计:");
+        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
+        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOTools.getAggregationWeightMap(subBudgetCountMap, domainSize);
+        Double errorWithoutRePerturb = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOTools.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Integer, Double> estimationWithoutRePerturb = PFOTools.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
+        System.out.println("aggregation weighted map without re-perturb:");
+        MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
+        System.out.println("error without re-perturb: " + errorWithoutRePerturb);
+        ArrayList<Double> estimationWithoutRePerturbList = new ArrayList<>(estimationWithoutRePerturb.values());
+        Double twoNorm = BasicCalculation.get2Norm(estimationWithoutRePerturbList, realIndexList);
+        System.out.println("two norm without re-perturb: " + twoNorm);
+        List<Double> normalizedEstimationWithoutRePerturbList = Normalization.normalizedBySimplexProjection(estimationWithoutRePerturbList);
+        twoNorm = BasicCalculation.get2Norm(normalizedEstimationWithoutRePerturbList, realIndexList);
+        System.out.println("two norm (normalized) without re-perturb: " + twoNorm);
+        System.out.println("estimation without re-perturb:");
+        MyPrint.showMap(estimationWithoutRePerturb, "; ");
+        System.out.println("normalized estimation list without re-perturb:");
+        MyPrint.showList(normalizedEstimationWithoutRePerturbList, "; ");
 
 
 
@@ -164,8 +226,6 @@ public class TestUtils {
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("2.6. 无偏统计信息:");
-        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
 //        System.out.println("newParameterQ:");
 //        MyPrint.showMap(newParameterQ);
 //        System.out.println("newParameterP:");
@@ -174,9 +234,23 @@ public class TestUtils {
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
         Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Double grrError = PFOTools.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
+        System.out.println("grrError: " + grrError);
         Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+        ArrayList<Double> estimationList = new ArrayList<>(estimationMap.values());
+        System.out.println("estimation list:");
+        MyPrint.showList(estimationList, "; ");
+        twoNorm = BasicCalculation.get2Norm(estimationList, realIndexList);
+        System.out.println("two norm: " + twoNorm);
+        List<Double> normalizedEstimationList = Normalization.normalizedBySimplexProjection(estimationList);
+        System.out.println("normalized estimation list:");
+        MyPrint.showList(normalizedEstimationList, "; ");
+        twoNorm = BasicCalculation.get2Norm(normalizedEstimationList, realIndexList);
+        System.out.println("two norm (normalized): " + twoNorm);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap, "; ");
+//        System.out.println("normalized estimation list:");
+//        MyPrint.showList(normalizedEstimationList, "; ");
     }
 
 
