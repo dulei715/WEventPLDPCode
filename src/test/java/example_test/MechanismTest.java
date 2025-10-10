@@ -10,7 +10,7 @@ import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
-import org.apache.poi.ss.formula.functions.T;
+import hnu.dll.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,17 +63,14 @@ public class MechanismTest {
         Integer positionCandidateSize = PositionCandidate.length;
         for (int i = 0; i < userSize; ++i) {
             tempInteger = random.nextInt(budgetCandidateSize) + 1;
-            if (tempInteger == 4) {
-                tempInteger = random.nextDouble() < 0.01 ? 4 : 3;
-            }
-//            else if (tempInteger == 1) {
-//                tempInteger = RandomUtil.isChosen(0.01) ? 1 : 2;
+//            if (tempInteger == 4) {
+//                tempInteger = random.nextDouble() < 0.01 ? 4 : 3;
 //            }
             windowSizeList.add(tempInteger);
             tempInteger = random.nextInt(budgetCandidateSize);
-            if (tempInteger == 0) {
-                tempInteger = random.nextDouble() < 0.5 ? 0 : 1;
-            }
+//            if (tempInteger == 0) {
+//                tempInteger = random.nextDouble() < 0.5 ? 0 : 1;
+//            }
             budgetList.add(BudgetCandidate[tempInteger]);
         }
         initializeParameters();
@@ -210,8 +207,8 @@ public class MechanismTest {
 
         MyPrint.showSplitLine("*", 150);
 
-        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSum(budgetCountMap, domainSize);
-        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSum(newBudgetCountMap, domainSize);
+        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(budgetCountMap, domainSize);
+        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(newBudgetCountMap, domainSize);
 
 
 //        MyPrint.showMap(distinctPMap);
@@ -344,7 +341,7 @@ public class MechanismTest {
         MyPrint.showMap(estimationMap);
         MyPrint.showSplitLine("*", 150);
 
-        Double pldpVarianceSum = PFOTools.getPLDPVarianceSum(rePerturbedEpsilonCount, domainSize);
+        Double pldpVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
         System.out.println("pldpVarianceSum: " + pldpVarianceSum);
         List<Double> estimationList = new ArrayList<>(estimationMap.values());
         List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
@@ -369,11 +366,61 @@ public class MechanismTest {
 //        MyPrint.showMap(subBudgetCountMap);
         showPositionBudgetInformation(subPositionIndexList, subNewPrivacyBudgetList);
 //        PFOTools.
-        Double gprrError = PFOTools.getGPRRError(subBudgetCountMap, userSize, samplingSize, domainSize);
+        groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
+        System.out.println("group map:");
+        MyPrint.showMap(groupDataMap);
+        Double gprrError = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, userSize, samplingSize, domainSize);
         System.out.println(gprrError);
         MyPrint.showSplitLine("*", 150);
 
+        perturbedData = PFOTools.perturb(groupDataMap, domainSize, random);
+        perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
+        System.out.println("perturbedCountMap:");
+        MyPrint.showMap(perturbedCountMap, "; ");
+        perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
+        MyPrint.showMap(perturbedStatisticMap, "; ");
+        MyPrint.showSplitLine("*", 150);
 
+    }
+
+    @Test
+    public void pLBDTestEnhanced() {
+        System.out.println("OriginalBudgetCount:");
+        MyPrint.showMap(budgetCountMap, "; ");
+        System.out.println("OriginalWindowSizeCount:");
+        MyPrint.showMap(windowSizeCountMap, "; ");
+
+        MyPrint.showSplitLine("*", 150);
+        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        System.out.println(optimalSelectionStruct);
+
+        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+        Double optimalError = optimalSelectionStruct.getError();
+        TreeMap<Double, Integer> totalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+        System.out.println("totalBudgetCountMap:");
+        MyPrint.showMap(totalBudgetCountMap, "; ");
+        Map<Double, Double> totalBudgetStatisticMap = BasicUtils.getStatisticByCount(totalBudgetCountMap);
+        System.out.println("totalBudgetStatisticMap:");
+        MyPrint.showMap(totalBudgetStatisticMap, "; ");
+        MyPrint.showSplitLine("*", 150);
+
+
+        // time slot 1
+        Integer samplingSize = 333;
+        Integer rightIndexExclude = samplingSize;
+        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, rightIndexExclude);
+        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, rightIndexExclude);
+        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, domainSize, random);
+
+        Integer leftIndex = samplingSize;
+        samplingSize = (int)Math.floor(userSize/2/2);
+        rightIndexExclude += samplingSize;
+        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, totalBudgetStatisticMap, domainSize, random);
     }
 
 }

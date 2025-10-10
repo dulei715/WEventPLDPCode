@@ -173,10 +173,12 @@ public class PFOTools {
 
     /**
      * 6.1. 获取每个取值的方差之和
+     * 第一个函数根据具体的用户估计信息计算精确的方差和（用于dis计算）, 其第一个参数是已经抽样后的用户分组结果
+     * 第二个函数根据用户分组占比计算近似的方差和 （用于error计算），其一个参数是所有用户的分组结果，第二个参数是对应的抽样用户占比
      * @param domainSize
      * @return
      */
-    public static Double getPLDPVarianceSum(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
+    public static Double getPLDPVarianceSumBySpecificUsers(Map<Double, Integer> distinctBudgetCountMap, Integer domainSize) {
         Double lambda, mu, totalVariance = 0D;
         BasicPair<Double, Double> tempPair;
         Double epsilon;
@@ -184,6 +186,23 @@ public class PFOTools {
         for (Map.Entry<Double, Integer> entry : distinctBudgetCountMap.entrySet()) {
             epsilon = entry.getKey();
             userSize = entry.getValue();
+            tempPair = getLambdaMuParameters(epsilon, userSize, domainSize);
+            lambda = tempPair.getKey();
+            mu = tempPair.getValue();
+            totalVariance += 1.0 / (domainSize * lambda + mu);
+        }
+        totalVariance = 1.0 / totalVariance;
+        return totalVariance;
+    }
+    public static Double getPLDPVarianceSumByGroupUserRatio(Integer totalUserSize, Map<Double, Double> groupRatioMap, Integer domainSize) {
+        Double lambda, mu, totalVariance = 0D;
+        BasicPair<Double, Double> tempPair;
+        Double epsilon, userRatio;
+        Integer userSize;
+        for (Map.Entry<Double, Double> entry : groupRatioMap.entrySet()) {
+            epsilon = entry.getKey();
+            userRatio = entry.getValue();
+            userSize = (int) Math.round(totalUserSize * userRatio);
             tempPair = getLambdaMuParameters(epsilon, userSize, domainSize);
             lambda = tempPair.getKey();
             mu = tempPair.getValue();
@@ -205,15 +224,20 @@ public class PFOTools {
 
     /**
      * 6.3. 计算Error
-     * @param distinctBudgetSamplingCountMap 传入的必须是sample过后的user关于budget的统计值
      * @param userSize
      * @param sampleSize
      * @param domainSize
      * @return
      */
-    public static Double getGPRRError(Map<Double, Integer> distinctBudgetSamplingCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+    @Deprecated
+    public static Double getGPRRErrorBySpecificUsers(Map<Double, Integer> distinctBudgetSamplingCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
         Double sampleVariance = getSamplingVariance(userSize, sampleSize);
-        Double pldpVariance = getPLDPVarianceSum(distinctBudgetSamplingCountMap, domainSize);
+        Double pldpVariance = getPLDPVarianceSumBySpecificUsers(distinctBudgetSamplingCountMap, domainSize);
+        return (sampleVariance + pldpVariance) / domainSize;
+    }
+    public static Double getGPRRErrorByGroupUserRatio(Map<Double, Double> distinctBudgetRatioMap, Integer userSize, Integer sampleSize, Integer domainSize) {
+        Double sampleVariance = getSamplingVariance(userSize, sampleSize);
+        Double pldpVariance = getPLDPVarianceSumByGroupUserRatio(sampleSize, distinctBudgetRatioMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
     }
 
@@ -322,7 +346,7 @@ public class PFOTools {
         List<Double> tempBudgetList, finalBudgetList = null;
         Integer originalSamplingSize;
         Double originalBudget;
-        LinkedHashMap<Double, Integer> newUniqueBudgetCountMap, finalUniqueBudgetCountMap = null;
+        LinkedHashMap<Double, Double> newUniqueBudgetStatisticMap;
         Double tempError, finalError = Double.MAX_VALUE;
         Integer finalSamplingSize = null;
         for (Integer uniqueSamplingSize : uniqueSamplingSizeSet) {
@@ -338,9 +362,9 @@ public class PFOTools {
                 }
             }
 
-            newUniqueBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(tempBudgetList);
-            tempError = getGPRRError(newUniqueBudgetCountMap, userSize, uniqueSamplingSize, domainSize);
-//            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
+            newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
+            tempError = getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
+            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;

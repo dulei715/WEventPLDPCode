@@ -1,4 +1,4 @@
-package hnu.dll;
+package hnu.dll.result;
 
 public class Main {
     public static void main(String[] args) {
