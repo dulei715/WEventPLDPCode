@@ -1,14 +1,17 @@
-package hnu.dll.special_tools;
+package hnu.dll.schemes._scheme_utils;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.BasicPair;
+import cn.edu.dll.struct.pair.BasicPair;
+import hnu.dll.special_tools.PFOUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class PersonalizedLocalWindowSizeMechanism {
+@Deprecated
+public class SchemeUtilsBefore {
+
     public static BasicPair<Integer, Double> optimalPopulationSelection(List<Integer> samplingList, List<Double> privacyBudgetRequirementList, Integer domainSize) {
         Double optimalError = Double.MAX_VALUE;
         Integer optimalSamplingSize = -1;
@@ -51,7 +54,7 @@ public class PersonalizedLocalWindowSizeMechanism {
             MyPrint.showList(newBudgetList);
 
             newUniqueBudgetCountMap = BasicArrayUtil.getUniqueListWithCountList(newBudgetList);
-            tempError = PFOTools.getGPRRErrorBySpecificUsers(newUniqueBudgetCountMap, userSize, currentUniqueSamplingSize, domainSize);
+            tempError = PFOUtils.getGPRRErrorBySpecificUsers(newUniqueBudgetCountMap, userSize, currentUniqueSamplingSize, domainSize);
 
             // for test
             System.out.println("current error: " + tempError);

@@ -2,7 +2,7 @@ package hnu.dll.special_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
-import cn.edu.dll.struct.CombinePair;
+import cn.edu.dll.struct.pair.CombinePair;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -123,7 +123,7 @@ public abstract class PersonalizedFrequencyOracle<T extends FrequencyOracle<Inte
 
 
     public CombinePair<Map<Double, List<Integer>>, Integer> rePerturb(TreeMap<Double, List<Integer>> perturbedDataMap) {
-        return PFOTools.rePerturb(perturbedDataMap, domainSize, random);
+        return PFOUtils.rePerturb(perturbedDataMap, domainSize, random);
     }
 
     public List<Double> aggregate(Map<Double, List<Integer>> obfuscatedReportData, Integer totalUserSize) {

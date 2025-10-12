@@ -1,7 +1,7 @@
 package example_test;
 
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.BasicPair;
+import cn.edu.dll.struct.pair.BasicPair;
 import hnu.dll.special_tools.PerturbUtils;
 import org.junit.Before;
 import org.junit.Test;

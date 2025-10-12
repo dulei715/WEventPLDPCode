@@ -4,9 +4,10 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRandomizedResponse;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.BasicPair;
-import cn.edu.dll.struct.CombinePair;
-import hnu.dll.special_tools.PFOTools;
+import cn.edu.dll.struct.pair.BasicPair;
+import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
 import hnu.dll.structure.OptimalSelectionStruct;
@@ -143,7 +144,7 @@ public class MechanismTest {
 
     @Test
     public void optimalSamplingSizeTest() {
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
         Map<BasicPair<Integer, Double>, Integer> newPairCount = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
@@ -186,7 +187,7 @@ public class MechanismTest {
 
 
 
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
@@ -202,17 +203,17 @@ public class MechanismTest {
         MyPrint.showSplitLine("*", 150);
 //        PFOTools.rePerturb()
         // todo: add rePerturb
-        Map<Double, Double> newDistinctQMap = PFOTools.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
-        Map<Double, Double> newDistinctPMap = PFOTools.getGeneralRandomResponseParameterP(newDistinctQMap);
-        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(newBudgetCountMap, domainSize);
+        Map<Double, Double> newDistinctQMap = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
+        Map<Double, Double> newDistinctPMap = PFOUtils.getGeneralRandomResponseParameterP(newDistinctQMap);
+        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(newBudgetCountMap, domainSize);
 
         System.out.println("newAggregationWeightedMap:");
         MyPrint.showMap(newAggregationWeightMap);
 
         MyPrint.showSplitLine("*", 150);
 
-        Double originalPLDPVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(budgetCountMap, domainSize);
-        Double newPLDPVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(newBudgetCountMap, domainSize);
+        Double originalPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(budgetCountMap, domainSize);
+        Double newPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(newBudgetCountMap, domainSize);
 
 
 //        MyPrint.showMap(distinctPMap);
@@ -230,7 +231,7 @@ public class MechanismTest {
         estimationList.add(0.18);
         estimationList.add(0.22);
         estimationList.add(0.18);
-        Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
+        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
         System.out.println(dissimilarity);
 //        PFOTools.getGPRRError()
     }
@@ -264,7 +265,7 @@ public class MechanismTest {
 //        MyPrint.showMap(BasicUtils.getStatisticByCount(this.budgetCountMap));
 //        MyPrint.showSplitLine("*", 150);
 
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
@@ -302,7 +303,7 @@ public class MechanismTest {
         System.out.println("groupDataCount:");
         Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
         MyPrint.showMap(groupDataCount);
-        Map<Double, List<Integer>> perturbedData = PFOTools.perturb(groupDataMap, domainSize, this.random);
+        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupDataMap, domainSize, this.random);
 //        System.out.println("perturbedData:");
 //        MyPrint.showMap(perturbedData);
         Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
@@ -313,7 +314,7 @@ public class MechanismTest {
         MyPrint.showSplitLine("*", 150);
 
         TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
-        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOTools.rePerturb(sortedPerturbedData, domainSize, random);
+        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, domainSize, random);
         Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
         Integer newTotalUserSize = rePerturbResult.getValue();
 //        System.out.println("rePerturbMap");
@@ -327,8 +328,8 @@ public class MechanismTest {
         MyPrint.showSplitLine("*", 150);
 
 
-        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
+        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
         System.out.println("newParameterQ:");
         MyPrint.showMap(newParameterQ);
         System.out.println("newParameterP:");
@@ -336,20 +337,20 @@ public class MechanismTest {
         Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbMap);
         System.out.println("rePerturbedEpsilonCount:");
         MyPrint.showMap(rePerturbedEpsilonCount);
-        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
+        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap:");
         MyPrint.showMap(newAggregationWeightMap);
-        Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
-        Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap);
         MyPrint.showSplitLine("*", 150);
 
-        Double pldpVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
+        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
         System.out.println("pldpVarianceSum: " + pldpVarianceSum);
         List<Double> estimationList = new ArrayList<>(estimationMap.values());
         List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
-        Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
+        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
         System.out.println("dissimilarity: " + dissimilarity);
         MyPrint.showSplitLine("*", 150);
 
@@ -373,11 +374,11 @@ public class MechanismTest {
         groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
         System.out.println("group map:");
         MyPrint.showMap(groupDataMap);
-        Double gprrError = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, userSize, samplingSize, domainSize);
+        Double gprrError = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, userSize, samplingSize, domainSize);
         System.out.println(gprrError);
         MyPrint.showSplitLine("*", 150);
 
-        perturbedData = PFOTools.perturb(groupDataMap, domainSize, random);
+        perturbedData = PFOUtils.perturb(groupDataMap, domainSize, random);
         perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
         System.out.println("perturbedCountMap:");
         MyPrint.showMap(perturbedCountMap, "; ");
@@ -398,7 +399,7 @@ public class MechanismTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -457,7 +458,7 @@ public class MechanismTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -517,7 +518,7 @@ public class MechanismTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -578,7 +579,7 @@ public class MechanismTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();

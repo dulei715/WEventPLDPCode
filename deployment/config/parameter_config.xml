@@ -6,12 +6,12 @@
 <root id="rootName">
     <datasets>
         <basicPath type="relative">..;0.dataset</basicPath>
-        <basicPath type="absolute" name="mac-book">;Users;admin;MainFiles;1.Research;dataset;3_stream_dp;0_dataset
+        <basicPath type="absolute" name="mac-book">;Users;admin;MainFiles;1.Research;dataset;3-2_stream_ldp;0_dataset
         </basicPath>
-        <basicPath type="absolute" name="mac-mini-book">;Users;mac;MainFiles;1.Research;dataset;3_stream_dp;0_dataset
+        <basicPath type="absolute" name="mac-mini-book">;Users;mac;MainFiles;1.Research;dataset;3-2_stream_ldp;0_dataset
         </basicPath>
-        <basicPath type="absolute" name="Huawei-book">E:;dataset;3.dynamicWEvent;0_dataset</basicPath>
-        <basicPath type="absolute" name="PC">E:;dataset;3_stream_dp;0_dataset</basicPath>
+<!--        <basicPath type="absolute" name="Huawei-book">E:;dataset;3.dynamicWEvent;0_dataset</basicPath>-->
+<!--        <basicPath type="absolute" name="PC">E:;dataset;3_stream_dp;0_dataset</basicPath>-->
         <fileName name="checkIn">CheckIn_dataset_TIST2015</fileName>
         <fileName name="trajectories">T-drive_Taxi_Trajectories</fileName>
         <fileName name="tlns">TLNS</fileName>

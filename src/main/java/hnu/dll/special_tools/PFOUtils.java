@@ -2,14 +2,14 @@ package hnu.dll.special_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
-import cn.edu.dll.struct.BasicPair;
-import cn.edu.dll.struct.CombinePair;
+import cn.edu.dll.struct.pair.BasicPair;
+import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public class PFOTools {
+public class PFOUtils {
     /**
      * 1. 根据不同的隐私预算集合和取值域计算GRR机制下参数Q的集合
      * @param privacyBudgetSet
@@ -279,7 +279,7 @@ public class PFOTools {
 //            frequencyOracle = this.distinctFrequencyOracleMap.get(epsilon);
             for (Integer data : originalDataList) {
 //                obfuscatedData = frequencyOracle.perturb(data);
-                obfuscatedData = FOTools.gRRPerturb(epsilon, data, domainSize, random);
+                obfuscatedData = FOUtils.gRRPerturb(epsilon, data, domainSize, random);
                 obfuscatedDataList.add(obfuscatedData);
             }
             result.put(epsilon, obfuscatedDataList);
@@ -309,20 +309,20 @@ public class PFOTools {
         for (int i = 0; i < epsilonListSize; ++i) {
             enhancedIndexList = new ArrayList<>();
             smallEpsilon = epsilonSortedList.get(i);
-            smallP = FOTools.getGRRP(smallEpsilon, domainSize);
-            smallQ = FOTools.getGRRQ(smallEpsilon, domainSize);
+            smallP = FOUtils.getGRRP(smallEpsilon, domainSize);
+            smallQ = FOUtils.getGRRQ(smallEpsilon, domainSize);
             currentObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(i));
             enhancedIndexList.addAll(currentObfuscatedList);
             for (int j = i + 1; j < epsilonListSize; ++j) {
                 largeEpsilon = epsilonSortedList.get(j);
-                largeP = FOTools.getGRRP(largeEpsilon, domainSize);
-                largeQ = FOTools.getGRRQ(largeEpsilon, domainSize);
+                largeP = FOUtils.getGRRP(largeEpsilon, domainSize);
+                largeQ = FOUtils.getGRRQ(largeEpsilon, domainSize);
                 // todo:这里只实现了GRR的enhancement
                 tempPair = PerturbUtils.getGRRRePerturbParameters(smallP, smallQ, largeP, largeQ, domainSize);
                 alpha = tempPair.getKey();
                 tempObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(j));
                 for (Integer tempIndex : tempObfuscatedList) {
-                    rePerturbIndex = FOTools.gRRPerturb(alpha, tempIndex, domainSize, random);
+                    rePerturbIndex = FOUtils.gRRPerturb(alpha, tempIndex, domainSize, random);
                     enhancedIndexList.add(rePerturbIndex);
                 }
 
@@ -335,47 +335,7 @@ public class PFOTools {
 
 
 
-    /**
-     * 10. 选择最优 sampling size
-     * @param samplingSizeRequirementList
-     * @param privacyBudgetList
-     * @param domainSize
-     * @return
-     */
-    public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, Integer domainSize) {
-        Map<Integer, Integer> uniqueSamplingSizeMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(samplingSizeRequirementList));
-        Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
-        int userSize = samplingSizeRequirementList.size();
-        List<Double> tempBudgetList, finalBudgetList = null;
-        Integer originalSamplingSize;
-        Double originalBudget;
-        LinkedHashMap<Double, Double> newUniqueBudgetStatisticMap;
-        Double tempError, finalError = Double.MAX_VALUE;
-        Integer finalSamplingSize = null;
-        for (Integer uniqueSamplingSize : uniqueSamplingSizeSet) {
-            tempBudgetList = new ArrayList<>();
-            for (int i = 0; i < userSize; ++i) {
-                originalSamplingSize = samplingSizeRequirementList.get(i);
-                originalBudget = privacyBudgetList.get(i);
-                if (originalSamplingSize < uniqueSamplingSize) {
-//                    tempBudgetList.add(originalBudget * originalSamplingSize / uniqueSamplingSize);
-                    tempBudgetList.add(originalBudget / Math.ceil(uniqueSamplingSize * 1.0 / originalSamplingSize));
-                } else {
-                    tempBudgetList.add(originalBudget);
-                }
-            }
 
-            newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
-            tempError = getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
-            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
-            if (tempError < finalError) {
-                finalError = tempError;
-                finalSamplingSize = uniqueSamplingSize;
-                finalBudgetList = tempBudgetList;
-            }
-        }
-        return new OptimalSelectionStruct(finalSamplingSize, finalError, finalBudgetList);
-    }
 
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException {

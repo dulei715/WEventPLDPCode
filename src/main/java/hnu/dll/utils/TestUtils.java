@@ -4,8 +4,8 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.BasicCalculation;
 import cn.edu.dll.differential_privacy.ldp.consistent.Normalization;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.CombinePair;
-import hnu.dll.special_tools.PFOTools;
+import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll.special_tools.PFOUtils;
 
 import java.util.*;
 
@@ -37,7 +37,7 @@ public class TestUtils {
 //        System.out.println("groupDataCount:");
 //        Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
 //        MyPrint.showMap(groupDataCount);
-        Map<Double, List<Integer>> perturbedData = PFOTools.perturb(groupDataMap, domainSize, random);
+        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupDataMap, domainSize, random);
 //        System.out.println("perturbedData:");
 //        MyPrint.showMap(perturbedData);
         Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
@@ -48,12 +48,12 @@ public class TestUtils {
 
 //        MyPrint.showSplitLine("*", 150);
         System.out.println("如果不重扰动，直接进行估计:");
-        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
-        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOTools.getAggregationWeightMap(subBudgetCountMap, domainSize);
-        Double errorWithoutRePerturb = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
-        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOTools.getAggregation(subBudgetCountMap, perturbedData, domainSize);
-        Map<Integer, Double> estimationWithoutRePerturb = PFOTools.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
+        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
+        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOUtils.getAggregationWeightMap(subBudgetCountMap, domainSize);
+        Double errorWithoutRePerturb = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Integer, Double> estimationWithoutRePerturb = PFOUtils.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
         System.out.println("aggregation weighted map without re-perturb:");
         MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
         System.out.println("error without re-perturb: " + errorWithoutRePerturb);
@@ -72,7 +72,7 @@ public class TestUtils {
         MyPrint.showSplitLine("*", 150);
         System.out.println("1.4. 重扰动与聚合信息:");
         TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
-        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOTools.rePerturb(sortedPerturbedData, domainSize, random);
+        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, domainSize, random);
         Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
         Integer newTotalUserSize = rePerturbResult.getValue();
 //        System.out.println("rePerturbMap");
@@ -96,14 +96,15 @@ public class TestUtils {
 //        MyPrint.showMap(newParameterQ);
 //        System.out.println("newParameterP:");
 //        MyPrint.showMap(newParameterP);
-        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
+        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
-        Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
-        Double grrError = PFOTools.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Double grrError = PFOUtils.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
         System.out.println("grrError: " + grrError);
-        Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         ArrayList<Double> estimationList = new ArrayList<>(estimationMap.values());
+
         twoNorm = BasicCalculation.get2Norm(estimationList, realIndexList);
         System.out.println("two norm: " + twoNorm);
         List<Double> normalizedEstimationList = Normalization.normalizedBySimplexProjection(estimationList);
@@ -118,11 +119,11 @@ public class TestUtils {
 
         MyPrint.showSplitLine("*", 150);
         System.out.println("1.6. dissimilarity相关计算");
-        Double pldpVarianceSum = PFOTools.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
+        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
         System.out.println("pldpVarianceSum: " + pldpVarianceSum);
         estimationList = new ArrayList<>(estimationMap.values());
         List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
-        Double dissimilarity = PFOTools.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
+        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
         System.out.println("dissimilarity: " + dissimilarity);
         MyPrint.showSplitLine("*", 150);
 
@@ -158,7 +159,7 @@ public class TestUtils {
         Integer samplingSize = subPositionIndexList.size();
         System.out.println("sampling size (n_pp,opt): " + samplingSize);
 //        Double gprrError = PFOTools.getGPRRErrorByGroupUserRatio(originalGroupRatioMap, originalTotalUserSize, samplingSize, domainSize);
-        Double gprrError = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        Double gprrError = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
         System.out.println("dissimilarity: " + dissimilarity);
         System.out.println("grrError: " + gprrError);
         String judge = dissimilarity > gprrError ? "dis > err" : "dis <= err";
@@ -172,7 +173,7 @@ public class TestUtils {
 //        System.out.println("groupDataCount:");
 //        Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
 //        MyPrint.showMap(groupDataCount);
-        Map<Double, List<Integer>> perturbedData = PFOTools.perturb(groupDataMap, domainSize, random);
+        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupDataMap, domainSize, random);
 //        System.out.println("perturbedData:");
 //        MyPrint.showMap(perturbedData);
         Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
@@ -182,12 +183,12 @@ public class TestUtils {
         MyPrint.showMap(perturbedStatisticMap, "; ");
 
         System.out.println("如果不重扰动，直接进行估计:");
-        Map<Double, Double> newParameterQ = PFOTools.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOTools.getGeneralRandomResponseParameterP(newParameterQ);
-        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOTools.getAggregationWeightMap(subBudgetCountMap, domainSize);
-        Double errorWithoutRePerturb = PFOTools.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
-        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOTools.getAggregation(subBudgetCountMap, perturbedData, domainSize);
-        Map<Integer, Double> estimationWithoutRePerturb = PFOTools.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
+        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
+        Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOUtils.getAggregationWeightMap(subBudgetCountMap, domainSize);
+        Double errorWithoutRePerturb = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Integer, Double> estimationWithoutRePerturb = PFOUtils.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
         System.out.println("aggregation weighted map without re-perturb:");
         MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
         System.out.println("error without re-perturb: " + errorWithoutRePerturb);
@@ -207,7 +208,7 @@ public class TestUtils {
         MyPrint.showSplitLine("*", 150);
         System.out.println("2.5. 重扰动与聚合信息:");
         TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
-        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOTools.rePerturb(sortedPerturbedData, domainSize, random);
+        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, domainSize, random);
         Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
         Integer newTotalUserSize = rePerturbResult.getValue();
 //        System.out.println("rePerturbMap");
@@ -230,13 +231,13 @@ public class TestUtils {
 //        MyPrint.showMap(newParameterQ);
 //        System.out.println("newParameterP:");
 //        MyPrint.showMap(newParameterP);
-        Map<Double, Double> newAggregationWeightMap = PFOTools.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
+        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
-        Map<Double, Map<Integer, Double>> aggregation = PFOTools.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
-        Double grrError = PFOTools.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Double grrError = PFOUtils.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
         System.out.println("grrError: " + grrError);
-        Map<Integer, Double> estimationMap = PFOTools.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         ArrayList<Double> estimationList = new ArrayList<>(estimationMap.values());
         System.out.println("estimation list:");
         MyPrint.showList(estimationList, "; ");

@@ -4,7 +4,7 @@ import cn.edu.dll.basic.RandomUtil;
 
 import java.util.Random;
 
-public class FOTools {
+public class FOUtils {
 
     public static Double getGRRQ(Double epsilon, Integer domainSize) {
         Double expEpsilon = Math.exp(epsilon);

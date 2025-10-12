@@ -1,7 +1,7 @@
 package hnu.dll.special_tools;
 
 import cn.edu.dll.basic.RandomUtil;
-import cn.edu.dll.struct.BasicPair;
+import cn.edu.dll.struct.pair.BasicPair;
 
 import java.util.Random;
 

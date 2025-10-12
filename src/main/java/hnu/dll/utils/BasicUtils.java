@@ -1,11 +1,9 @@
 package hnu.dll.utils;
 
-import cn.edu.dll.struct.BasicPair;
+import cn.edu.dll.differential_privacy.ldp.consistent.Normalization;
+import cn.edu.dll.struct.pair.BasicPair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class BasicUtils {
     public static <T extends Comparable<T>, S extends Comparable<S>> Map<BasicPair<T,S>, Integer> countUniquePair(List<T> firstElementList, List<S> secondElementList) {
@@ -104,6 +102,29 @@ public class BasicUtils {
             result.put(tempK, tempSize);
         }
         return result;
+    }
+
+    public static <K, V> List<V> toSortedListByKeys(Map<K, V> data, Collection<K> shownKeyCollection, V defaultValue) {
+        TreeSet<K> sortedSet = new TreeSet<>(shownKeyCollection);
+        List<V> result = new ArrayList<>(sortedSet.size());
+        for (K key : sortedSet) {
+            result.add(data.getOrDefault(key, defaultValue));
+        }
+        return result;
+    }
+
+    public static <K> Map<K, Double> normalizeValues(Map<K, Double> dataMap) {
+        LinkedHashMap<K, Double> map = new LinkedHashMap<>(dataMap);
+        Map<K, Double> resultMap = new HashMap<>();
+        List<Double> valueList = new ArrayList<>(map.values());
+        List<Double> normalizedValueList = Normalization.normalizedBySimplexProjection(valueList);
+        Set<K> keySet = map.keySet();
+        int index = 0;
+        for (K key : keySet) {
+            resultMap.put(key, normalizedValueList.get(index));
+            ++index;
+        }
+        return resultMap;
     }
 
 }

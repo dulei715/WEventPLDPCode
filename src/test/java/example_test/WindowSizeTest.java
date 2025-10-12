@@ -1,11 +1,10 @@
 package example_test;
 
 import cn.edu.dll.basic.BasicArrayUtil;
-import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.BasicPair;
-import hnu.dll.special_tools.MechanismUtils;
-import hnu.dll.special_tools.PFOTools;
+import cn.edu.dll.struct.pair.BasicPair;
+import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 import org.junit.Test;
@@ -49,7 +48,7 @@ public class WindowSizeTest {
         MyPrint.showSplitLine("*", 120);
         MyPrint.showMap(budgetCountList);
         MyPrint.showSplitLine("*", 120);
-        OptimalSelectionStruct optimalSelectionStruct = PFOTools.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 120);
 

@@ -4,7 +4,7 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.struct.CombineTriple;
+import cn.edu.dll.struct.pair.CombineTriple;
 import org.dom4j.Document;
 import org.dom4j.Element;
 

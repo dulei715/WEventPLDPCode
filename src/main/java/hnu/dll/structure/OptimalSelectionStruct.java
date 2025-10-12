@@ -6,11 +6,13 @@ public class OptimalSelectionStruct {
     private Integer optimalSamplingSize;
     private Double error;
     private List<Double> newPrivacyBudgetList;
+    private Integer optimalSamplingSizeIndex;
 
-    public OptimalSelectionStruct(Integer optimalSamplingSize, Double error, List<Double> newPrivacyBudgetList) {
+    public OptimalSelectionStruct(Integer optimalSamplingSize, Double error, List<Double> newPrivacyBudgetList, Integer optimalSamplingSizeIndex) {
         this.optimalSamplingSize = optimalSamplingSize;
         this.error = error;
         this.newPrivacyBudgetList = newPrivacyBudgetList;
+        this.optimalSamplingSizeIndex = optimalSamplingSizeIndex;
     }
 
     public Integer getOptimalSamplingSize() {
@@ -25,12 +27,17 @@ public class OptimalSelectionStruct {
         return newPrivacyBudgetList;
     }
 
+    public Integer getOptimalSamplingSizeIndex() {
+        return optimalSamplingSizeIndex;
+    }
+
     @Override
     public String toString() {
         return "OptimalSelectionStruct{" +
                 "optimalSamplingSize=" + optimalSamplingSize +
                 ", error=" + error +
                 ", newPrivacyBudgetList=" + newPrivacyBudgetList +
+                ", optimalSamplingSizeIndex=" + optimalSamplingSizeIndex +
                 '}';
     }
 }
