@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The path of this file is <Project Path>/../config/parameter_config.xml
+    or <Project Path>/deployment/config/parameter_config.xml
+ -->
+<root id="rootName">
+    <datasets>
+        <basicPath type="relative">..;0.dataset</basicPath>
+        <basicPath type="absolute" name="mac-book">;Users;admin;MainFiles;1.Research;dataset;3_stream_dp;0_dataset
+        </basicPath>
+        <basicPath type="absolute" name="mac-mini-book">;Users;mac;MainFiles;1.Research;dataset;3_stream_dp;0_dataset
+        </basicPath>
+        <basicPath type="absolute" name="Huawei-book">E:;dataset;3.dynamicWEvent;0_dataset</basicPath>
+        <basicPath type="absolute" name="PC">E:;dataset;3_stream_dp;0_dataset</basicPath>
+        <fileName name="checkIn">CheckIn_dataset_TIST2015</fileName>
+        <fileName name="trajectories">T-drive_Taxi_Trajectories</fileName>
+        <fileName name="tlns">TLNS</fileName>
+        <fileName name="sin">Sin</fileName>
+        <fileName name="log">Log</fileName>
+        <fileHandle name="checkIn">
+            <timeSlot unit="minute">100</timeSlot>
+            <combineRound>10</combineRound>
+        </fileHandle>
+        <fileHandle name="trajectories">
+            <timeSlot unit="minute">1</timeSlot>
+            <longitudeSplitSize>10</longitudeSplitSize>
+            <latitudeSplitSize>10</latitudeSplitSize>
+            <combineRound>10</combineRound>
+        </fileHandle>
+        <fileHandle name="tlns">
+            <userSize>10000</userSize>
+            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <timeStampSize>10000</timeStampSize>
+            <combineRound>10</combineRound>
+        </fileHandle>
+        <fileHandle name="sin">
+            <userSize>10000</userSize>
+            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <timeStampSize>10000</timeStampSize>
+            <combineRound>10</combineRound>
+        </fileHandle>
+        <fileHandle name="log">
+            <userSize>10000</userSize>
+            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <timeStampSize>10000</timeStampSize>
+            <combineRound>10</combineRound>
+        </fileHandle>
+    </datasets>
+    <candidateSet>
+        <!-- attribute name="PrivacyBudgetLowerBound">
+            <value name="default">0.1</value>
+        </attribute -->
+        <attribute name="PrivacyBudgetUpperBound"> <!-- 仅在version 1 和 version 2 中使用 -->
+            <value name="default">10</value>
+        </attribute>
+        <attribute name="WindowSizeLowerBound">  <!-- 仅在version 1 中使用 -->
+            <value name="default">1</value>
+        </attribute>
+        <!-- attribute name="WindowSizeUpperBound">
+            <value name="default">200</value>
+            <value name="case1">50</value>
+        </attribute -->
+        <attribute name="BackwardPrivacyBudgetUpperBoundDifference">
+            <value name="default">10</value>
+        </attribute>
+        <attribute name="BackwardPrivacyBudgetLowerBoundDifference">  <!-- 用于假设backward的privacy尽可能大，因此这个目前没用 -->
+            <value name="default">1.0</value>
+        </attribute>
+        <!-- backward的window size lower bound 和 window size lower bound 共用 -->
+        <version_2>
+            <attribute name="GenPrivacyBudget">
+                <value name="default">0.2,0.4,0.6,0.8,1.0</value>
+                <value name="case1">0.5,1,1.5,2,2.5</value>
+                <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
+            </attribute>
+            <attribute name="GenWindowSize">
+                <value name="default">40,80,120,160,200</value>
+                <value name="case1">10,20,30,40,50</value>
+                <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
+            </attribute>
+        </version_2>
+        <attribute name="TwoFixedPrivacyBudget">
+            <value name="default">1.0,0.6</value>
+        </attribute>
+        <attribute name="TwoFixedWindowSize">
+            <value name="default">40,120</value>
+        </attribute>
+    </candidateSet>
+    <independentVariables>
+        <attribute name="PrivacyBudget">
+            <dataType>java.lang.Double</dataType>
+            <single name="default">0.6</single>
+            <single name="case1">1.5</single>
+            <single name="1">2.5</single>
+            <variance name="default">0.2,0.4,0.6,0.8,1.0</variance>
+            <variance name="case1">0.5,1,1.5,2,2.5</variance>
+            <variance name="1">0.1,0.325,0.55,0.775,1.0</variance>
+        </attribute>
+        <attribute name="WindowSize">
+            <dataType>java.lang.Integer</dataType>
+            <single name="default">120</single>
+            <single name="case1">30</single>
+            <single name="1">120</single>
+            <variance name="default">40,80,120,160,200</variance>
+            <variance name="case1">10,20,30,40,50</variance>
+            <variance name="1">40,80,120,160,200</variance>
+        </attribute>
+        <attribute name="TwoFixedUserRatio">
+            <dataType>java.lang.Double</dataType>
+            <single name="default">0.5</single> <!-- no use -->
+            <variance name="default">0.1,0.3,0.5,0.7,0.9</variance>
+        </attribute>
+        <attribute name="UserType">
+            <!--for dynamic mechanisms-->
+            <dataType>java.lang.Integer</dataType>
+            <single name="default">10</single>
+            <variance name="default">1,300,600,900,1200</variance>
+            <single name="1">600</single>
+            <variance name="1">1,5,10,15,20</variance>
+        </attribute>
+        <attribute name="SegmentUnitSize">
+            <dataType>java.lang.Integer</dataType>
+            <!--            <single name="default">100</single>-->
+            <!--            <single name="default">5135</single>-->
+            <single name="default">250</single>
+            <single name="case2">5000</single>
+            <single name="case1">6591</single>
+            <variance name="default">1000,2000,3000,4000,5000</variance>
+            <variance name="case1">25,50,100,150,200</variance>
+        </attribute>
+        <attribute name="BatchUnitSize">
+            <dataType>java.lang.Integer</dataType>
+            <single name="default">2</single>
+            <variance name="default">1,2,3,4,5</variance>
+        </attribute>
+    </independentVariables>
+
+    <dependentVariables>
+        <attribute name="Name">
+            <dataType>java.lang.String</dataType>
+            <defaultValue>Non-Name</defaultValue>
+        </attribute>
+        <attribute name="TimeCost">
+            <dataType>java.lang.Long</dataType>
+            <defaultValue>0</defaultValue>
+        </attribute>
+        <attribute name="MRE">
+            <dataType>java.lang.Double</dataType>
+            <defaultValue>0</defaultValue>
+        </attribute>
+    </dependentVariables>
+
+    <!--    <dataset name="realDataset">-->
+    <!--        <bean id="beanModel" name="defaultTrajectory" type="ecnu.dll.dataset.struct.TrajectoryBean">-->
+    <!--            <field name="userID" type="java.lang.Integer">0</field>-->
+    <!--            <field name="timestamp" type="java.lang.Long">0</field>-->
+    <!--            <field name="longitude" type="java.lang.Double">0</field>-->
+    <!--            <field name="latitude" type="java.lang.Double">0</field>-->
+    <!--        </bean>-->
+    <!--    </dataset>-->
+</root>
