@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-public class MechanismTest {
+public class MechanismBasicTest {
     public Random random;
     public List<Integer> windowSizeList;
     public List<Double> budgetList;

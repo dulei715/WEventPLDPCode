@@ -51,6 +51,7 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
             throw new RuntimeException("The user size in privacy budget list and window size list are not equal!");
         }
         this.userSize = this.windowSizeList.size();
+        this.candidateUserIndexSet = new HashSet<>();
         this.candidateUserIndexSet.addAll(BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.userSize - 1));
         this.random = random;
     }
@@ -103,7 +104,7 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
     /**
      * 调用optimalPopulationSelection来初始化最优sample，最优window size以及新的privacy budget
      */
-    protected void initializeOptimalParameters() {
+    public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
         setCalculationParameters();
         List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
@@ -115,14 +116,14 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
         this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
     }
 
-    public boolean updateNextPublicationResult(List<StreamDataElement<Boolean>> nextDataElementList) {
+    public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 
         ++this.currentTime;
         // M_{t,s}
-        Double dissimilarity = samplingSubMechanism(nextDataElementList);
+        Double dissimilarity = samplingSubMechanism(nextDataIndexList);
 
         // M_{t,r}
-        return reportSubMechanism(nextDataElementList, dissimilarity);
+        return reportSubMechanism(nextDataIndexList, dissimilarity);
     }
 
 
