@@ -1,21 +1,20 @@
-package hnu.dll.schemes.main_scheme;
+package hnu.dll.schemes.compare_scheme._3_ablation;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.Mechanism;
-import hnu.dll.schemes._scheme_utils.*;
+import hnu.dll.schemes._scheme_utils.BasicSchemeUtils;
+import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.special_tools.PFOUtils;
-import hnu.dll.structure.HistoryUserSizeQueue;
-import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.structure.HistoryPopulationQueue;
-import hnu.dll.structure.stream_data.StreamDataElement;
+import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
+public abstract class AblateRePerturbMechanism extends Mechanism {
     protected Random random;
 
     protected int currentTime;
@@ -40,7 +39,7 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
     List<Integer> publicationPopulationIndexList;
 
 
-    public PersonalizedEventLocalPrivacyMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public AblateRePerturbMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = -1;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
@@ -59,9 +58,6 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
 //    protected abstract void setCalculationPrivacyBudgetList();
 //
 //    protected abstract void setPublicationPrivacyBudgetList();
-
-    protected abstract void setCalculationParameters();
-    protected abstract void setPublicationParameters();
 
 
     public List<Double> getOriginalPrivacyBudgetList() {
@@ -106,7 +102,6 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
      */
     public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
-        setCalculationParameters();
         List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
         this.optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
         this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
@@ -119,16 +114,16 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 
         ++this.currentTime;
-        // M_{t,s}
+        // M_{s,t}
         Double dissimilarity = samplingSubMechanism(nextDataIndexList);
 
-        // M_{t,r}
-        return reportSubMechanism(nextDataIndexList, dissimilarity);
+        // M_{r,t}
+        return reportingSubMechanism(nextDataIndexList, dissimilarity);
     }
 
 
     /**
-     * M_{t,s}
+     * M_{s,t}
      * @param nextDataIndexList 要求该数据顺序和用户信息顺序一致
      * @return
      */
@@ -142,9 +137,9 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
         // 获取当前 data 列表
         List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForCalculation);
 
-        CombinePair<Map<Integer, Double>, Map<Double, Integer>> enhancedGPRRInfo = enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList);
-        Map<Integer, Double> normalizedEstimationMap = enhancedGPRRInfo.getKey();
-        Map<Double, Integer> rePerturbedEpsilonCount = enhancedGPRRInfo.getValue();
+        CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRRInfo = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random);
+        Map<Integer, Double> normalizedEstimationMap = gPRRInfo.getKey();
+        Map<Double, Integer> rePerturbedEpsilonCount = gPRRInfo.getValue();
 
         List<Double> normalizedEstimationList = BasicUtils.toSortedListByKeys(normalizedEstimationMap, this.domainIndexList, 0D);
 
@@ -153,68 +148,10 @@ public abstract class PersonalizedEventLocalPrivacyMechanism extends Mechanism {
         return PFOUtils.getDissimilarity(normalizedEstimationList, lastReleaseEstimationList, pldpVarianceSum);
     }
 
-    // M_{t,r}
-    protected CombinePair<Boolean, Map<Integer, Double>> reportSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
-
-        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.optimalWindowSize - 1);
-        Integer publicationSamplingSize = remainingPublicationUserSize / 2;
-        Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
-        // 获取当前 privacy budget 列表
-        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
-        // 获取当前 data 列表
-        List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
-        Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
-
-        Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
-
-        Map<Integer, Double> normalizedEstimation;
-
-        Boolean flag;
-
-        if (dissimilarity > error) {
-            flag = true;
-            this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-            normalizedEstimation = enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList).getKey();
-            this.lastReleaseEstimation = normalizedEstimation;
-            this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
-        } else {
-            flag = false;
-            normalizedEstimation = this.lastReleaseEstimation;
-        }
-
-        // recycle
-        Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
-        Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
-        this.candidateUserIndexSet.addAll(samplingRecycle);
-        this.candidateUserIndexSet.addAll(publicationRecycle);
-
-        return new CombinePair<>(flag, normalizedEstimation);
-    }
-
-    private CombinePair<Map<Integer, Double>, Map<Double, Integer>> enhancedGPRR(List<Double> samplingPrivacyBudgetList, List<Integer> samplingDataIndexList) {
-        // 1. PFO.Perturb 扰动
-        Map<Double, List<Integer>> groupedDataMap = BasicUtils.groupByEpsilon(samplingPrivacyBudgetList, samplingDataIndexList);
-        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupedDataMap, this.domainSize, this.random);
-
-        // 2. PFO.RePerturb 重扰动
-        TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
-        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, this.domainSize, this.random);
-        Map<Double, List<Integer>> rePerturbData = rePerturbResult.getKey();
-
-        // 3. PFO.Aggregate 聚合
-        Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbData);
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbData, this.domainSize);
+    // M_{r,t}
+    protected abstract CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity);
 
 
-        // 4. PFO.Estimate 估计
-        Map<Double, Double> samplingAggregationWeightedMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, this.domainSize);
-        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(groupedDataMap.keySet(), this.domainSize);
-        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
-        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, samplingAggregationWeightedMap);
-        return new CombinePair<>(BasicUtils.normalizeValues(estimationMap), rePerturbedEpsilonCount);
-//        List<Double> rawEstimationList = BasicUtils.toSortedListByKeys(estimationMap, this.domainIndexList, 0D);
-//        List<Double> normalizedEstimationList = Normalization.normalizedBySimplexProjection(rawEstimationList);
-    }
 
     public abstract String getSimpleName();
 

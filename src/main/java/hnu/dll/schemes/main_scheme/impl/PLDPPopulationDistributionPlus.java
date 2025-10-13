@@ -1,24 +1,59 @@
 package hnu.dll.schemes.main_scheme.impl;
 
-import hnu.dll.schemes.main_scheme.PersonalizedEventLocalPrivacyMechanism;
+import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.basic.RandomUtil;
+import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.schemes.main_scheme.EnhancedPLPMechanism;
+import hnu.dll.special_tools.PFOUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class PLDPPopulationDistributionPlus extends PersonalizedEventLocalPrivacyMechanism {
+public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
     public PLDPPopulationDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
     }
 
+    // M_{t,r}
     @Override
-    protected void setCalculationParameters() {
+    protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
 
-    }
+        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.optimalWindowSize - 1);
+        Integer publicationSamplingSize = remainingPublicationUserSize / 2;
+        Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
+        // 获取当前 privacy budget 列表
+        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
+        // 获取当前 data 列表
+        List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
+        Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
 
-    @Override
-    protected void setPublicationParameters() {
+        Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
 
+        Map<Integer, Double> normalizedEstimation;
+
+        Boolean flag;
+
+        if (dissimilarity > error) {
+            flag = true;
+            this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
+            normalizedEstimation = MechanismUtils.enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+            this.lastReleaseEstimation = normalizedEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
+        } else {
+            flag = false;
+            normalizedEstimation = this.lastReleaseEstimation;
+        }
+
+        // recycle
+        Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
+        Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
+        this.candidateUserIndexSet.addAll(samplingRecycle);
+        this.candidateUserIndexSet.addAll(publicationRecycle);
+
+        return new CombinePair<>(flag, normalizedEstimation);
     }
 
     @Override

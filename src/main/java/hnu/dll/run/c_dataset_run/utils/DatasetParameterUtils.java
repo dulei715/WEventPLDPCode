@@ -1,0 +1,44 @@
+package hnu.dll.run.c_dataset_run.utils;
+
+import cn.edu.dll.basic.StringUtil;
+import cn.edu.dll.constant_values.ConstantValues;
+import cn.edu.dll.io.read.BasicRead;
+import hnu.dll.run.b_parameter_run.version_3.utils.InputDataStruct;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+public class DatasetParameterUtils {
+//    private static Map<String, >
+    public static List<String> getDataType(String basicPath, String dataTypeFileName) {
+        String filePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", dataTypeFileName);
+        BasicRead basicRead = new BasicRead(",");
+        basicRead.startReading(filePath);
+        List<String> data = basicRead.readAllWithoutLineNumberRecordInFile();
+        basicRead.endReading();
+        return data;
+    }
+
+    public static List<Integer> getData(String dataPath, List<String> dataType) {
+        BasicRead basicRead = new BasicRead(",");
+        basicRead.startReading(dataPath);
+        List<String> strDataList = basicRead.readAllWithoutLineNumberRecordInFile();
+        basicRead.endReading();
+        InputDataStruct bean;
+        String location;
+        TreeMap<String, Boolean> tempMap;
+        List<Integer> resultList = new ArrayList<>();
+        Integer tempElement;
+        for (String str : strDataList) {
+            bean = InputDataStruct.toBean(basicRead.split(str));
+            location = bean.getLocation();
+            tempElement = dataType.indexOf(location);
+            resultList.add(tempElement);
+        }
+        return resultList;
+    }
+
+
+
+}

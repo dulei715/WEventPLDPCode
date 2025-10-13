@@ -4,7 +4,6 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.FrequencyOracle;
 import cn.edu.dll.struct.pair.BasicPair;
 import cn.edu.dll.struct.pair.CombinePair;
-import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
@@ -246,6 +245,7 @@ public class PFOUtils {
 
     /**
      * 7. 计算dissimilarity
+     * 调用之前要保证前两个数据各项的对应关系
      * @param estimationList
      * @param lastEstimationList
      * @param pldpVarianceSum
@@ -279,7 +279,7 @@ public class PFOUtils {
 //            frequencyOracle = this.distinctFrequencyOracleMap.get(epsilon);
             for (Integer data : originalDataList) {
 //                obfuscatedData = frequencyOracle.perturb(data);
-                obfuscatedData = FOUtils.gRRPerturb(epsilon, data, domainSize, random);
+                obfuscatedData = FOUtils.gRRSinglePerturb(epsilon, data, domainSize, random);
                 obfuscatedDataList.add(obfuscatedData);
             }
             result.put(epsilon, obfuscatedDataList);
@@ -322,7 +322,7 @@ public class PFOUtils {
                 alpha = tempPair.getKey();
                 tempObfuscatedList = perturbedDataMap.get(epsilonSortedList.get(j));
                 for (Integer tempIndex : tempObfuscatedList) {
-                    rePerturbIndex = FOUtils.gRRPerturb(alpha, tempIndex, domainSize, random);
+                    rePerturbIndex = FOUtils.gRRSinglePerturb(alpha, tempIndex, domainSize, random);
                     enhancedIndexList.add(rePerturbIndex);
                 }
 
