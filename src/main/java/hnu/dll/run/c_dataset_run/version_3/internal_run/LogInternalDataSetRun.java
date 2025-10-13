@@ -1,9 +1,9 @@
 package hnu.dll.run.c_dataset_run.version_3.internal_run;
 
-import cn.edu.dll.struct.pair.PureTriple;
-import ecnu.dll._config.ConfigureUtils;
-import ecnu.dll._config.Constant;
-import ecnu.dll.run.c_dataset_run.version_3.version_utils.DatasetSegmentRunUtils;
+import cn.edu.dll.struct.pair.CombineTriple;
+import hnu.dll._config.ConfigureUtils;
+import hnu.dll._config.Constant;
+import hnu.dll.run.c_dataset_run.version_3.version_utils.DatasetSegmentRunUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -12,7 +12,7 @@ public class LogInternalDataSetRun {
     public static void runInternalLog() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String basicPath = Constant.logFilePath;
         String dataTypeFileName = "status.txt";
-        PureTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
         DatasetSegmentRunUtils.internalDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
     }

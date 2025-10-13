@@ -1,23 +1,14 @@
 package hnu.dll.run.b_parameter_run.version_3.utils;
 
 import cn.edu.dll.io.read.BasicRead;
-import ecnu.dll._config.Constant;
-import ecnu.dll.schemes._basic_struct.Mechanism;
-import ecnu.dll.schemes.basic_scheme.NonPrivacyMechanism;
-import ecnu.dll.schemes.compared_scheme.w_event_dp.BudgetAbsorption;
-import ecnu.dll.schemes.compared_scheme.w_event_dp.BudgetDistribution;
-import ecnu.dll.schemes.main_scheme.a_optimal_fixed_window_size.cdp.impl.PersonalizedBudgetAbsorption;
-import ecnu.dll.schemes.main_scheme.a_optimal_fixed_window_size.cdp.impl.PersonalizedBudgetDistribution;
-import ecnu.dll.schemes.main_scheme.b_dynamic_windown_size.DynamicPersonalizedBudgetAbsorption;
-import ecnu.dll.schemes.main_scheme.b_dynamic_windown_size.DynamicPersonalizedBudgetDistribution;
+import hnu.dll._config.Constant;
+import hnu.dll.schemes._basic_struct.Mechanism;
+import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ParameterInitializeUtils {
-    public static Map<String, Mechanism> getInitializedSchemeMap(List<String> dataType, Integer userSize,
+    public static Map<String, Mechanism> getInitializedSchemeMap(Set<String> dataType, Integer userSize,
                                                                  Double staticPrivacyBudget, Integer staticWindowSize,
                                                                  List<Double> personalizedPrivacyBudgetList, List<Integer> personalziedWindowSizeList) {
         Map<String, Mechanism> resultMap = new HashMap<>();
@@ -27,18 +18,18 @@ public class ParameterInitializeUtils {
 
         BudgetDistribution budgetDistributionMechanism = new BudgetDistribution(dataType, staticPrivacyBudget, staticWindowSize);
         BudgetAbsorption budgetAbsorptionMechanism = new BudgetAbsorption(dataType, staticPrivacyBudget, staticWindowSize);
-        resultMap.put(Constant.BudgetDistributionSchemeName, budgetDistributionMechanism);
-        resultMap.put(Constant.BudgetAbsorptionSchemeName, budgetAbsorptionMechanism);
+        resultMap.put(Constant.LBDSchemeName, budgetDistributionMechanism);
+        resultMap.put(Constant.LBASchemeName, budgetAbsorptionMechanism);
 
         PersonalizedBudgetDistribution personalizedBudgetDistributionScheme = new PersonalizedBudgetDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList);
         PersonalizedBudgetAbsorption personalizedBudgetAbsorptionScheme = new PersonalizedBudgetAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList);
-        resultMap.put(Constant.PersonalizedBudgetDistributionSchemeName, personalizedBudgetDistributionScheme);
-        resultMap.put(Constant.PersonalizedBudgetAbsorptionSchemeName, personalizedBudgetAbsorptionScheme);
+        resultMap.put(Constant.PLPDBasicSchemeName, personalizedBudgetDistributionScheme);
+        resultMap.put(Constant.PLPABasicSchemeName, personalizedBudgetAbsorptionScheme);
 
         DynamicPersonalizedBudgetDistribution dynamicPersonalizedBudgetDistribution = new DynamicPersonalizedBudgetDistribution(dataType, userSize);
         DynamicPersonalizedBudgetAbsorption dynamicPersonalizedBudgetAbsorption = new DynamicPersonalizedBudgetAbsorption(dataType, userSize);
-        resultMap.put(Constant.DynamicPersonalizedBudgetDistributionSchemeName, dynamicPersonalizedBudgetDistribution);
-        resultMap.put(Constant.DynamicPersonalizedBudgetAbsorptionSchemeName, dynamicPersonalizedBudgetAbsorption);
+        resultMap.put(Constant.EnhancedPBDSchemeName, dynamicPersonalizedBudgetDistribution);
+        resultMap.put(Constant.EnhancedPBASchemeName, dynamicPersonalizedBudgetAbsorption);
 
         return resultMap;
     }

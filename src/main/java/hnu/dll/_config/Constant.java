@@ -118,14 +118,14 @@ public class Constant {
 
 
     // for scheme name string
-    public static final String NonPrivacySchemeName = "NonPrivacyScheme";
-    public static final String BudgetDistributionSchemeName = "BudgetDistributionScheme";
-    public static final String BudgetAbsorptionSchemeName = "BudgetAbsorptionScheme";
-    public static final String PersonalizedBudgetDistributionSchemeName = "PersonalizedBudgetDistributionScheme";
-    public static final String PersonalizedBudgetAbsorptionSchemeName = "PersonalizedBudgetAbsorptionScheme";
-    public static final String PersonalizedLDPBudgetUniformSchemeName = "PersonalizedBudgetLDPScheme";
-    public static final String DynamicPersonalizedBudgetDistributionSchemeName = "DynamicPersonalizedBudgetDistributionScheme";
-    public static final String DynamicPersonalizedBudgetAbsorptionSchemeName = "DynamicPersonalizedBudgetAbsorptionScheme";
+    public static final String NonPrivacySchemeName = "NonPrivacy-Scheme";
+    public static final String LBDSchemeName = "LBD-Scheme";
+    public static final String LBASchemeName = "LBA-Scheme";
+    public static final String PLPDBasicSchemeName = "PLPD-Basic-Scheme";
+    public static final String PLPABasicSchemeName = "PLPA-Basic-Scheme";
+    //todo:
+    public static final String EnhancedPBDSchemeName = "PLPD-Plus-Scheme";
+    public static final String EnhancedPBASchemeName = "PLPA-Plus-Scheme";
 
 
 

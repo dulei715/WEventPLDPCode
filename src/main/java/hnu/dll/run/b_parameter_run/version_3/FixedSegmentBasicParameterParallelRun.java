@@ -5,9 +5,8 @@ import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.write.ExperimentResultWrite;
 import hnu.dll._config.Constant;
 import hnu.dll.run.a_mechanism_run._0_NonPrivacyMechanismRun;
-import hnu.dll.run.a_mechanism_run._1_WEventLDPMechanismRun;
-import hnu.dll.run.a_mechanism_run._2_PersonalizedEventMechanismRun;
-import hnu.dll.run.a_mechanism_run._3_PersonalizedDynamicEventMechanismRun;
+import hnu.dll.run.a_mechanism_run._1_NonPersonalizedWEventLDPMechanismRun;
+import hnu.dll.run.a_mechanism_run._2_PersonalizedWEventLDPBaselineMechanismRun;
 import hnu.dll.run.b_parameter_run.basic.version_3.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.schemes._basic_struct.Mechanism;
@@ -74,22 +73,22 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         NonPrivacyMechanism nonPrivacyScheme = new NonPrivacyMechanism(dataType);
         this.mechanismMap.put(Constant.NonPrivacySchemeName, nonPrivacyScheme);
         BudgetDistribution budgetDistributionScheme = new BudgetDistribution(dataType, privacyBudget, windowSize);
-        this.mechanismMap.put(Constant.BudgetDistributionSchemeName, budgetDistributionScheme);
+        this.mechanismMap.put(Constant.LBDSchemeName, budgetDistributionScheme);
         BudgetAbsorption budgetAbsorption = new BudgetAbsorption(dataType, privacyBudget, windowSize);
-        this.mechanismMap.put(Constant.BudgetAbsorptionSchemeName, budgetAbsorption);
+        this.mechanismMap.put(Constant.LBASchemeName, budgetAbsorption);
 
         List<Double> privacyBudgetList = ParameterGroupInitializeUtils.getTypePrivacyBudgetFromFileAndFill(StringUtil.join(ConstantValues.FILE_SPLIT, dynamicPrivacyBudgetBasicPath, "typePrivacyBudgetFile.txt"), userToTypeFilePath);
         List<Integer> windowSizeList = ParameterGroupInitializeUtils.getTypeWindowSizeFromFileAndFill(StringUtil.join(ConstantValues.FILE_SPLIT, dynamicWindowSizeBasicPath, "typeWindowSizeFile.txt"), userToTypeFilePath);
         PersonalizedBudgetDistribution personalizedBudgetDistribution = new PersonalizedBudgetDistribution(dataType, privacyBudgetList, windowSizeList);
-        this.mechanismMap.put(Constant.PersonalizedBudgetDistributionSchemeName, personalizedBudgetDistribution);
+        this.mechanismMap.put(Constant.PLPDBasicSchemeName, personalizedBudgetDistribution);
         PersonalizedBudgetAbsorption personalizedBudgetAbsorption = new PersonalizedBudgetAbsorption(dataType, privacyBudgetList, windowSizeList);
-        this.mechanismMap.put(Constant.PersonalizedBudgetAbsorptionSchemeName, personalizedBudgetAbsorption);
+        this.mechanismMap.put(Constant.PLPABasicSchemeName, personalizedBudgetAbsorption);
 
         Integer userSize = ParameterGroupInitializeUtils.getUserSize(StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "user.txt"));
         DynamicPersonalizedBudgetDistribution dynamicPersonalizedBudgetDistribution = new DynamicPersonalizedBudgetDistribution(dataType, userSize);
-        this.mechanismMap.put(Constant.DynamicPersonalizedBudgetDistributionSchemeName, dynamicPersonalizedBudgetDistribution);
+        this.mechanismMap.put(Constant.EnhancedPBDSchemeName, dynamicPersonalizedBudgetDistribution);
         DynamicPersonalizedBudgetAbsorption dynamicPersonalizedBudgetAbsorption = new DynamicPersonalizedBudgetAbsorption(dataType, userSize);
-        this.mechanismMap.put(Constant.DynamicPersonalizedBudgetAbsorptionSchemeName, dynamicPersonalizedBudgetAbsorption);
+        this.mechanismMap.put(Constant.EnhancedPBASchemeName, dynamicPersonalizedBudgetAbsorption);
     }
 
 
@@ -139,25 +138,25 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
                 experimentResultList.add(tempResult);
                 // 执行各种机制
 //                System.out.println("Start BudgetDistribution...");
-                tempResult = _1_WEventLDPMechanismRun.runBatch((BudgetDistribution)mechanismMap.get(Constant.BudgetDistributionSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _1_NonPersonalizedWEventLDPMechanismRun.runBatch((BudgetDistribution)mechanismMap.get(Constant.LBDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 //                System.out.println("Start BudgetAbsorption...");
-                tempResult = _1_WEventLDPMechanismRun.runBatch((BudgetAbsorption)mechanismMap.get(Constant.BudgetAbsorptionSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _1_NonPersonalizedWEventLDPMechanismRun.runBatch((BudgetAbsorption)mechanismMap.get(Constant.LBASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 //                System.out.println("Start PersonalizedBudgetDistribution...");
-                tempResult = _2_PersonalizedEventMechanismRun.runBatch((PersonalizedBudgetDistribution)mechanismMap.get(Constant.PersonalizedBudgetDistributionSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((PersonalizedBudgetDistribution)mechanismMap.get(Constant.PLPDBasicSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 //                System.out.println("Start PersonalizedBudgetAbsorption...");
-                tempResult = _2_PersonalizedEventMechanismRun.runBatch((PersonalizedBudgetAbsorption)mechanismMap.get(Constant.PersonalizedBudgetAbsorptionSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((PersonalizedBudgetAbsorption)mechanismMap.get(Constant.PLPABasicSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 
-                tempResult = _3_PersonalizedDynamicEventMechanismRun.runBatch((DynamicPersonalizedBudgetDistribution)mechanismMap.get(Constant.DynamicPersonalizedBudgetDistributionSchemeName), batchID, batchDataList, rawPublicationBatchList, remainBackwardPrivacyBudgetListBatchList, backwardWindowSizeListBatchList, forwardPrivacyBudgetListBatchList, forwardWindowSizeListBatchList);
+                tempResult = _3_PersonalizedWEventLDPAblateMechanismRun.runBatch((DynamicPersonalizedBudgetDistribution)mechanismMap.get(Constant.EnhancedPBDSchemeName), batchID, batchDataList, rawPublicationBatchList, remainBackwardPrivacyBudgetListBatchList, backwardWindowSizeListBatchList, forwardPrivacyBudgetListBatchList, forwardWindowSizeListBatchList);
                 experimentResultList.add(tempResult);
 
-                tempResult = _3_PersonalizedDynamicEventMechanismRun.runBatch((DynamicPersonalizedBudgetAbsorption)mechanismMap.get(Constant.DynamicPersonalizedBudgetAbsorptionSchemeName), batchID, batchDataList, rawPublicationBatchList, remainBackwardPrivacyBudgetListBatchList, backwardWindowSizeListBatchList, forwardPrivacyBudgetListBatchList, forwardWindowSizeListBatchList);
+                tempResult = _3_PersonalizedWEventLDPAblateMechanismRun.runBatch((DynamicPersonalizedBudgetAbsorption)mechanismMap.get(Constant.EnhancedPBASchemeName), batchID, batchDataList, rawPublicationBatchList, remainBackwardPrivacyBudgetListBatchList, backwardWindowSizeListBatchList, forwardPrivacyBudgetListBatchList, forwardWindowSizeListBatchList);
                 experimentResultList.add(tempResult);
 
                 // write result

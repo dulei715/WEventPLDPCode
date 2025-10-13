@@ -5,6 +5,7 @@ import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.Mechanism;
+import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
@@ -12,7 +13,7 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class BaseLinePLPMechanism extends Mechanism {
+public abstract class BaseLinePLPMechanism extends PersonalizedMechanism {
     protected Random random;
 
     protected int currentTime;
@@ -32,9 +33,23 @@ public abstract class BaseLinePLPMechanism extends Mechanism {
     protected HistoryPopulationQueue samplingSubMechanismHistoryQueue;
     protected HistoryPopulationQueue publicationSubMechanismHistoryQueue;
 
-    List<Integer> calculationPopulationIndexList;
-    List<Integer> publicationPopulationIndexList;
+    protected List<Double> distinctBudgetList;
+    protected List<Integer> distinctWindowSizeList;
 
+    @Override
+    public List<Double> getDistinctBudgetList() {
+        return this.distinctBudgetList;
+    }
+
+    @Override
+    public List<Integer> getDistinctWindowSizeList() {
+        return distinctWindowSizeList;
+    }
+
+    @Override
+    public List<Integer> getDomainIndexList() {
+        return domainIndexList;
+    }
 
     public BaseLinePLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = -1;
@@ -50,6 +65,8 @@ public abstract class BaseLinePLPMechanism extends Mechanism {
         this.candidateUserIndexSet = new HashSet<>();
         this.candidateUserIndexSet.addAll(BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.userSize - 1));
         this.random = random;
+        this.distinctBudgetList = BasicArrayUtil.getUniqueList(this.originalPrivacyBudgetList);
+        this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.windowSizeList);
     }
 
 

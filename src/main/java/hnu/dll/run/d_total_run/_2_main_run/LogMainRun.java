@@ -1,11 +1,11 @@
 package hnu.dll.run.d_total_run._2_main_run;
 
 import cn.edu.dll.signal.CatchSignal;
-import ecnu.dll._config.Constant;
-import ecnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.LogDatasetPreprocessRun;
-import ecnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_generator.UserGroupGenerator;
-import ecnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForLog;
-import ecnu.dll.run.c_dataset_run.version_3.basic_run.LogDataSetRun;
+import hnu.dll._config.Constant;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.LogDatasetPreprocessRun;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_generator.UserGroupGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForLog;
+import hnu.dll.run.c_dataset_run.version_3.basic_run.LogDataSetRun;
 
 public class LogMainRun {
     public static void main(String[] args) throws Exception {

@@ -7,7 +7,6 @@ import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.special_tools.FOUtils;
-import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
 import hnu.dll.utils.BasicUtils;
 
@@ -33,6 +32,10 @@ public abstract class LPMechanism extends Mechanism {
     protected HistoryPopulationQueue publicationSubMechanismHistoryQueue;
 
 
+    @Override
+    public List<Integer> getDomainIndexList() {
+        return domainIndexList;
+    }
 
     public LPMechanism(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
         this.currentTime = -1;

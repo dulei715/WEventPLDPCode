@@ -5,16 +5,16 @@ import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.LPMechanism;
-import hnu.dll.special_tools.PFOUtils;
+import hnu.dll.special_tools.FOUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class PLDPPopulationDistribution extends LPMechanism {
-    public PLDPPopulationDistribution(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
-        super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+public class LDPPopulationDistribution extends LPMechanism {
+    public LDPPopulationDistribution(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
+        super(dataTypeSet, privacyBudget, windowSize, userSize, random);
     }
 
     // M_{r,t}
@@ -23,14 +23,8 @@ public class PLDPPopulationDistribution extends LPMechanism {
 
         Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.windowSize - 1);
         Integer publicationSamplingSize = remainingPublicationUserSize / 2;
-        Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
-        // 获取当前 privacy budget 列表
-        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForPublication);
-        // 获取当前 data 列表
-        List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
-        Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
 
-        Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
+        Double error = FOUtils.getGPRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
 
         Map<Integer, Double> normalizedEstimation;
 
@@ -38,10 +32,15 @@ public class PLDPPopulationDistribution extends LPMechanism {
 
         if (dissimilarity > error) {
             flag = true;
+            Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
+            List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
+
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-            normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+            normalizedEstimation = MechanismUtils.gRR(this.privacyBudget, samplingDataIndexList, this.domainSize, this.random);
             this.lastReleaseEstimation = normalizedEstimation;
             this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
+
+
         } else {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
@@ -58,6 +57,6 @@ public class PLDPPopulationDistribution extends LPMechanism {
 
     @Override
     public String getSimpleName() {
-        return "PLPD";
+        return "LPD";
     }
 }

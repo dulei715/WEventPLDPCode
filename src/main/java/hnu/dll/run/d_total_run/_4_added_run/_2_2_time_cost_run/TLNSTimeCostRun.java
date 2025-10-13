@@ -1,11 +1,11 @@
 package hnu.dll.run.d_total_run._4_added_run._2_2_time_cost_run;
 
 import cn.edu.dll.signal.CatchSignal;
-import ecnu.dll._config.Constant;
-import ecnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.TLNSDatasetPreprocessRun;
-import ecnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_generator.UserGroupGenerator;
-import ecnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForTLNS;
-import ecnu.dll.run.c_dataset_run.version_3.basic_run.TLNSDataSetRun;
+import hnu.dll._config.Constant;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.TLNSDatasetPreprocessRun;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_generator.UserGroupGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForTLNS;
+import hnu.dll.run.c_dataset_run.version_3.basic_run.TLNSDataSetRun;
 
 public class TLNSTimeCostRun {
     public static void main(String[] args) throws Exception {

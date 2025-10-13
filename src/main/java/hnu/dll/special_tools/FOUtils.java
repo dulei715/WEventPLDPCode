@@ -94,4 +94,9 @@ public class FOUtils {
         return (differSum - pldpVarianceSum) / size;
     }
 
+    public static Double getGPRRError(Double privacyBudget, Integer sampleSize, Integer domainSize) {
+        Double pldpVariance = getLDPVarianceSum(privacyBudget, sampleSize, domainSize);
+        return pldpVariance / domainSize;
+    }
+
 }

@@ -7,7 +7,7 @@ import hnu.dll.structure.HistoryPopulationQueue;
 
 import java.util.*;
 
-public abstract class NonPrivacyMechanism extends Mechanism {
+public class NonPrivacyMechanism extends Mechanism {
 
     protected int currentTime;
     protected List<Integer> domainIndexList;
@@ -18,9 +18,6 @@ public abstract class NonPrivacyMechanism extends Mechanism {
     protected HistoryPopulationQueue samplingSubMechanismHistoryQueue;
     protected HistoryPopulationQueue publicationSubMechanismHistoryQueue;
 
-    List<Integer> calculationPopulationIndexList;
-    List<Integer> publicationPopulationIndexList;
-
 
     public NonPrivacyMechanism(Set<String> dataTypeSet) {
         this.currentTime = -1;
@@ -28,7 +25,14 @@ public abstract class NonPrivacyMechanism extends Mechanism {
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
     }
 
+    public Integer getDomainSize() {
+        return domainSize;
+    }
 
+    @Override
+    public List<Integer> getDomainIndexList() {
+        return domainIndexList;
+    }
 
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 

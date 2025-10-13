@@ -5,6 +5,7 @@ import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.LPMechanism;
+import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
@@ -13,10 +14,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class PLDPPopulationAbsorption extends LPMechanism {
+public class LDPPopulationAbsorption extends LPMechanism {
     protected AbsorptionLastInfo lastInfo;
-    public PLDPPopulationAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
-        super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+    public LDPPopulationAbsorption(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
+        super(dataTypeSet, privacyBudget, windowSize, userSize, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
     }
 
@@ -33,18 +34,16 @@ public class PLDPPopulationAbsorption extends LPMechanism {
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
             Integer publicationSamplingSize = this.samplingSize * Math.min(absorbedLength, this.windowSize);
-            Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
-            // 获取当前 privacy budget 列表
-            List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForPublication);
-            // 获取当前 data 列表
-            List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
-            Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
 
-            Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
+            Double error = FOUtils.getGPRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
             if (dissimilarity > error) {
                 flag = true;
+                Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
+                // 获取当前 data 列表
+                List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
+
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-                normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+                normalizedEstimation = MechanismUtils.gRR(this.privacyBudget, samplingDataIndexList, this.domainSize, this.random);
                 this.lastReleaseEstimation = normalizedEstimation;
                 this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
                 this.lastInfo.update(this.currentTime, publicationSamplingSize);
@@ -66,6 +65,6 @@ public class PLDPPopulationAbsorption extends LPMechanism {
 
     @Override
     public String getSimpleName() {
-        return "PLPA";
+        return "LPA";
     }
 }

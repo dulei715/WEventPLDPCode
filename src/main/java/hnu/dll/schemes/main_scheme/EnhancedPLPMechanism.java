@@ -5,6 +5,7 @@ import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.Mechanism;
+import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.*;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.OptimalSelectionStruct;
@@ -13,7 +14,7 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class EnhancedPLPMechanism extends Mechanism {
+public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
     protected Random random;
 
     protected int currentTime;
@@ -34,9 +35,18 @@ public abstract class EnhancedPLPMechanism extends Mechanism {
     protected HistoryPopulationQueue samplingSubMechanismHistoryQueue;
     protected HistoryPopulationQueue publicationSubMechanismHistoryQueue;
 
-    List<Integer> calculationPopulationIndexList;
-    List<Integer> publicationPopulationIndexList;
+    protected List<Double> distinctBudgetList;
+    protected List<Integer> distinctWindowSizeList;
 
+    @Override
+    public List<Double> getDistinctBudgetList() {
+        return this.distinctBudgetList;
+    }
+
+    @Override
+    public List<Integer> getDistinctWindowSizeList() {
+        return distinctWindowSizeList;
+    }
 
     public EnhancedPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = -1;
@@ -52,6 +62,8 @@ public abstract class EnhancedPLPMechanism extends Mechanism {
         this.candidateUserIndexSet = new HashSet<>();
         this.candidateUserIndexSet.addAll(BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.userSize - 1));
         this.random = random;
+        this.distinctBudgetList = BasicArrayUtil.getUniqueList(this.originalPrivacyBudgetList);
+        this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.windowSizeList);
     }
 
 //    protected abstract void setCalculationPrivacyBudgetList();
@@ -92,6 +104,10 @@ public abstract class EnhancedPLPMechanism extends Mechanism {
         return windowSizeList;
     }
 
+    public Integer getDomainSize() {
+        return domainSize;
+    }
+
     public Map<Integer, Double> getReleaseNoiseCountMap() {
         return this.lastReleaseEstimation;
     }
@@ -108,6 +124,7 @@ public abstract class EnhancedPLPMechanism extends Mechanism {
         // 这里初始化历史窗口大小为 w_opt - 1
         this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
         this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
+
     }
 
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
