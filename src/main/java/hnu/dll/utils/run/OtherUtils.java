@@ -2,7 +2,7 @@ package hnu.dll.utils.run;
 
 import cn.edu.dll.basic.NumberUtil;
 import cn.edu.dll.filter.file_filter.DirectoryFileFilter;
-import ecnu.dll._config.Constant;
+import hnu.dll._config.Constant;
 
 import java.io.File;
 

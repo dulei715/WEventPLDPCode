@@ -13,6 +13,6 @@ public class GenerateDiscreteParametersForCheckIn {
         String basicParameterGenerationDirectoryName = "generated_parameters";
         String userPrivacyFileNameForPersonalized = "userPrivacyBudgetFile.txt";
         String windowSizeFileNameForPersonalized = "userWindowSizeFile.txt";
-        DiscreteParameterGenerator.generateParametersForCheckIn(privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, userPrivacyFileNameForPersonalized, windowSizeFileNameForPersonalized);
+//        DiscreteParameterGenerator.generateParametersForCheckIn(privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, userPrivacyFileNameForPersonalized, windowSizeFileNameForPersonalized);
     }
 }

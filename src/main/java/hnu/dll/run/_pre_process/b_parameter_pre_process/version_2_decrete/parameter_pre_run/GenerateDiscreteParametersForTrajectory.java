@@ -13,6 +13,6 @@ public class GenerateDiscreteParametersForTrajectory {
         String basicParameterGenerationDirectoryName = "generated_parameters";
         String privacyBudgetFileNameForPersonalized = "userPrivacyBudgetFile.txt";
         String windowSizeFileNameForPersonalized = "userWindowSizeFile.txt";
-        DiscreteParameterGenerator.generateParametersForTrajectory(privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, privacyBudgetFileNameForPersonalized, windowSizeFileNameForPersonalized);
+//        DiscreteParameterGenerator.generateParametersForTrajectory(privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, privacyBudgetFileNameForPersonalized, windowSizeFileNameForPersonalized);
     }
 }

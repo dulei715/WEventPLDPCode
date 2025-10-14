@@ -5,8 +5,10 @@ import cn.edu.dll.configure.XMLConfigure;
 import cn.edu.dll.constant_values.ConstantValues;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Constant {
     public static String projectPath = System.getProperty("user.dir");
@@ -28,8 +30,20 @@ public class Constant {
 
     public static Integer MAX_BACKWARD_WINDOW_SIZE;
 
+    public static Random[] randomArray;
+
+    public static void initializeRandomArrayByRoundSize(Integer roundSize) {
+        randomArray = new Random[roundSize];
+        for (int i = 0; i < roundSize; i++) {
+            randomArray[i] = new Random(i);
+        }
+    }
+
 
     static {
+
+        initializeRandomArrayByRoundSize(10);
+
         configPath = StringUtil.join(ConstantValues.FILE_SPLIT, projectPath, "config", "parameter_config.xml");
         File configFile = new File(configPath);
         if (!configFile.exists()) {
@@ -60,17 +74,12 @@ public class Constant {
         logFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, logFileName);
 
         MAX_BACKWARD_WINDOW_SIZE = ConfigureUtils.getMaxWindowSize() + 1;
+
+
+
     }
 
 
-//    public static Integer THETA_SCALE = 10;
-    public static Integer THETA_SCALE = 2;
-    public static Integer PID_PI = 3;
-    public static Double PHI_Scale = 0.5;
-    //这里规定p_max为0.5
-    public static Double P_MAX = 0.5;
-    public static Double Q_VARIANCE = Math.pow(10, 5);
-    public static Double R_VARIANCE = Math.pow(10, 6);
 
 
     // constant for experiment result title
@@ -85,13 +94,6 @@ public class Constant {
     public static final String MJSD = "MJSD";// MeanJSDivergence (AJSD), 是所有时刻JS散度的均值
     public static final String BJSD = "BJSD"; // BatchJSDivergence, 是一个batch中的所有JS散度的总和
 
-    public static final String  nonPrivacyName = "NP";
-    public static final String  budgetDistributionName = "BD";
-    public static final String  budgetAbsorptionName = "BA";
-    public static final String  personalizedBudgetDistributionName = "PBD";
-    public static final String  personalizedBudgetAbsorptionName = "PBA";
-    public static final String  dynamicPersonalizedBudgetDistributionName = "DPBD";
-    public static final String  dynamicPersonalizedBudgetAbsorptionName = "DPBA";
 
 
 
@@ -99,9 +101,6 @@ public class Constant {
 
 
 
-    // constant for Personalized Dynamic Budget Distribution (Absorption)
-//    public static final Integer MAX_BACKWARD_WINDOW_SIZE = 201;
-//    public static final Integer MAX_BACKWARD_WINDOW_SIZE = 51;
 
     public static final Double PRIVACY_LOWER_BOUND = 0.1;
     public static final Double PRIVACY_UPPER_BOUND = 10D;
@@ -118,14 +117,43 @@ public class Constant {
 
 
     // for scheme name string
+    /**
+     * 用于对比的类的类名：
+     * 0. NonPrivacyBudgetMechanism (NonPrivacyScheme)
+     *
+     * 1. LPMechanism
+     *  (1) LDPPopulationDistribution (LPD)
+     *  (2) LDPopulationAbsorption (LPA)
+     *
+     * 2. BaselinePLPMechanism
+     *  (1) BaselinePLPDistribution (PLPD)
+     *  (2) BaselinePLPAbsorption (PLPA)
+     *
+     * 3-1. AblateOPSMechanism
+     *  (1) AblateOPSDistributionPlus (A-OPS-PLPD+)
+     *  (2) AblateOPSAbsorptionPlus (A-OPS-PLPA+)
+     *
+     * 3-2. AblateRePerturbMechanism
+     *  (1) AblateRePerturbDistributionPlus (A-RP-PLPD+)
+     *  (2) AblateRePerturbAbsorptionPlus (A-RP-PLPA+)
+     *
+     * 4. EnhancedPLPMechanism
+     *  (1) PLDPPopulationDistributionPlus (PLPD+)
+     *  (2) PLDPPopulationAbsorptionPlus (PLPA+)
+     *
+     */
     public static final String NonPrivacySchemeName = "NonPrivacy-Scheme";
-    public static final String LBDSchemeName = "LBD-Scheme";
-    public static final String LBASchemeName = "LBA-Scheme";
-    public static final String PLPDBasicSchemeName = "PLPD-Basic-Scheme";
-    public static final String PLPABasicSchemeName = "PLPA-Basic-Scheme";
-    //todo:
-    public static final String EnhancedPBDSchemeName = "PLPD-Plus-Scheme";
-    public static final String EnhancedPBASchemeName = "PLPA-Plus-Scheme";
+    public static final String LPDSchemeName = "LBD-Scheme";
+    public static final String LPASchemeName = "LBA-Scheme";
+    public static final String BasePLPDSchemeName = "PLPD-Basic-Scheme";
+    public static final String BasePLPASchemeName = "PLPA-Basic-Scheme";
+    public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
+    public static final String AblateOPSPLPASchemeName = "PLPA-Ablate-OPS-Scheme";
+    public static final String AblateRPPLPDSchemeName = "PLPD-Ablate-RP-Scheme";
+    public static final String AblateRPPLPASchemeName = "PLPA-Ablate-RP-Scheme";
+
+    public static final String EnhancedPLPDSchemeName = "PLPD-Plus-Scheme";
+    public static final String EnhancedPLPASchemeName = "PLPA-Plus-Scheme";
 
 
 
@@ -139,14 +167,23 @@ public class Constant {
     public static final Integer TrajectorySamplingLengthUpperBound = 200;
 
 
-    // for LDPTrace
-    public static final double LDPTraceAlpha = 0.3;
-    public static final double LDPTraceBeta = 0.2;
-    public static final double LDPTraceLambda = 2.5;
     public static final Integer generatingTrajectorySizeFromSynthetic = TrajectorySamplingSize;
 
     public static final List<Integer> CandidateSectorSizeListForNYC = Arrays.asList(5, 10, 15, 20);
 
+
+    /**
+     *
+     *  ------------------------------------------------------------------------------
+     */
+
+    public static final List<Double> CandidatePrivacyBudgetList = Arrays.asList(
+            0.5, 1.0, 1.5, 2.0, 2.5
+    );
+
+    public static final List<Integer> CandidateWindowSizeList = Arrays.asList(
+            10, 20, 30, 40, 50
+    );
 
 
     public static void main(String[] args) {

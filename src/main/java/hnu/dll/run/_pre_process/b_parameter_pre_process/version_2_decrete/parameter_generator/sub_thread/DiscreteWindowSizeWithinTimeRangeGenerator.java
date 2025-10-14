@@ -9,6 +9,7 @@ import hnu.dll.utils.FormatFileName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class DiscreteWindowSizeWithinTimeRangeGenerator implements Runnable {
@@ -20,9 +21,10 @@ public class DiscreteWindowSizeWithinTimeRangeGenerator implements Runnable {
     private List<BasicPair<Integer, Integer>> userWSizeList;
     private Integer startIndex;
     private Integer endIndex;
+    private Random random;
     private CountDownLatch latch;
 
-    public DiscreteWindowSizeWithinTimeRangeGenerator(String outputFileDir, List<Integer> timeStampList, List<Integer> windowSizeCandidateList, Integer backwardWindowSizeLowerBound, List<BasicPair<Integer, Integer>> userWSizeList, Integer startIndex, Integer endIndex, CountDownLatch latch) {
+    public DiscreteWindowSizeWithinTimeRangeGenerator(String outputFileDir, List<Integer> timeStampList, List<Integer> windowSizeCandidateList, Integer backwardWindowSizeLowerBound, List<BasicPair<Integer, Integer>> userWSizeList, Integer startIndex, Integer endIndex, Random random, CountDownLatch latch) {
         this.outputFileDir = outputFileDir;
         this.timeStampList = timeStampList;
         this.windowSizeCandidateList = windowSizeCandidateList;
@@ -31,6 +33,7 @@ public class DiscreteWindowSizeWithinTimeRangeGenerator implements Runnable {
         this.userWSizeList = userWSizeList;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
+        this.random = random;
         this.latch = latch;
     }
 
@@ -53,7 +56,7 @@ public class DiscreteWindowSizeWithinTimeRangeGenerator implements Runnable {
             for (BasicPair<Integer, Integer> userWindowSizeUpperBoundPair : userWSizeList) {
                 //todo: 这里把backward window size设置为最小
 //                Integer tempRandomInteger = RandomUtil.getRandomInteger(backwardWindowSizeLowerBound, userWindowSizeUpperBoundPair.getValue());
-                Integer tempRandomInteger = RandomUtil.getRandomInteger(backwardWindowSizeLowerBound, backwardWindowSizeLowerBound);
+                Integer tempRandomInteger = RandomUtil.getRandomInteger(backwardWindowSizeLowerBound, backwardWindowSizeLowerBound, random);
 //                Integer tempRandomInteger2 = RandomUtil.getRandomInteger(windowSizeCandidateList, userWindowSizeUpperBoundPair.getValue());
 //                Integer index = RandomUtil.getRandomIndexGivenStatisticPoint(windowSizeRatioList.toArray(new Double[0]));
                 subWindowSizeUpperBound = userWindowSizeUpperBoundPair.getValue();

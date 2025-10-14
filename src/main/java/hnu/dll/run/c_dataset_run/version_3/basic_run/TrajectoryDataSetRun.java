@@ -1,43 +1,45 @@
 package hnu.dll.run.c_dataset_run.version_3.basic_run;
 
-import cn.edu.dll.struct.pair.PureTriple;
-import ecnu.dll._config.ConfigureUtils;
-import ecnu.dll._config.Constant;
-import ecnu.dll.run.c_dataset_run.version_3.version_utils.DatasetSegmentRunUtils;
+import cn.edu.dll.struct.pair.CombineTriple;
+import hnu.dll._config.ConfigureUtils;
+import hnu.dll._config.Constant;
+import hnu.dll.run.c_dataset_run.version_3.version_utils.DatasetSegmentRunUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Random;
 
 public class TrajectoryDataSetRun {
 
 
 
-    public static void runTrajectory() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public static void runTrajectory(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         String basicPath = Constant.trajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
-        PureTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
+        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
     }
-    public static void runTrajectorySerially() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+
+    public static void runTrajectorySerially(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         String basicPath = Constant.trajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
-        PureTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
+        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
     }
-    public static void runTrajectoryContainingSimpleLDP() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public static void runTrajectoryContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         String basicPath = Constant.trajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
-        PureTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
+        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
     }
 
 //    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {

@@ -2,7 +2,7 @@ package hnu.dll.utils.run;
 
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
-import ecnu.dll.run.c_dataset_run.utils.PostProcessUtils;
+import hnu.dll.run.c_dataset_run.utils.PostProcessUtils;
 
 public class CombineForEachRoundInternal {
     public static void combineAllRoundInternal(String datasetBasicPath, String finalResultDirName) {

@@ -1,6 +1,6 @@
 package hnu.dll.run.d_total_run._3_poster_process_run.utils;
 
-import ecnu.dll.utils.run.RepeatUtils;
+import hnu.dll.utils.run.RepeatUtils;
 
 public class CombineMultipleMainRound {
     public static void main(String[] args) {

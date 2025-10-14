@@ -104,6 +104,11 @@ public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
         return windowSizeList;
     }
 
+    @Override
+    public List<Integer> getDomainIndexList() {
+        return domainIndexList;
+    }
+
     public Integer getDomainSize() {
         return domainSize;
     }

@@ -4,6 +4,7 @@ import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.io.read.CSVRead;
 import cn.edu.dll.io.write.CSVWrite;
+import cn.edu.dll.struct.bean_structs.BeanInterface;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -36,6 +37,39 @@ public class CSVReadEnhanced extends CSVRead {
                 e.printStackTrace();
             }
         }
+        return elementList;
+    }
+
+    public static <T> List<T> readDataToBeanList(String filePath, BeanInterface<T> beanInterface) {
+        BufferedReader bufferedReader = null;
+        List<T> elementList = new ArrayList();
+
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)));
+
+            while(bufferedReader.readLine().startsWith(CSVWrite.commonTag)) {
+            }
+
+            String line;
+            while((line = bufferedReader.readLine()) != null) {
+                if (!line.startsWith(CSVWrite.commonTag)) {
+                    T tempElement = (T)beanInterface.toBean(line.split(","));
+                    elementList.add(tempElement);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         return elementList;
     }
 

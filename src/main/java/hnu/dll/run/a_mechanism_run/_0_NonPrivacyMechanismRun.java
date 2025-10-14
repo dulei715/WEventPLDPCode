@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class _0_NonPrivacyMechanismRun {
 
-    public static CombinePair<ExperimentResult, List<Map<Integer, Double>>> runBatch(NonPrivacyMechanism mechanism, Integer batchID, List<List<Integer>> batchDataList) {
+    public static CombinePair<ExperimentResult, List<Map<Integer, Double>>> runBatch(NonPrivacyMechanism scheme, Integer batchID, List<List<Integer>> batchDataList) {
 //        NonPrivacyMechanism scheme = new NonPrivacyMechanism(dataType);
         ExperimentResult experimentResult = new ExperimentResult();
         int timeBatchSize = batchDataList.size();
@@ -20,12 +20,12 @@ public class _0_NonPrivacyMechanismRun {
         startTime = System.currentTimeMillis();
         CombinePair<Boolean, Map<Integer, Double>> reportDataPair;
         for (int i = 0; i < timeBatchSize; i++) {
-            reportDataPair = mechanism.updateNextPublicationResult(batchDataList.get(i));
+            reportDataPair = scheme.updateNextPublicationResult(batchDataList.get(i));
             publicationList.add(reportDataPair.getValue());
         }
         endTime = System.currentTimeMillis();
         timeCost = endTime - startTime;
-        experimentResult.addPair(Constant.MechanismName, Constant.nonPrivacyName);
+        experimentResult.addPair(Constant.MechanismName, scheme.getSimpleName());
         experimentResult.addPair(Constant.BatchName, String.valueOf(batchID));
         experimentResult.addPair(Constant.BatchRealSize, String.valueOf(timeBatchSize));
         experimentResult.addPair(Constant.TimeCost, String.valueOf(timeCost));

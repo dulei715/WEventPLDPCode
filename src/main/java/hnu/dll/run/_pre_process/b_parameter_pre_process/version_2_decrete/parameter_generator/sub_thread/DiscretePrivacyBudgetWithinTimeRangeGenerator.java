@@ -10,6 +10,7 @@ import hnu.dll.utils.FormatFileName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class DiscretePrivacyBudgetWithinTimeRangeGenerator implements Runnable {
@@ -21,9 +22,10 @@ public class DiscretePrivacyBudgetWithinTimeRangeGenerator implements Runnable {
     private List<BasicPair<Integer, Double>> userBudgetList;
     private Integer startIndex;
     private Integer endIndex;
+    private Random random;
     private CountDownLatch latch;
 
-    public DiscretePrivacyBudgetWithinTimeRangeGenerator(String outputFileDir, List<Integer> timeStampList, List<Double> privacyBudgetCandidateList, Double remainBackwardPrivacyLowerBound, Double remainBackwardPrivacyUpperBound, List<BasicPair<Integer, Double>> userBudgetList, Integer startIndex, Integer endIndex, CountDownLatch latch) {
+    public DiscretePrivacyBudgetWithinTimeRangeGenerator(String outputFileDir, List<Integer> timeStampList, List<Double> privacyBudgetCandidateList, Double remainBackwardPrivacyLowerBound, Double remainBackwardPrivacyUpperBound, List<BasicPair<Integer, Double>> userBudgetList, Integer startIndex, Integer endIndex, Random random, CountDownLatch latch) {
         this.outputFileDir = outputFileDir;
         this.timeStampList = timeStampList;
         this.privacyBudgetCandidateList = privacyBudgetCandidateList;
@@ -33,6 +35,7 @@ public class DiscretePrivacyBudgetWithinTimeRangeGenerator implements Runnable {
         this.userBudgetList = userBudgetList;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
+        this.random = random;
         this.latch = latch;
     }
 
@@ -51,7 +54,7 @@ public class DiscretePrivacyBudgetWithinTimeRangeGenerator implements Runnable {
             tempOutputFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, outputFileDir, "timestamp_" + formatFileNameID + ".txt");
             basicWrite.startWriting(tempOutputFilePath);
             for (BasicPair<Integer, Double> userBudgetLowerBoundPair : userBudgetList) {
-                Double tempRandomDouble = RandomUtil.getRandomDouble(remainBackwardPrivacyLowerBound, remainBackwardPrivacyUpperBound);
+                Double tempRandomDouble = RandomUtil.getRandomDouble(remainBackwardPrivacyLowerBound, remainBackwardPrivacyUpperBound, random);
 //                Double tempRandomDouble2 = RandomUtil.getRandomDouble(userBudgetLowerBoundPair.getValue(), privacyUpperBound);
                 tempBudgetLowerBound = userBudgetLowerBoundPair.getValue();
                 tempIndex = privacyBudgetCandidateList.indexOf(tempBudgetLowerBound);
