@@ -1,5 +1,7 @@
-package hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator;
+package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator;
 
+import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.print.MyPrint;
@@ -10,8 +12,12 @@ import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.Constant;
 import hnu.dll._config.ParameterUtils;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.utils.PreprocessRunUtils;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator.sub_thread.DiscretePrivacyBudgetWithinTimeRangeGenerator;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator.sub_thread.DiscreteWindowSizeWithinTimeRangeGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread.DiscretePrivacyBudgetWithinTimeRangeGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread.DiscreteWindowSizeWithinTimeRangeGenerator;
+import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
+import hnu.dll.run2.utils.UserParameterGenerationUtils;
+import hnu.dll.run2.utils.io.UserParameterWriteUtils;
+import hnu.dll.run2.utils.structs.UserParameter;
 import hnu.dll.utils.thread.ThreadUtils;
 
 import java.io.File;
@@ -141,7 +147,54 @@ public class DiscreteParameterGenerator {
 
 
 
-    public static void generatePrivacyBudget(String dirPath, String privacyBudgetFileNameForPersonalized, final List<Integer> userTypeIDList, final List<Integer> timeStampList, final List<Double> privacyBudgetList, final List<Double> candidateSortedBudgetList /*升序排列*/, Random random){
+    public static void generatePrivacyBudgetAndWindowSize(String dirPath, String parameterFileNameForPerson,
+                                             final Integer userSize,
+                                             final List<Double> privacyBudgetList, final Double defaultPrivacyBudget, final List<Double> candidateSortedBudgetList,
+                                             final List<Integer> windowSizeList, final Integer defaultWindowSize, final List<Integer> candidateSortedWindowSizeList,
+                                             Random random){
+//        Double privacyUpperBound = ConfigureUtils.getPrivacyBudgetUpperBound();
+        File tempDir;
+        String tempFileAbsolutePath;
+
+        String innerFileName;
+        List<Double> tempSubBudgetList;
+        List<Integer> tempSubWindowSizeList;
+        List<UserParameter> tempUserParameterList;
+        Integer focusIndex;
+        for (Double tempBudget : privacyBudgetList) {
+            innerFileName = ParameterGroupInitializeUtils.toPathName(tempBudget, defaultWindowSize);
+            tempDir = new File(dirPath, innerFileName);
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();
+            }
+            // 根据候选列表抽出子列表
+            focusIndex = candidateSortedBudgetList.indexOf(tempBudget);
+            tempSubBudgetList = candidateSortedBudgetList.subList(focusIndex, candidateSortedBudgetList.size());
+            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, tempSubBudgetList, defaultWindowSize, random);
+            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), parameterFileNameForPerson);
+            UserParameterWriteUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
+        }
+
+        for (Integer tempWindowSize : windowSizeList) {
+            if (tempWindowSize.equals(defaultWindowSize)) {
+                continue;
+            }
+            innerFileName = ParameterGroupInitializeUtils.toPathName(defaultPrivacyBudget, tempWindowSize);
+            tempDir = new File(dirPath, innerFileName);
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();
+            }
+            focusIndex = candidateSortedWindowSizeList.indexOf(tempWindowSize);
+            tempSubWindowSizeList = candidateSortedWindowSizeList.subList(0, focusIndex + 1);
+            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, defaultPrivacyBudget, tempSubWindowSizeList, random);
+            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), "userParameterFile.txt");
+            UserParameterWriteUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
+        }
+    }
+
+    public static void generatePrivacyBudget(String dirPath, String privacyBudgetFileNameForPersonalized, final List<Integer> userTypeIDList,
+                                             final List<Integer> timeStampList, final List<Double> privacyBudgetList,
+                                             final List<Double> candidateSortedBudgetList /*升序排列*/, Random random){
 //        Double privacyUpperBound = ConfigureUtils.getPrivacyBudgetUpperBound();
         Double remainBackwardPrivacyUpperBound = ConfigureUtils.getBackwardPrivacyBudgetUpperBoundDifference();
         //todo: 这里把backward privacy设置为最大
@@ -171,7 +224,7 @@ public class DiscreteParameterGenerator {
             }
             tempDirPath = tempDir.getAbsolutePath();
             generateFixedPrivacyBudgetForAllUsers(tempDirPath, privacyBudgetFileNameForPersonalized, userTypeIDList, tempBudgetList, tempRatioList);
-            generatePrivacyBudgetForAllUsersWithTimeStamps(tempDirPath, privacyBudgetFileNameForPersonalized, timeStampList, tempBudgetList, remainBackwardPrivacyLowerBound, remainBackwardPrivacyUpperBound, random);
+//            generatePrivacyBudgetForAllUsersWithTimeStamps(tempDirPath, privacyBudgetFileNameForPersonalized, timeStampList, tempBudgetList, remainBackwardPrivacyLowerBound, remainBackwardPrivacyUpperBound, random);
         }
     }
 
@@ -202,7 +255,7 @@ public class DiscreteParameterGenerator {
             }
             tempDirPath = tempDir.getAbsolutePath();
             generateFixedWindowSizeForAllUsers(tempDirPath, windowSizeFileNameForPersonalized, userIDList, tempWindowSizeList, tempRatioList);
-            generateWindowSizeForAllUsersWithTimeStamps(tempDirPath, windowSizeFileNameForPersonalized, timeStampList, tempWindowSizeList, backwardWindowSizeLowerBound, random);
+//            generateWindowSizeForAllUsersWithTimeStamps(tempDirPath, windowSizeFileNameForPersonalized, timeStampList, tempWindowSizeList, backwardWindowSizeLowerBound, random);
         }
     }
 
@@ -210,23 +263,34 @@ public class DiscreteParameterGenerator {
     public static void generateParametersForDataset(String datasetBasicPath,
                                                     String privacyBudgetConfigVarianceName,
                                                     String windowSizeConfigVarianceName,
-                                                    String userTypeIDFileName,
+                                                    Integer userSize,
                                                     String basicParameterGenerationDirectoryName,
-                                                    String privacyBudgetFileNameForPersonalized,
+                                                    String privacyBudgetFileNameForPerson,
                                                     String windowSizeFileNameForPersonalized,
                                                     Random random) {
         String privacyBudgetDirName = "1.privacy_budget";
         String windowSizeDirName = "2.window_size";
 
         String datasetParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, datasetBasicPath, basicParameterGenerationDirectoryName);
+        // 从xml参数文件中获取 budget
         List<Double> privacyBudgetList = ConfigureUtils.getIndependentPrivacyBudgetList(privacyBudgetConfigVarianceName);
+        Double defaultPrivacyBudget = ConfigureUtils.getIndependentSinglePrivacyBudget(privacyBudgetConfigVarianceName);
+        // 从xml参数文件中 windowSize
         List<Integer> windowSizeList = ConfigureUtils.getIndependentWindowSizeList(windowSizeConfigVarianceName);
-        List<Integer> datasetUserTypeIDList = PreprocessRunUtils.getUserTypeIDList(datasetBasicPath, userTypeIDFileName);
+        Integer defaultWindowSize = ConfigureUtils.getIndependentSingleWindowSize(windowSizeConfigVarianceName);
+
         List<Integer> datasetTimeStampList = PreprocessRunUtils.getTimeStampList(datasetBasicPath);
+
         List<Double> candidatePrivacyBudgetList = ConfigureUtils.getGenerationPrivacyBudgetList()[0];
+
         List<Integer> candidateWindowSizeList = ConfigureUtils.getGenerationWindowSizeList()[0];
-        generatePrivacyBudget(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, privacyBudgetDirName), privacyBudgetFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, privacyBudgetList, candidatePrivacyBudgetList, random);
-        generateWindowSize(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, windowSizeDirName), windowSizeFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, windowSizeList, candidateWindowSizeList, random);
+        /* for test */ List<Integer> datasetUserTypeIDList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, 4);
+        generatePrivacyBudgetAndWindowSize(datasetParameterBasicPath, privacyBudgetFileNameForPerson, userSize,
+                privacyBudgetList, defaultPrivacyBudget, candidatePrivacyBudgetList,
+                windowSizeList, defaultWindowSize, candidateWindowSizeList,
+                random);
+//        generatePrivacyBudget(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, privacyBudgetDirName), privacyBudgetFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, privacyBudgetList, candidatePrivacyBudgetList, random);
+//        generateWindowSize(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, windowSizeDirName), windowSizeFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, windowSizeList, candidateWindowSizeList, random);
     }
 
     @Deprecated

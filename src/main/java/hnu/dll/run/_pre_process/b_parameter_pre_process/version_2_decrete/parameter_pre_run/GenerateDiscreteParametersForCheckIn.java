@@ -1,7 +1,6 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_pre_run;
 
 import cn.edu.dll.signal.CatchSignal;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator.DiscreteParameterGenerator;
 
 public class GenerateDiscreteParametersForCheckIn {
     public static void main(String[] args) {

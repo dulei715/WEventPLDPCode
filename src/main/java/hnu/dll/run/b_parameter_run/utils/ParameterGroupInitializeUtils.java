@@ -58,6 +58,12 @@ public class ParameterGroupInitializeUtils {
         return "w_size_".concat(valueStr);
     }
 
+    public static String toPathName(Double privacyBudget, Integer windowSize) {
+        String budgetPathName = toPathName(privacyBudget);
+        String windowSizePathName = toPathName(windowSize);
+        return budgetPathName.concat("_").concat(windowSizePathName);
+    }
+
     public static Integer getUserSize(String userFilePath) {
         BasicRead basicRead = new BasicRead(",");
         basicRead.startReading(userFilePath);

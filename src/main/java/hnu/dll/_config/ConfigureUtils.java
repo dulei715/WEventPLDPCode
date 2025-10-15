@@ -192,6 +192,13 @@ public class ConfigureUtils {
         return result;
     }
 
+    public static Double getIndependentSinglePrivacyBudget(String varianceName) {
+        Document document = Constant.xmlConfigure.getDocument();;
+        Element element = (Element) document.selectNodes("//independentVariables/attribute[@name='PrivacyBudget']/single[@name='" + varianceName + "']").get(0);
+        String textTrim = element.getTextTrim();
+        return Double.valueOf(textTrim);
+    }
+
     public static List<Integer> getIndependentWindowSizeList(String varianceName) {
         Document document = Constant.xmlConfigure.getDocument();;
         Element element = (Element) document.selectNodes("//independentVariables/attribute[@name='WindowSize']/variance[@name='" + varianceName + "']").get(0);
@@ -202,6 +209,12 @@ public class ConfigureUtils {
             result.add(Integer.valueOf(str));
         }
         return result;
+    }
+    public static Integer getIndependentSingleWindowSize(String varianceName) {
+        Document document = Constant.xmlConfigure.getDocument();;
+        Element element = (Element) document.selectNodes("//independentVariables/attribute[@name='WindowSize']/single[@name='" + varianceName + "']").get(0);
+        String textTrim = element.getTextTrim();
+        return Integer.valueOf(textTrim);
     }
 
     public static List<Double> getIndependentUserRatioList(String varianceName) {

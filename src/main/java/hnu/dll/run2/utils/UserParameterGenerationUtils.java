@@ -34,5 +34,29 @@ public class UserParameterGenerationUtils {
         }
         return result;
     }
+    public static List<UserParameter> generateUserParameterList(Integer userSize, List<Double> budgetCandidateList, Integer windowSize, Random random) {
+        List<UserParameter> result = new ArrayList<>(userSize);
+        Integer budgetListSize = budgetCandidateList.size();
+        Integer randomIndex;
+        Double budget;
+        for (int i = 0; i < userSize; i++) {
+            randomIndex = random.nextInt(budgetListSize);
+            budget = budgetCandidateList.get(randomIndex);
+            result.add(new UserParameter(i, budget, windowSize));
+        }
+        return result;
+    }
 
+    public static List<UserParameter> generateUserParameterList(Integer userSize, Double budget, List<Integer> windowSizeCandidateList, Random random) {
+        List<UserParameter> result = new ArrayList<>(userSize);
+        Integer windowSizeListSize = windowSizeCandidateList.size();
+        Integer randomIndex;
+        Integer windowSize;
+        for (int i = 0; i < userSize; i++) {
+            randomIndex = random.nextInt(windowSizeListSize);
+            windowSize = windowSizeCandidateList.get(randomIndex);
+            result.add(new UserParameter(i, budget, windowSize));
+        }
+        return result;
+    }
 }

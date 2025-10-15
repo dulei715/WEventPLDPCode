@@ -1,4 +1,4 @@
-package hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator.sub_thread;
+package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread;
 
 import cn.edu.dll.basic.NumberUtil;
 import cn.edu.dll.basic.RandomUtil;

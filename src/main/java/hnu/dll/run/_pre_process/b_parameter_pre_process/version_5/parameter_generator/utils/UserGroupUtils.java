@@ -19,13 +19,13 @@ public class UserGroupUtils {
         return userTypeStringList;
     }
 
-    public static List<String> getUserIDTypeRatio(List<Double> typeRatioList) {
-        List<String> userIDTypeRatioList = new ArrayList<>();
-        for (int i = 0; i < typeRatioList.size(); i++) {
-            userIDTypeRatioList.add(String.format("%d,%.2f", i, typeRatioList.get(i)));
-        }
-        return userIDTypeRatioList;
-    }
+//    public static List<String> getUserIDTypeRatio(List<Double> typeRatioList) {
+//        List<String> userIDTypeRatioList = new ArrayList<>();
+//        for (int i = 0; i < typeRatioList.size(); i++) {
+//            userIDTypeRatioList.add(String.format("%d,%.2f", i, typeRatioList.get(i)));
+//        }
+//        return userIDTypeRatioList;
+//    }
 
 
     public static List<String> getUserToTypeInAverage(String userIDInputPath, String userTypeIDInputPath) {
@@ -65,38 +65,38 @@ public class UserGroupUtils {
     }
 
 
-    public static List<String> getUserToTypeByRatio(List<String> userIDDataList, List<String> userTypeIDRatioDataList) {
-
-        String tempOutputString;
-        Iterator<String> userIDIterator = userIDDataList.iterator();
-        Integer tempGroupElementSize, userSize = userIDDataList.size();
-        String tempUserID, tempTypeID;
-        List<String> userToTypeData = new ArrayList<>();
-        Double tempRatio;
-        String[] tempSplitArray;
-        double ratioSum = 0;
-        for (String userTypeIDRatio : userTypeIDRatioDataList) {
-            ratioSum += Double.parseDouble(userTypeIDRatio.split(",")[1]);
-        }
-        for (String userTypeIDRatio : userTypeIDRatioDataList) {
-            tempSplitArray = userTypeIDRatio.split(",");
-            tempTypeID = tempSplitArray[0];
-            tempRatio = Double.valueOf(tempSplitArray[1]);
-            tempGroupElementSize = (int) Math.round(userSize / ratioSum * tempRatio);
-            for (int i = 0; i < tempGroupElementSize && userIDIterator.hasNext(); i++) {
-                tempUserID = userIDIterator.next();
-                tempOutputString = StringUtil.join(",", tempUserID, Integer.valueOf(tempTypeID));
-                userToTypeData.add(tempOutputString);
-            }
-        }
-        return userToTypeData;
-    }
-    public static List<String> getUserToTypeByRatio(String userIDInputPath, String userTypeIDRatioInputPath) {
-
-        List<String> userIDDataList = ListReadUtils.readAllDataList(userIDInputPath, ",");
-        List<String> userTypeIDRatioDataList = ListReadUtils.readAllDataList(userTypeIDRatioInputPath, ",");
-        return getUserToTypeByRatio(userIDDataList, userTypeIDRatioDataList);
-    }
+//    public static List<String> getUserToTypeByRatio(List<String> userIDDataList, List<String> userTypeIDRatioDataList) {
+//
+//        String tempOutputString;
+//        Iterator<String> userIDIterator = userIDDataList.iterator();
+//        Integer tempGroupElementSize, userSize = userIDDataList.size();
+//        String tempUserID, tempTypeID;
+//        List<String> userToTypeData = new ArrayList<>();
+//        Double tempRatio;
+//        String[] tempSplitArray;
+//        double ratioSum = 0;
+//        for (String userTypeIDRatio : userTypeIDRatioDataList) {
+//            ratioSum += Double.parseDouble(userTypeIDRatio.split(",")[1]);
+//        }
+//        for (String userTypeIDRatio : userTypeIDRatioDataList) {
+//            tempSplitArray = userTypeIDRatio.split(",");
+//            tempTypeID = tempSplitArray[0];
+//            tempRatio = Double.valueOf(tempSplitArray[1]);
+//            tempGroupElementSize = (int) Math.round(userSize / ratioSum * tempRatio);
+//            for (int i = 0; i < tempGroupElementSize && userIDIterator.hasNext(); i++) {
+//                tempUserID = userIDIterator.next();
+//                tempOutputString = StringUtil.join(",", tempUserID, Integer.valueOf(tempTypeID));
+//                userToTypeData.add(tempOutputString);
+//            }
+//        }
+//        return userToTypeData;
+//    }
+//    public static List<String> getUserToTypeByRatio(String userIDInputPath, String userTypeIDRatioInputPath) {
+//
+//        List<String> userIDDataList = ListReadUtils.readAllDataList(userIDInputPath, ",");
+//        List<String> userTypeIDRatioDataList = ListReadUtils.readAllDataList(userTypeIDRatioInputPath, ",");
+//        return getUserToTypeByRatio(userIDDataList, userTypeIDRatioDataList);
+//    }
 
 
 

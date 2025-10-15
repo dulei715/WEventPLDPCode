@@ -1,7 +1,7 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run;
 
 import hnu.dll._config.Constant;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_2_decrete.parameter_generator.DiscreteParameterGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.DiscreteParameterGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
 
 import java.util.Random;
@@ -14,7 +14,7 @@ public class GenerateGroupParametersForTrajectory {
         String basicParameterGenerationDirectoryName = "group_generated_parameters";
         String privacyBudgetFileNameForPersonalized = "typePrivacyBudgetFile.txt";
         String windowSizeFileNameForPersonalized = "typeWindowSizeFile.txt";
-//        DiscreteParameterGenerator.generateParametersForDataset(privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, privacyBudgetFileNameForPersonalized, windowSizeFileNameForPersonalized, random);
+        DiscreteParameterGenerator.generateParametersForDataset(Constant.trajectoriesFilePath, privacyBudgetConfigVarianceName, windowSizeConfigVarianceName, userTypeIDFileName, basicParameterGenerationDirectoryName, privacyBudgetFileNameForPersonalized, windowSizeFileNameForPersonalized, random);
 
     }
 
