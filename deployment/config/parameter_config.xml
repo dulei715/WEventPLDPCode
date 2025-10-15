@@ -60,12 +60,12 @@
             <value name="default">200</value>
             <value name="case1">50</value>
         </attribute -->
-        <attribute name="BackwardPrivacyBudgetUpperBoundDifference">
-            <value name="default">10</value>
-        </attribute>
-        <attribute name="BackwardPrivacyBudgetLowerBoundDifference">  <!-- 用于假设backward的privacy尽可能大，因此这个目前没用 -->
-            <value name="default">1.0</value>
-        </attribute>
+<!--        <attribute name="BackwardPrivacyBudgetUpperBoundDifference">-->
+<!--            <value name="default">10</value>-->
+<!--        </attribute>-->
+<!--        <attribute name="BackwardPrivacyBudgetLowerBoundDifference">  &lt;!&ndash; 用于假设backward的privacy尽可能大，因此这个目前没用 &ndash;&gt;-->
+<!--            <value name="default">1.0</value>-->
+<!--        </attribute>-->
         <!-- backward的window size lower bound 和 window size lower bound 共用 -->
         <version_2>
             <attribute name="GenPrivacyBudget">
@@ -79,12 +79,12 @@
                 <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
             </attribute>
         </version_2>
-        <attribute name="TwoFixedPrivacyBudget">
-            <value name="default">1.0,0.6</value>
-        </attribute>
-        <attribute name="TwoFixedWindowSize">
-            <value name="default">40,120</value>
-        </attribute>
+<!--        <attribute name="TwoFixedPrivacyBudget">-->
+<!--            <value name="default">1.0,0.6</value>-->
+<!--        </attribute>-->
+<!--        <attribute name="TwoFixedWindowSize">-->
+<!--            <value name="default">40,120</value>-->
+<!--        </attribute>-->
     </candidateSet>
 
     <!--  1. 重要参数 (independentVariables)，用于存储实验中的自变量  xx-->
