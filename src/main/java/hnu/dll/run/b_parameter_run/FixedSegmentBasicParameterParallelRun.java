@@ -46,6 +46,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
     private Double defaultPrivacyBudget;
     private Integer defaultWindowSize;
     private List<UserParameter> userParameterList;
+    private Map<Integer, Integer> userToIndexMap;
 //    private List<Double> personalizedPrivacyBudgetList;
 //    private List<Integer> personalziedWindowSizeList;
 //    private Integer userSize;
@@ -76,7 +77,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
 
     public FixedSegmentBasicParameterParallelRun(String basicPath, final Set<String> dataType,
                                                  Integer singleBatchSize,
-                                                 Double defaultPrivacyBudget, Integer defaultWindowSize, List<UserParameter> userParameterList,
+                                                 Double defaultPrivacyBudget, Integer defaultWindowSize, List<UserParameter> userParameterList, Map<Integer, Integer> userToIndexMap,
                                                  File[] timeStampDataFiles, int startFileIndex, int endFileIndex, Integer segmentID,
                                                  Random random,
                                                  CountDownLatch latch, CountDownLatch innerLatch) {
@@ -86,6 +87,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         this.defaultPrivacyBudget = defaultPrivacyBudget;
         this.defaultWindowSize = defaultWindowSize;
         this.userParameterList = userParameterList;
+        this.userToIndexMap = userToIndexMap;
         this.timeStampDataFiles = timeStampDataFiles;
         this.startFileIndex = startFileIndex;
         this.endFileIndex = endFileIndex;
@@ -169,7 +171,8 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         String outputFilePath;
         for (int i = startFileIndex; i <= endFileIndex; i++) {
             file = timeStampDataFiles[i];
-            dataList = DatasetParameterUtils.getData(file.getAbsolutePath(), new ArrayList<>(dataType));
+            dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap);
+
             batchDataList.add(dataList);
 
 

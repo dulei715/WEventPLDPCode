@@ -189,8 +189,9 @@ public class Constant {
      * file directories
      *
      */
-    public static final String groupParameterDirectoryName = "group_generated_parameters";
-    public static final String personalizedParameterFileName = "userParameterFile.txt";
+    public static final String GroupParameterDirectoryName = "group_generated_parameters";
+    public static final String PersonalizedParameterFileName = "userParameterFile.txt";
+    public static final String UserToIndexFileName = "user_to_Index.txt";
 
     public static final String groupOutputFileName = "group_output";
 

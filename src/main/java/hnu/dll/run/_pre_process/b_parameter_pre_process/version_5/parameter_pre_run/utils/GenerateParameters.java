@@ -18,8 +18,8 @@ public class GenerateParameters {
                 privacyBudgetConfigVarianceName,
                 windowSizeConfigVarianceName,
                 userSize,
-                Constant.groupParameterDirectoryName,
-                Constant.personalizedParameterFileName,
+                Constant.GroupParameterDirectoryName,
+                Constant.PersonalizedParameterFileName,
                 random);
 
     }

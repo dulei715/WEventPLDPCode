@@ -186,7 +186,7 @@ public class DiscreteParameterGenerator {
             focusIndex = candidateSortedWindowSizeList.indexOf(tempWindowSize);
             tempSubWindowSizeList = candidateSortedWindowSizeList.subList(0, focusIndex + 1);
             tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, defaultPrivacyBudget, tempSubWindowSizeList, random);
-            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), Constant.personalizedParameterFileName);
+            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), Constant.PersonalizedParameterFileName);
             UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
     }

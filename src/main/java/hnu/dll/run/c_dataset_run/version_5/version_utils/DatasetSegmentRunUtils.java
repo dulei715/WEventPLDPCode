@@ -5,6 +5,8 @@ import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.struct.pair.CombineTriple;
 import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.ParameterUtils;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.utils.GenerateParameters;
 import hnu.dll.run.b_parameter_run.FixedSegmentBasicParameterParallelRun;
 import hnu.dll.run.b_parameter_run.FixedSegmentBasicParameterSerialRun;
 import hnu.dll.run.b_parameter_run.FixedSegmentEnhancedParameterParallelRun;
@@ -17,13 +19,15 @@ import hnu.dll.utils.filters.NumberTxtFilter;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class DatasetSegmentRunUtils {
     public static void basicDatasetRun(
-            String basicPath, String dataTypeFileName, String groupParameterFileName, String personalizedParameterFileName,
+            String basicPath, String dataTypeFileName,
+            String groupParameterFileName, String personalizedParameterFileName,
             Integer singleBatchSize,
             Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         /**
@@ -39,6 +43,8 @@ public class DatasetSegmentRunUtils {
 
         Runnable tempRunnable;
         Thread tempThread;
+
+        Map<Integer, Integer> userToIndexMap = UserGroupGenerator.getUserToIndexMap(basicPath);
 
         File dirFile = new File(basicPath, "runInput");
         File[] timeStampDataFiles = dirFile.listFiles(new NumberTxtFilter());
@@ -77,7 +83,7 @@ public class DatasetSegmentRunUtils {
                 tempRunnable =  new FixedSegmentBasicParameterParallelRun(
                         basicPath, dataType, /** 路径和文件相关参数 */
                         singleBatchSize, /** 传入 的batch 大小参数 */
-                        budget, windowSizeDefault, userParameterList, /** 用户参数 */
+                        budget, windowSizeDefault, userParameterList, userToIndexMap, /** 用户参数 */
                         timeStampDataFiles, startIndex, endIndex, segmentID, /** 当前 segement 对应的时间段数据 */
                         random,
                         latch, innerLatch);
@@ -96,7 +102,7 @@ public class DatasetSegmentRunUtils {
                 tempRunnable =  new FixedSegmentBasicParameterParallelRun(
                         basicPath, dataType,
                         singleBatchSize,
-                        budgetDefault, windowSize, userParameterList,
+                        budgetDefault, windowSize, userParameterList, userToIndexMap,
                         timeStampDataFiles, startIndex, endIndex, segmentID,
                         random,
                         latch, innerLatch);

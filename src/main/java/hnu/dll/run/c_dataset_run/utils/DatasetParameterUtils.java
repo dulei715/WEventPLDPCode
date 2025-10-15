@@ -1,5 +1,6 @@
 package hnu.dll.run.c_dataset_run.utils;
 
+import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.read.BasicRead;
@@ -26,6 +27,7 @@ public class DatasetParameterUtils {
         return data;
     }
 
+    @Deprecated
     public static List<Integer> getData(String dataPath, List<String> dataType) {
         BasicRead basicRead = new BasicRead(",");
         basicRead.startReading(dataPath);
@@ -41,6 +43,27 @@ public class DatasetParameterUtils {
             location = bean.getLocation();
             tempElement = dataType.indexOf(location);
             resultList.add(tempElement);
+        }
+        return resultList;
+    }
+    public static List<Integer> getDataMappedToIndex(String dataPath, List<String> dataType, Map<Integer, Integer> userIDToIndexMap) {
+        BasicRead basicRead = new BasicRead(",");
+        basicRead.startReading(dataPath);
+        List<String> strDataList = basicRead.readAllWithoutLineNumberRecordInFile();
+        basicRead.endReading();
+        InputDataStruct bean;
+        String location;
+        TreeMap<String, Boolean> tempMap;
+
+        List<Integer> resultList = BasicArrayUtil.getInitializedList(0, userIDToIndexMap.size());
+        Integer tempElement, userIndex;
+        for (String str : strDataList) {
+            // 保证读到的文件中所有的user出现且只出现一次
+            bean = InputDataStruct.toBean(basicRead.split(str));
+            userIndex = userIDToIndexMap.get(bean.getUserID());
+            location = bean.getLocation();
+            tempElement = dataType.indexOf(location);
+            resultList.add(userIndex, tempElement);
         }
         return resultList;
     }

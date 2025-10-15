@@ -14,9 +14,12 @@ public class TrajectoryDataSetRun {
 
         String basicPath = Constant.trajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
+        String userToIndexFileName = "user_to_Index.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName, Constant.groupParameterDirectoryName, Constant.personalizedParameterFileName, singleBatchSize, random);
+        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName,
+                Constant.GroupParameterDirectoryName, Constant.PersonalizedParameterFileName,
+                singleBatchSize, random);
     }
 }
