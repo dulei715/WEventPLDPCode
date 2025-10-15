@@ -86,6 +86,8 @@
             <value name="default">40,120</value>
         </attribute>
     </candidateSet>
+
+    <!--  1. 重要参数 (independentVariables)，用于存储实验中的自变量  xx-->
     <independentVariables>
         <attribute name="PrivacyBudget">
             <dataType>java.lang.Double</dataType>
@@ -105,19 +107,6 @@
             <variance name="case1">10,20,30,40,50</variance>
             <variance name="1">40,80,120,160,200</variance>
         </attribute>
-        <attribute name="TwoFixedUserRatio">
-            <dataType>java.lang.Double</dataType>
-            <single name="default">0.5</single> <!-- no use -->
-            <variance name="default">0.1,0.3,0.5,0.7,0.9</variance>
-        </attribute>
-        <attribute name="UserType">
-            <!--for dynamic mechanisms-->
-            <dataType>java.lang.Integer</dataType>
-            <single name="default">10</single>
-            <variance name="default">1,300,600,900,1200</variance>
-            <single name="1">600</single>
-            <variance name="1">1,5,10,15,20</variance>
-        </attribute>
         <attribute name="SegmentUnitSize">
             <dataType>java.lang.Integer</dataType>
             <!--            <single name="default">100</single>-->
@@ -129,6 +118,7 @@
             <variance name="case1">25,50,100,150,200</variance>
         </attribute>
         <attribute name="BatchUnitSize">
+            <!-- 表示有多少个Batch单元 -->
             <dataType>java.lang.Integer</dataType>
             <single name="default">2</single>
             <variance name="default">1,2,3,4,5</variance>

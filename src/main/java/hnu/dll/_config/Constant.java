@@ -5,7 +5,6 @@ import cn.edu.dll.configure.XMLConfigure;
 import cn.edu.dll.constant_values.ConstantValues;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -184,6 +183,16 @@ public class Constant {
     public static final List<Integer> CandidateWindowSizeList = Arrays.asList(
             10, 20, 30, 40, 50
     );
+
+
+    /**
+     * file directories
+     *
+     */
+    public static final String groupParameterDirectoryName = "group_generated_parameters";
+    public static final String personalizedParameterFileName = "userParameterFile.txt";
+
+    public static final String groupOutputFileName = "group_output";
 
 
     public static void main(String[] args) {

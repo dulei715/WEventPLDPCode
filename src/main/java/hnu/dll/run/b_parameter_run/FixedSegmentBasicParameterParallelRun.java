@@ -9,6 +9,7 @@ import hnu.dll._config.Constant;
 import hnu.dll.run.a_mechanism_run.*;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
+import hnu.dll.run2.utils.structs.UserParameter;
 import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbsorption;
@@ -27,46 +28,68 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class FixedSegmentBasicParameterParallelRun implements Runnable {
+    /**
+     * 1. 文件路径相关信息
+     */
     private String basicPath;
-    private String dataTypeFileName;
+    private Set<String> dataType;
+
+    /**
+     * 2. batch 相关信息
+     */
     private Integer singleBatchSize;
     private Integer batchID = 0;
-    private Double privacyBudget;
-    private Integer windowSize;
+
+    /**
+     * 3. 用户参数相关信息
+     */
+    private Double defaultPrivacyBudget;
+    private Integer defaultWindowSize;
+    private List<UserParameter> userParameterList;
+//    private List<Double> personalizedPrivacyBudgetList;
+//    private List<Integer> personalziedWindowSizeList;
+//    private Integer userSize;
+
+    /**
+     * 4. 数据段相关信息
+     */
     private File[] timeStampDataFiles;
     private int startFileIndex;
     private int endFileIndex;
     private Integer segmentID;
 
+    /**
+     * 5. 随机工具
+     */
     private Random random;
-    private Integer userSize;
 
-    private Map<String, Mechanism> mechanismMap;
-    private Set<String> dataType;
-    private String dynamicPrivacyBudgetBasicPath;
-    private String dynamicWindowSizeBasicPath;
-    private String userToTypeFilePath;
+    /**
+     * 6. 控制线程同步的计数器
+     */
     private CountDownLatch latch;
     private CountDownLatch innerLatch;
 
 
-    public FixedSegmentBasicParameterParallelRun(String basicPath, String dataTypeFileName,
+    private Map<String, Mechanism> mechanismMap;
+
+
+
+    public FixedSegmentBasicParameterParallelRun(String basicPath, final Set<String> dataType,
                                                  Integer singleBatchSize,
-                                                 Double privacyBudget, Integer windowSize, Integer userSize,
-                                                 File[] timeStampDataFiles,
-                                                 int startFileIndex, int endFileIndex, Integer segmentID,
+                                                 Double defaultPrivacyBudget, Integer defaultWindowSize, List<UserParameter> userParameterList,
+                                                 File[] timeStampDataFiles, int startFileIndex, int endFileIndex, Integer segmentID,
                                                  Random random,
                                                  CountDownLatch latch, CountDownLatch innerLatch) {
         this.basicPath = basicPath;
-        this.dataTypeFileName = dataTypeFileName;
+        this.dataType = dataType;
         this.singleBatchSize = singleBatchSize;
-        this.privacyBudget = privacyBudget;
-        this.windowSize = windowSize;
+        this.defaultPrivacyBudget = defaultPrivacyBudget;
+        this.defaultWindowSize = defaultWindowSize;
+        this.userParameterList = userParameterList;
         this.timeStampDataFiles = timeStampDataFiles;
         this.startFileIndex = startFileIndex;
         this.endFileIndex = endFileIndex;
         this.segmentID = segmentID;
-        this.userSize = userSize;
         this.random = random;
         this.latch = latch;
         this.innerLatch = innerLatch;
@@ -74,7 +97,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
     }
 
     private void initialize() {
-        dataType = DatasetParameterUtils.getDataTypeSet(this.basicPath, this.dataTypeFileName);
+//        dataType = DatasetParameterUtils.getDataTypeSet(this.basicPath, this.dataTypeFileName);
         this.mechanismMap = new TreeMap<>();
 
         /**
@@ -86,51 +109,58 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         /**
          * 1. NonPersonalizedSchemes
          */
-        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, privacyBudget, windowSize, userSize, random);
+        Integer userSize = userParameterList.size();
+        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, defaultPrivacyBudget, defaultWindowSize, userSize, random);
         this.mechanismMap.put(Constant.LPDSchemeName, lPD);
-        LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, privacyBudget, windowSize, userSize, random);
+        LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, defaultPrivacyBudget, defaultWindowSize, userSize, random);
         this.mechanismMap.put(Constant.LPASchemeName, lPA);
 
-
-
-        // todo:下面暂时置空
-//        List<Double> privacyBudgetList = ParameterGroupInitializeUtils.getTypePrivacyBudgetFromFileAndFill(StringUtil.join(ConstantValues.FILE_SPLIT, dynamicPrivacyBudgetBasicPath, "typePrivacyBudgetFile.txt"), userToTypeFilePath);
-//        List<Integer> windowSizeList = ParameterGroupInitializeUtils.getTypeWindowSizeFromFileAndFill(StringUtil.join(ConstantValues.FILE_SPLIT, dynamicWindowSizeBasicPath, "typeWindowSizeFile.txt"), userToTypeFilePath);
-        List<Double> privacyBudgetList = null;
-        List<Integer> windowSizeList = null;
 
         /**
          * 2. BaselineSchemes
          */
-        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, privacyBudgetList, windowSizeList, random);
+        List<Double> personalizedPrivacyBudgetList = UserParameter.extractPrivacyBudgetList(userParameterList);
+        List<Integer> personalizedWindowSizeList = UserParameter.extractWindowSizeList(userParameterList);
+        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.BasePLPDSchemeName, baselinePLPD);
-        BaselinePLPAbsorption baselinePLPA = new BaselinePLPAbsorption(dataType, privacyBudgetList, windowSizeList, random);
+        BaselinePLPAbsorption baselinePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.BasePLPASchemeName, baselinePLPA);
 
         /**
-         * AblationSchemes
+         * 3. AblationSchemes
          */
-        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, privacyBudgetList, windowSizeList, random);
+        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.AblateOPSPLPDSchemeName, ablateOPSD);
-        AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, privacyBudgetList, windowSizeList, random);
+        AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.AblateOPSPLPASchemeName, ablateOPSA);
+        AblateRePerturbDistributionPlus ablateRPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        this.mechanismMap.put(Constant.AblateRPPLPDSchemeName, ablateRPD);
+        AblateRePerturbAbsorptionPlus ablateRPA = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        this.mechanismMap.put(Constant.AblateRPPLPASchemeName, ablateRPA);
+
+        /**
+         * 4. EnhancedSchemes
+         */
+        PLDPPopulationDistributionPlus enhancedPLPD = new PLDPPopulationDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        this.mechanismMap.put(Constant.EnhancedPLPDSchemeName, enhancedPLPD);
+        PLDPPopulationAbsorptionPlus enhancedPLPA = new PLDPPopulationAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        this.mechanismMap.put(Constant.EnhancedPLPASchemeName, enhancedPLPA);
+
     }
 
 
     public List<ExperimentResult> runSegmentBatch() {
 
-//        File dirFile = new File(basicPath, "runInput");
-//        File[] timeStampDataFiles = dirFile.listFiles(new NumberTxtFilter());
         List<Integer> dataList;
         File file;
         List<List<Integer>> batchDataList = new ArrayList<>();
         List<ExperimentResult> experimentResultList = new ArrayList<>();
         ExperimentResult tempResult;
 
-        String tempDataPath;
 
+        String parameterRelativeFileName = ParameterGroupInitializeUtils.toPathName(defaultPrivacyBudget, defaultWindowSize);
 
-        String basicOutputPathDir = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "group_output_containing_ldp", "p_"+String.valueOf(privacyBudget).replace(".","-")+"_w_"+windowSize, "segment_"+segmentID);
+        String basicOutputPathDir = StringUtil.join(ConstantValues.FILE_SPLIT,basicPath, Constant.groupOutputFileName, parameterRelativeFileName, "segment_"+segmentID);
         File basicOutputFile = new File(basicOutputPathDir);
         if (!basicOutputFile.exists()) {
             basicOutputFile.mkdirs();

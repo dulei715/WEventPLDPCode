@@ -54,10 +54,12 @@ public class LDPPopulationAbsorption extends LPMechanism {
         }
 
         // recycle
-        Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
-        Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
-        this.candidateUserIndexSet.addAll(samplingRecycle);
-        this.candidateUserIndexSet.addAll(publicationRecycle);
+        if (currentTime >= windowSize) {
+            Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
+            Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
+            this.candidateUserIndexSet.addAll(samplingRecycle);
+            this.candidateUserIndexSet.addAll(publicationRecycle);
+        }
 
         return new CombinePair<>(flag, normalizedEstimation);
 

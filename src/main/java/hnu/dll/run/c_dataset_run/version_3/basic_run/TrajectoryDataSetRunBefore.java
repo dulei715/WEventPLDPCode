@@ -3,13 +3,13 @@ package hnu.dll.run.c_dataset_run.version_3.basic_run;
 import cn.edu.dll.struct.pair.CombineTriple;
 import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.Constant;
-import hnu.dll.run.c_dataset_run.version_3.version_utils.DatasetSegmentRunUtils;
+import hnu.dll.run.c_dataset_run.version_5.version_utils.DatasetSegmentRunUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Random;
-
-public class TrajectoryDataSetRun {
+@Deprecated
+public class TrajectoryDataSetRunBefore {
 
 
 
@@ -20,7 +20,7 @@ public class TrajectoryDataSetRun {
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
+//        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
     }
 
     public static void runTrajectorySerially(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {

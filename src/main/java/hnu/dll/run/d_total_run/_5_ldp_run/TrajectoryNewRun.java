@@ -3,8 +3,6 @@ package hnu.dll.run.d_total_run._5_ldp_run;
 import cn.edu.dll.signal.CatchSignal;
 import hnu.dll._config.Constant;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForTrajectory;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.GenerateParameters;
 
 import java.util.Random;
 

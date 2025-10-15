@@ -47,10 +47,12 @@ public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
         }
 
         // recycle
-        Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
-        Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
-        this.candidateUserIndexSet.addAll(samplingRecycle);
-        this.candidateUserIndexSet.addAll(publicationRecycle);
+        if (this.currentTime >= this.optimalWindowSize) {
+            Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
+            Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
+            this.candidateUserIndexSet.addAll(samplingRecycle);
+            this.candidateUserIndexSet.addAll(publicationRecycle);
+        }
 
         return new CombinePair<>(flag, normalizedEstimation);
     }

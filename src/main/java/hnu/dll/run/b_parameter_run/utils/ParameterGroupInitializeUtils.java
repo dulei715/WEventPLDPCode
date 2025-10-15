@@ -51,11 +51,11 @@ public class ParameterGroupInitializeUtils {
 
     public static String toPathName(Double privacyBudget) {
         String valueStr = String.valueOf(privacyBudget).replace(".", "-");
-        return "budget_".concat(valueStr);
+        return "p_".concat(valueStr);
     }
     public static String toPathName(Integer windowSize) {
         String valueStr = String.valueOf(windowSize);
-        return "w_size_".concat(valueStr);
+        return "w_".concat(valueStr);
     }
 
     public static String toPathName(Double privacyBudget, Integer windowSize) {

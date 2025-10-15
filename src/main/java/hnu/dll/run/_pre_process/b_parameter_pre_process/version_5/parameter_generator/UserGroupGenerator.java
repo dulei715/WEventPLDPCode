@@ -16,6 +16,10 @@ public class UserGroupGenerator {
         ListWriteUtils.writeList(outputPath, userToIndexData, ",");
     }
 
+    public static String getUserAbsolutePath(String basicPath) {
+        return StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "user.txt");
+    }
+
 
 
 }

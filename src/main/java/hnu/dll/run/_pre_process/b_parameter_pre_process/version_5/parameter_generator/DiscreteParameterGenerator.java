@@ -1,7 +1,6 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator;
 
 import cn.edu.dll.basic.BasicArrayUtil;
-import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.print.MyPrint;
@@ -16,7 +15,7 @@ import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_gene
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread.DiscreteWindowSizeWithinTimeRangeGenerator;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run2.utils.UserParameterGenerationUtils;
-import hnu.dll.run2.utils.io.UserParameterWriteUtils;
+import hnu.dll.run2.utils.io.UserParameterIOUtils;
 import hnu.dll.run2.utils.structs.UserParameter;
 import hnu.dll.utils.thread.ThreadUtils;
 
@@ -172,7 +171,7 @@ public class DiscreteParameterGenerator {
             tempSubBudgetList = candidateSortedBudgetList.subList(focusIndex, candidateSortedBudgetList.size());
             tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, tempSubBudgetList, defaultWindowSize, random);
             tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), parameterFileNameForPerson);
-            UserParameterWriteUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
+            UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
 
         for (Integer tempWindowSize : windowSizeList) {
@@ -187,8 +186,8 @@ public class DiscreteParameterGenerator {
             focusIndex = candidateSortedWindowSizeList.indexOf(tempWindowSize);
             tempSubWindowSizeList = candidateSortedWindowSizeList.subList(0, focusIndex + 1);
             tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, defaultPrivacyBudget, tempSubWindowSizeList, random);
-            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), "userParameterFile.txt");
-            UserParameterWriteUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
+            tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), Constant.personalizedParameterFileName);
+            UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
     }
 
@@ -266,10 +265,9 @@ public class DiscreteParameterGenerator {
                                                     Integer userSize,
                                                     String basicParameterGenerationDirectoryName,
                                                     String privacyBudgetFileNameForPerson,
-                                                    String windowSizeFileNameForPersonalized,
                                                     Random random) {
-        String privacyBudgetDirName = "1.privacy_budget";
-        String windowSizeDirName = "2.window_size";
+//        String privacyBudgetDirName = "1.privacy_budget";
+//        String windowSizeDirName = "2.window_size";
 
         String datasetParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, datasetBasicPath, basicParameterGenerationDirectoryName);
         // 从xml参数文件中获取 budget
@@ -279,7 +277,6 @@ public class DiscreteParameterGenerator {
         List<Integer> windowSizeList = ConfigureUtils.getIndependentWindowSizeList(windowSizeConfigVarianceName);
         Integer defaultWindowSize = ConfigureUtils.getIndependentSingleWindowSize(windowSizeConfigVarianceName);
 
-        List<Integer> datasetTimeStampList = PreprocessRunUtils.getTimeStampList(datasetBasicPath);
 
         List<Double> candidatePrivacyBudgetList = ConfigureUtils.getGenerationPrivacyBudgetList()[0];
 

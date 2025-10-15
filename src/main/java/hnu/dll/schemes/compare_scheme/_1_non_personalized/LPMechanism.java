@@ -38,7 +38,7 @@ public abstract class LPMechanism extends Mechanism {
     }
 
     public LPMechanism(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
-        this.currentTime = -1;
+        this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
         this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
@@ -48,6 +48,7 @@ public abstract class LPMechanism extends Mechanism {
         this.candidateUserIndexSet = new HashSet<>();
         this.candidateUserIndexSet.addAll(BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.userSize - 1));
         this.random = random;
+        initializeOptimalParameters();
     }
 
 

@@ -49,7 +49,7 @@ public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
     }
 
     public EnhancedPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
-        this.currentTime = -1;
+        this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
         this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
@@ -64,6 +64,7 @@ public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
         this.random = random;
         this.distinctBudgetList = BasicArrayUtil.getUniqueList(this.originalPrivacyBudgetList);
         this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.windowSizeList);
+        initializeOptimalParameters();
     }
 
 //    protected abstract void setCalculationPrivacyBudgetList();
