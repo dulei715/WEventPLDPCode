@@ -2,7 +2,6 @@ package hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.paramet
 
 import cn.edu.dll.signal.CatchSignal;
 import hnu.dll._config.Constant;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.DiscreteParameterGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
 
 public class GenerateGroupParametersForCheckIn {
@@ -19,7 +18,7 @@ public class GenerateGroupParametersForCheckIn {
     public static void main(String[] args) {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
-        UserGroupGenerator.generateUserToIndex(Constant.checkInFilePath);
+        UserGroupGenerator.generateUserToIndex(Constant.CheckInFilePath);
 //        UserGroupGenerator.generateUserIDType(Constant.checkInFilePath);
 //        UserGroupGenerator.generateUserToType(Constant.checkInFilePath);
         generateParameters();

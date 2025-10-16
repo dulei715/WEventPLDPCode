@@ -30,7 +30,7 @@ public class TrajectoryDatasetPreprocessRun {
 
     public static void removeInvalidFiles() {
         FileFilter txtFileFilter = new TxtFilter();
-        String trajectoryDirectoryPath = Constant.trajectoriesFilePath;
+        String trajectoryDirectoryPath = Constant.TrajectoriesFilePath;
         File inputDirFile = new File(trajectoryDirectoryPath, "taxi_log_2008_by_id");
         File outputDirFile = new File(trajectoryDirectoryPath, "taxi_log_2008_by_id_filter");
         if (!outputDirFile.exists()) {
@@ -52,7 +52,7 @@ public class TrajectoryDatasetPreprocessRun {
      */
     public static void extract() {
 
-        String trajectoryDirectoryPath = Constant.trajectoriesFilePath;
+        String trajectoryDirectoryPath = Constant.TrajectoriesFilePath;
         Double longitudeLeft = 116.0, longitudeRight = 116.8;
         Double latitudeLeft = 39.5, latitudeRight = 40.3;
         Integer longitudeShareSize = ConfigureUtils.getTrajectoryLongitudeSize();
@@ -98,7 +98,7 @@ public class TrajectoryDatasetPreprocessRun {
         Integer latitudeSplitSize = ConfigureUtils.getTrajectoryLatitudeSize();
         double longitudeUnit = 255.3 / longitudeSplitSize;
         double latitudeUnit = 96.06767 / latitudeSplitSize;
-        String trajectoryDirectoryPath = Constant.trajectoriesFilePath;
+        String trajectoryDirectoryPath = Constant.TrajectoriesFilePath;
         File filterFile = new File(trajectoryDirectoryPath, "taxi_log_2008_by_id_filter");
         File[] files = filterFile.listFiles();
         BasicRead basicRead = new BasicRead(",");
@@ -140,8 +140,8 @@ public class TrajectoryDatasetPreprocessRun {
         int timeStamp = 0;
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "shuffle_by_time_slot";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
         Long startTrajectoryTimeSlot = 1201930244000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetTrajectoryTest.testTime()测试中得到
         Long endTrajectoryTimeSlot = 1202463559000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("trajectories");
@@ -211,8 +211,8 @@ public class TrajectoryDatasetPreprocessRun {
         int timeStamp = 0;
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "shuffle_by_time_slot";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
         Long startTrajectoryTimeSlot = 1201930244000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetTrajectoryTest.testTime()测试中得到
         Long endTrajectoryTimeSlot = 1202463559000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("trajectories");
@@ -259,8 +259,8 @@ public class TrajectoryDatasetPreprocessRun {
         int tempTimeStamp = 0;
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "shuffle_by_time_slot";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
         Long startTrajectoryTimeSlot = 1201930244000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetTrajectoryTest.testTime()测试中得到
         Long endTrajectoryTimeSlot = 1202463559000L;
         Long threadTimeRange = (endTrajectoryTimeSlot - startTrajectoryTimeSlot) / threadSize;
@@ -321,8 +321,8 @@ public class TrajectoryDatasetPreprocessRun {
         int tempTimeStamp = 0;
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "shuffle_by_time_slot";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
         Long startTrajectoryTimeSlot = 1201930244000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetTrajectoryTest.testTime()测试中得到
         Long endTrajectoryTimeSlot = 1202463559000L;
         Long threadTimeRange = (endTrajectoryTimeSlot - startTrajectoryTimeSlot) / threadSize;
@@ -385,7 +385,7 @@ public class TrajectoryDatasetPreprocessRun {
     public static void formatFileName(String subDirName) {
         String outputDirectoryName = subDirName;
 //        String outputDirectoryName = "extract_data";
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
         File outputDirFile = new File(StringUtil.join(ConstantValues.FILE_SPLIT, outputDirectoryPath));
         File[] files = outputDirFile.listFiles();
         String oldFileName, newFileName;
@@ -410,7 +410,7 @@ public class TrajectoryDatasetPreprocessRun {
     // 这里不能用多线程
     public static void mergeToExperimentRawDataBefore() {
         int threadSizeUpperBound = 1; //这里只能用单线程，不然每次都会初始化原有的用户状态，会出错
-        String initializedInputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "shuffle_by_time_slot");
+        String initializedInputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "shuffle_by_time_slot");
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "runInput";
         File direcoryFile = new File(initializedInputDirectoryPath);
@@ -438,7 +438,7 @@ public class TrajectoryDatasetPreprocessRun {
 
 
     public static void mergeToExperimentRawData() {
-        String initializedInputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "shuffle_by_time_slot");
+        String initializedInputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "shuffle_by_time_slot");
         String inputDirectoryName = "extract_data";
         String outputDirectoryName = "runInput";
         File directoryFile = new File(initializedInputDirectoryPath);
@@ -466,15 +466,15 @@ public class TrajectoryDatasetPreprocessRun {
             }
         }
         BasicWrite basicWrite = new BasicWrite(",");
-        basicWrite.startWriting(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "basic_info", "cell.txt"));
+        basicWrite.startWriting(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "basic_info", "cell.txt"));
         basicWrite.writeStringListWithoutSize(cellList);
         basicWrite.endWriting();
     }
 
     public static void recordBasicInformation() {
         recordCellInfo();
-        PreprocessRunUtils.recordUserInfo(Constant.trajectoriesFilePath, "runInput", "user.txt");
-        PreprocessRunUtils.recordTimeStampInfo(Constant.trajectoriesFilePath, "runInput");
+        PreprocessRunUtils.recordUserInfo(Constant.TrajectoriesFilePath, "runInput", "user.txt");
+        PreprocessRunUtils.recordTimeStampInfo(Constant.TrajectoriesFilePath, "runInput");
     }
 
 

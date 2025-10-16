@@ -1,11 +1,15 @@
-package hnu.dll.run.d_total_run._2_main_run;
+package hnu.dll.run.d_total_run._5_main_run;
 
 import cn.edu.dll.signal.CatchSignal;
 import hnu.dll._config.Constant;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.SinDatasetPreprocessRun;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.TLNSDatasetPreprocessRun;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.parameter_pre_run.GenerateGroupParametersForSin;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.utils.GenerateParameters;
+import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
+import hnu.dll.run.c_dataset_run.version_5.DataSetRun;
 
+import java.util.Random;
 
 public class SinMainRun {
     public static void main(String[] args) throws Exception {
@@ -13,19 +17,22 @@ public class SinMainRun {
         catchSignal.startCatch();
 
         String datasetPath = Constant.SinFilePath;
-        String finalResultDirName = "4.sin_result";
+        String fileName = Constant.SinLocationFileName;
+
+        Integer randomIndex = Integer.valueOf(args[0]);
+//        Integer randomIndex = 0;
+        Random random = Constant.randomArray[randomIndex];
+
 
         // 1. dataset 生成
         SinDatasetPreprocessRun.generateDataset();
 
         // 2. parameter 生成
-        UserGroupGenerator.generateUserToIndex(Constant.SinFilePath);
-//        UserGroupGenerator.generateUserIDType(Constant.sinFilePath);
-//        UserGroupGenerator.generateUserToType(Constant.sinFilePath);
-        GenerateGroupParametersForSin.generateParameters();
+        Integer userSize = ParameterGroupInitializeUtils.getUserSize(UserGroupGenerator.getUserAbsolutePath(datasetPath));
+        GenerateParameters.generate(datasetPath, fileName, userSize, random);
 
         // 3. 执行
-//        SinDataSetRun.runSin();
+        DataSetRun.runDataSet(datasetPath, random);
 
 //        // 4. 后处理
 //        String rawDataDir = StringUtil.join(ConstantValues.FILE_SPLIT, datasetPath, "group_output");

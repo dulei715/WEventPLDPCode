@@ -47,7 +47,7 @@ public class BasicTest {
 
     @Test
     public void fun3() {
-        String dataDirPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "runInput");
+        String dataDirPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "runInput");
 //        System.out.println(dataDirPath);
         File fileDir = new File(dataDirPath);
         File[] files = FileUtils.listFilesByFileName(fileDir, new NumberTxtFilter());

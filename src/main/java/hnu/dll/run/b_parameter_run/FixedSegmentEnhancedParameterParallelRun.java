@@ -229,7 +229,7 @@ public class FixedSegmentEnhancedParameterParallelRun implements Runnable {
 
     public static void main1(String[] args) {
         System.out.println("Start Writing...");
-        String basicPath = Constant.checkInFilePath;
+        String basicPath = Constant.CheckInFilePath;
         Double privacyBudget = 0.5;
         Integer windowSize = 10;
         Integer batchID = 1;

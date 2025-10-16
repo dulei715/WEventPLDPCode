@@ -25,7 +25,7 @@ public class SinDataSetRun {
 //        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
 //    }
     public static void runSinContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String basicPath = Constant.sinFilePath;
+        String basicPath = Constant.SinFilePath;
         String dataTypeFileName = "status.txt";
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();

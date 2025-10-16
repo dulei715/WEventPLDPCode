@@ -13,7 +13,7 @@ public class SinTimeCostPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.sinFilePath;
+        String datasetPath = Constant.SinFilePath;
         String finalResultDirName = "4.sin_time_cost_result";
 
         String basicOutputFileString = "../3.result_time_cost";

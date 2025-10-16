@@ -22,7 +22,7 @@ public class OtherUtils {
     }
 
     public static void main(String[] args) {
-        File file = new File(Constant.sinFilePath);
+        File file = new File(Constant.SinFilePath);
         File subDatasetNameFile = getSubDatasetNameFile(file);
         System.out.println(subDatasetNameFile.getName());
     }

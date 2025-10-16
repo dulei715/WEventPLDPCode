@@ -15,7 +15,8 @@ public class CheckInMainRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.checkInFilePath;
+        String datasetPath = Constant.CheckInFilePath;
+        String locationFileName = Constant.CheckInLocationFileName;
 
         Integer randomIndex = Integer.valueOf(args[0]);
 //        Integer randomIndex = 0;
@@ -23,7 +24,7 @@ public class CheckInMainRun {
 
         Integer userSize = ParameterGroupInitializeUtils.getUserSize(UserGroupGenerator.getUserAbsolutePath(datasetPath));
         // 1. parameter 生成
-        GenerateParameters.generate(datasetPath, userSize, random);
+        GenerateParameters.generate(datasetPath, locationFileName, userSize, random);
 
         // 上面步骤执行完才能执行这步
         // 2. 执行

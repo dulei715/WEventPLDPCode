@@ -13,7 +13,7 @@ public class TrajectoryTimeCostPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.trajectoriesFilePath;
+        String datasetPath = Constant.TrajectoriesFilePath;
         String finalResultDirName = "1.trajectory_time_cost_result";
 
         String basicOutputFileString = "../3.result_time_cost";

@@ -13,7 +13,7 @@ public class CheckInContainingLDPPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.checkInFilePath;
+        String datasetPath = Constant.CheckInFilePath;
         String finalResultDirName = "2.check_in_containing_ldp_result";
 
         String basicOutputFileString = "../4.result_containing_ldp";

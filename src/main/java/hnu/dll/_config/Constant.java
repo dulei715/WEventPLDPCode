@@ -21,11 +21,11 @@ public class Constant {
     public static String sinFileName;
     public static String logFileName;
 
-    public static String checkInFilePath;
-    public static String trajectoriesFilePath;
-    public static String tlnsFilePath;
-    public static String sinFilePath;
-    public static String logFilePath;
+    public static String CheckInFilePath;
+    public static String TrajectoriesFilePath;
+    public static String TLNSFilePath;
+    public static String SinFilePath;
+    public static String LogFilePath;
 
     public static Integer MAX_BACKWARD_WINDOW_SIZE;
 
@@ -66,11 +66,11 @@ public class Constant {
         sinFileName = ConfigureUtils.getDatasetFileName("sin");
         logFileName = ConfigureUtils.getDatasetFileName("log");
 
-        checkInFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, checkInFileName);
-        trajectoriesFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, trajectoriesFileName);
-        tlnsFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, tlnsFileName);
-        sinFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, sinFileName);
-        logFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, logFileName);
+        CheckInFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, checkInFileName);
+        TrajectoriesFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, trajectoriesFileName);
+        TLNSFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, tlnsFileName);
+        SinFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, sinFileName);
+        LogFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicDatasetPath, logFileName);
 
         MAX_BACKWARD_WINDOW_SIZE = ConfigureUtils.getMaxWindowSize() + 1;
 
@@ -196,6 +196,16 @@ public class Constant {
 
     public static final String GroupOutputDirName = "group_output";
 
+
+    /**
+     * for different datasets
+     */
+    public static final String TrajectoryLocationFileName = "cell.txt";
+    public static final String CheckInLocationFileName = "country.txt";
+
+    public static final String TLNSLocationFileName = "status.txt";
+    public static final String SinLocationFileName = "status.txt";
+    public static final String LogLocationFileName = "status.txt";
 
     public static void main(String[] args) {
 //        System.out.println(configPath);

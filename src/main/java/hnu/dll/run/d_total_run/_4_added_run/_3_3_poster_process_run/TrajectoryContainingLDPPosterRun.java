@@ -13,7 +13,7 @@ public class TrajectoryContainingLDPPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.trajectoriesFilePath;
+        String datasetPath = Constant.TrajectoriesFilePath;
         String finalResultDirName = "1.trajectory_containing_ldp_result";
 
         String basicOutputFileString = "../4.result_containing_ldp";

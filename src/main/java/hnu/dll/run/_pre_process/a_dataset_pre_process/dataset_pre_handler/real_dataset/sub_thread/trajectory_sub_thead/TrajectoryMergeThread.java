@@ -38,8 +38,8 @@ public class TrajectoryMergeThread implements Runnable{
         BasicWrite basicWrite = new BasicWrite(",");
         List<String> tempDataList;
         TrajectorySimplifiedBean tempBean;
-        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = TrajectoryPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, inputDirectoryName));
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, outputDirectoryName);
+        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = TrajectoryPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, inputDirectoryName));
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, outputDirectoryName);
 
         for (File file : files) {
             basicRead.startReading(file.getAbsolutePath());

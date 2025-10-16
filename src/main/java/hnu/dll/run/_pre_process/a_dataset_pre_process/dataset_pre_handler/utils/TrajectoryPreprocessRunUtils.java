@@ -78,7 +78,7 @@ public class TrajectoryPreprocessRunUtils {
 //        return result;
 //    }
     public static List<Integer> getUserIDList() {
-        String filePathDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "runInput");
+        String filePathDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "runInput");
         File dirFile = new File(filePathDir);
         String filePath = dirFile.listFiles(new TxtFilter())[0].getAbsolutePath();
         List<Integer> result = new ArrayList<>();
@@ -110,7 +110,7 @@ public class TrajectoryPreprocessRunUtils {
 
     public static void main(String[] args) {
 //        List<Integer> result = getUserIDList();
-        List<Integer> result = PreprocessRunUtils.getTimeStampList(Constant.trajectoriesFilePath);
+        List<Integer> result = PreprocessRunUtils.getTimeStampList(Constant.TrajectoriesFilePath);
         MyPrint.showList(result);
         System.out.println(result.size());
     }

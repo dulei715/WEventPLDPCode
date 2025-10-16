@@ -70,7 +70,7 @@ public class CheckInPreprocessRunUtils {
 
 
     public static List<Integer> getUserIDList() {
-        String filePathDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput");
+        String filePathDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "runInput");
         File dirFile = new File(filePathDir);
         String filePath = dirFile.listFiles(new TxtFilter())[0].getAbsolutePath();
         List<Integer> result = new ArrayList<>();
@@ -99,8 +99,8 @@ public class CheckInPreprocessRunUtils {
         int timeStamp = 0;
         String inputDirectoryName = "join";
         String outputDirectoryName = "runInput";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, outputDirectoryName);
         Long startCheckInTimeSlot = 1333476006000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetCheckInTest.testTime()测试中得到
         Long endCheckInTimeSlot = 1379373855000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("checkIn");
@@ -120,7 +120,7 @@ public class CheckInPreprocessRunUtils {
 
     public static void main3(String[] args) {
 //        List<Integer> result = getUserIDLIst();
-        List<Integer> result = PreprocessRunUtils.getTimeStampList(Constant.checkInFilePath);
+        List<Integer> result = PreprocessRunUtils.getTimeStampList(Constant.CheckInFilePath);
         MyPrint.showList(result);
         System.out.println(result.size());
     }

@@ -19,7 +19,7 @@ public class GenerateGroupParametersForLog {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
         // 1. 生成 user_to_index.txt 到 basic_info中
-        UserGroupGenerator.generateUserToIndex(Constant.logFilePath);
+        UserGroupGenerator.generateUserToIndex(Constant.LogFilePath);
 //        UserGroupGenerator.generateUserIDType(Constant.logFilePath);
 //        UserGroupGenerator.generateUserToType(Constant.logFilePath);
         // 2. 生成实验参数到 group_generated_parameters

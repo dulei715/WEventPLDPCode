@@ -11,7 +11,7 @@ public class TLNSMainRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.tlnsFilePath;
+        String datasetPath = Constant.TLNSFilePath;
         String finalResultDirName = "3.tlns_result";
 
         // 1. dataset 生成

@@ -13,7 +13,7 @@ public class LogTimeCostPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.logFilePath;
+        String datasetPath = Constant.LogFilePath;
         String finalResultDirName = "5.log_time_cost_result";
 
         String basicOutputFileString = "../3.result_time_cost";

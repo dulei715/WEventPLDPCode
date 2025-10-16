@@ -305,13 +305,13 @@ public class DiscreteParameterGenerator {
          */
         String privacyBudgetDirName = "1.privacy_budget";
         String windowSizeDirName = "2.window_size";
-        String trajectoryParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, basicParameterGenerationDirectoryName);
+        String trajectoryParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, basicParameterGenerationDirectoryName);
 
         List<Double> privacyBudgetList = ConfigureUtils.getIndependentPrivacyBudgetList(privacyBudgetConfigVarianceName);
         List<Integer> windowSizeList = ConfigureUtils.getIndependentWindowSizeList(windowSizeConfigVarianceName);
 
-        List<Integer> trajectoryUserTypeIDList = PreprocessRunUtils.getUserTypeIDList(Constant.trajectoriesFilePath, userTypeIDFileName);
-        List<Integer> trajectoryTimeStampList = PreprocessRunUtils.getTimeStampList(Constant.trajectoriesFilePath);
+        List<Integer> trajectoryUserTypeIDList = PreprocessRunUtils.getUserTypeIDList(Constant.TrajectoriesFilePath, userTypeIDFileName);
+        List<Integer> trajectoryTimeStampList = PreprocessRunUtils.getTimeStampList(Constant.TrajectoriesFilePath);
         List<Double> candidatePrivacyBudgetList = ConfigureUtils.getGenerationPrivacyBudgetList()[0];
         List<Integer> candidateWindowSizeList = ConfigureUtils.getGenerationWindowSizeList()[0];
         generatePrivacyBudget(StringUtil.join(ConstantValues.FILE_SPLIT, trajectoryParameterBasicPath, privacyBudgetDirName), privacyBudgetFileNameForPersonalized, trajectoryUserTypeIDList, trajectoryTimeStampList, privacyBudgetList, candidatePrivacyBudgetList, random);
@@ -323,11 +323,11 @@ public class DiscreteParameterGenerator {
 
         String privacyBudgetDirName = "1.privacy_budget";
         String windowSizeDirName = "2.window_size";
-        String checkInParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, basicParameterGenerationDirectoryName);
+        String checkInParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, basicParameterGenerationDirectoryName);
         List<Double> privacyBudgetList = ConfigureUtils.getIndependentPrivacyBudgetList(privacyBudgetConfigVarianceName);
         List<Integer> windowSizeList = ConfigureUtils.getIndependentWindowSizeList(windowSizeConfigVarianceName);
-        List<Integer> checkInUserTypeIDList = PreprocessRunUtils.getUserTypeIDList(Constant.checkInFilePath, userTypeIDFileName);
-        List<Integer> checkInTimeStampList = PreprocessRunUtils.getTimeStampList(Constant.checkInFilePath);
+        List<Integer> checkInUserTypeIDList = PreprocessRunUtils.getUserTypeIDList(Constant.CheckInFilePath, userTypeIDFileName);
+        List<Integer> checkInTimeStampList = PreprocessRunUtils.getTimeStampList(Constant.CheckInFilePath);
         List<Double> candidatePrivacyBudgetList = ConfigureUtils.getGenerationPrivacyBudgetList()[0];
         List<Integer> candidateWindowSizeList = ConfigureUtils.getGenerationWindowSizeList()[0];
         generatePrivacyBudget(StringUtil.join(ConstantValues.FILE_SPLIT, checkInParameterBasicPath, privacyBudgetDirName), privacyBudgetFileNameForPersonalized, checkInUserTypeIDList, checkInTimeStampList, privacyBudgetList, candidatePrivacyBudgetList, random);

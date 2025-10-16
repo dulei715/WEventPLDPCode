@@ -25,7 +25,7 @@ public class TLNSDataSetRun {
 //        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
 //    }
     public static void runTLNSContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String basicPath = Constant.tlnsFilePath;
+        String basicPath = Constant.TLNSFilePath;
         String dataTypeFileName = "status.txt";
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();

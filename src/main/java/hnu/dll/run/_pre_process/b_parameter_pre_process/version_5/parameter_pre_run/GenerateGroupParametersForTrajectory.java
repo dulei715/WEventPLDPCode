@@ -15,9 +15,9 @@ public class GenerateGroupParametersForTrajectory {
     public static void main(String[] args) {
 //        CatchSignal catchSignal = new CatchSignal();
 //        catchSignal.startCatch();
-        Integer userSize = ParameterGroupInitializeUtils.getUserSize(UserGroupGenerator.getUserAbsolutePath(Constant.trajectoriesFilePath));
+        Integer userSize = ParameterGroupInitializeUtils.getUserSize(UserGroupGenerator.getUserAbsolutePath(Constant.TrajectoriesFilePath));
 
-        GenerateParameters.generate(Constant.trajectoriesFilePath, userSize, Constant.randomArray[0]);
+        GenerateParameters.generate(Constant.TrajectoriesFilePath, Constant.TrajectoryLocationFileName, userSize, Constant.randomArray[0]);
 
     }
 }

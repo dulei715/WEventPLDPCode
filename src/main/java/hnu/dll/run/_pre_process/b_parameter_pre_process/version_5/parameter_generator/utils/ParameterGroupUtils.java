@@ -66,9 +66,18 @@ public class ParameterGroupUtils {
         String tempOutputString;
         List<String> locationNameDataList = ListReadUtils.readAllDataList(locationNameInputPath, ",");
         List<String> locationToIndexDataList = new ArrayList<>();
-        for (String locationName : locationNameDataList) {
-            tempOutputString = StringUtil.join(",", locationName, random.nextInt(indexSize));
-            locationToIndexDataList.add(tempOutputString);
+        int realIndexSize = locationNameDataList.size();
+        if (realIndexSize <= indexSize) {
+            for (int i = 0; i < realIndexSize; ++i) {
+                String locationName = locationNameDataList.get(i);
+                tempOutputString = StringUtil.join(",", locationName, i);
+                locationToIndexDataList.add(tempOutputString);
+            }
+        } else {
+            for (String locationName : locationNameDataList) {
+                tempOutputString = StringUtil.join(",", locationName, random.nextInt(indexSize));
+                locationToIndexDataList.add(tempOutputString);
+            }
         }
         return locationToIndexDataList;
     }

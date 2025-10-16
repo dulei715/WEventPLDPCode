@@ -21,7 +21,7 @@ public class SinDatasetPreprocessRun {
     public static void generateDataset() {
 
         String datasetName = "sin";
-        String datasetPath = Constant.sinFilePath;
+        String datasetPath = Constant.SinFilePath;
         String positionFileName = "status.txt";
 
         // 1. 生成时刻文件 time_stamp.txt

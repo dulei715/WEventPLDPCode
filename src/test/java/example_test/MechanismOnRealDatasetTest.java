@@ -60,7 +60,7 @@ public class MechanismOnRealDatasetTest {
     // Test Trajectory
     @Before
     public void before() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        basicPath = Constant.trajectoriesFilePath;
+        basicPath = Constant.TrajectoriesFilePath;
         finalResultDirName = "1.trajectory_result";
         Integer randomIndex = 0;
         random = Constant.randomArray[randomIndex];

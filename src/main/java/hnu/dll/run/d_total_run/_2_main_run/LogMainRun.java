@@ -11,14 +11,14 @@ public class LogMainRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.logFilePath;
+        String datasetPath = Constant.LogFilePath;
         String finalResultDirName = "5.log_result";
 
         // 1. dataset 生成
         LogDatasetPreprocessRun.generateDataset();
 
         // 2. parameter 生成
-        UserGroupGenerator.generateUserToIndex(Constant.logFilePath);
+        UserGroupGenerator.generateUserToIndex(Constant.LogFilePath);
 //        UserGroupGenerator.generateUserIDType(Constant.logFilePath);
 //        UserGroupGenerator.generateUserToType(Constant.logFilePath);
         GenerateGroupParametersForLog.generateParameters();

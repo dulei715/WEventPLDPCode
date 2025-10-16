@@ -12,7 +12,7 @@ public class CheckInPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.checkInFilePath;
+        String datasetPath = Constant.CheckInFilePath;
         String finalResultDirName = "2.check_in_result";
 
         String basicOutputFileString = "../1.result";

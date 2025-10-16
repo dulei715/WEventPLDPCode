@@ -13,7 +13,7 @@ public class SinContainingLDPPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.sinFilePath;
+        String datasetPath = Constant.SinFilePath;
         String finalResultDirName = "4.sin_containing_ldp_result";
 
         String basicOutputFileString = "../4.result_containing_ldp";

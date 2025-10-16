@@ -19,7 +19,7 @@ public class LogDatasetPreprocessRun {
 
     public static void generateDataset() {
         String datasetName = "log";
-        String datasetPath = Constant.logFilePath;
+        String datasetPath = Constant.LogFilePath;
         String positionFileName = "status.txt";
 
         // 1. 生成时刻文件 time_stamp.txt

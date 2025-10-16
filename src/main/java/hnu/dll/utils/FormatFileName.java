@@ -46,7 +46,7 @@ public class FormatFileName {
 //        String leftSplit = args[1];
 //        String rightSplit = args[2];
 //        String directoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput");
-        String directoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "runInput");
+        String directoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "runInput");
         String leftSplit = "_";
         String rightSplit = ".";
         File directoryFile = new File(directoryPath);

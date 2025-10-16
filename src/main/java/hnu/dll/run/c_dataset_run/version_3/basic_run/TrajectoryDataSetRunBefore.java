@@ -15,7 +15,7 @@ public class TrajectoryDataSetRunBefore {
 
     public static void runTrajectory(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        String basicPath = Constant.trajectoriesFilePath;
+        String basicPath = Constant.TrajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
@@ -25,7 +25,7 @@ public class TrajectoryDataSetRunBefore {
 
     public static void runTrajectorySerially(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        String basicPath = Constant.trajectoriesFilePath;
+        String basicPath = Constant.TrajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
@@ -34,7 +34,7 @@ public class TrajectoryDataSetRunBefore {
     }
     public static void runTrajectoryContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        String basicPath = Constant.trajectoriesFilePath;
+        String basicPath = Constant.TrajectoriesFilePath;
         String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");

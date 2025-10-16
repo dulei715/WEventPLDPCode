@@ -28,8 +28,8 @@ public class CheckInDatasetPreprocessRun {
 
     private static final String checkInDataFileName = "dataset_TIST2015_Checkins.txt";
     public static void dataSplit(int unitSize) {
-        String dataPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, checkInDataFileName);
-        String outputSuperDirectory = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "split");
+        String dataPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, checkInDataFileName);
+        String outputSuperDirectory = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "split");
 //        System.out.println(dataPath);
 //        System.out.println(outputSuperDirectory);
 
@@ -55,13 +55,13 @@ public class CheckInDatasetPreprocessRun {
     }
 
     public static void dataJoin() {
-        String outputDataSuperPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "join");
+        String outputDataSuperPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "join");
         File outputDataSuperPathDirectory = new File(outputDataSuperPath);
-        String splitDirectory = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "split");
+        String splitDirectory = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "split");
         if (!outputDataSuperPathDirectory.exists()) {
             outputDataSuperPathDirectory.mkdirs();
         }
-        CheckInBeanUtils.transformSplitFilesToCountry(Constant.checkInFilePath, splitDirectory, outputDataSuperPath);
+        CheckInBeanUtils.transformSplitFilesToCountry(Constant.CheckInFilePath, splitDirectory, outputDataSuperPath);
     }
 
 
@@ -72,8 +72,8 @@ public class CheckInDatasetPreprocessRun {
         int timeStamp = 0;
         String inputDirectoryName = "join";
         String outputDirectoryName = "runInput";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, outputDirectoryName);
         Long startCheckInTimeSlot = 1333476006000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetCheckInTest.testTime()测试中得到
         Long endCheckInTimeSlot = 1379373855000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("checkIn");
@@ -148,8 +148,8 @@ public class CheckInDatasetPreprocessRun {
         int timeStamp = 0;
         String inputDirectoryName = "join";
         String outputDirectoryName = "shuffle_by_time_slot";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, outputDirectoryName);
         Long startCheckInTimeSlot = 1333476006000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetCheckInTest.testTime()测试中得到
         Long endCheckInTimeSlot = 1379373855000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("checkIn");
@@ -219,8 +219,8 @@ public class CheckInDatasetPreprocessRun {
         int timeStamp = 0;
         String inputDirectoryName = "shuffle_by_time_slot";
         String outputDirectoryName = "runInput";
-        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, inputDirectoryName);
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, outputDirectoryName);
+        String inputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, inputDirectoryName);
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, outputDirectoryName);
         Long startCheckInTimeSlot = 1333476006000L; // 在/Users/admin/MainFiles/5.GitTrans/2.github_code/DynamicWEventCode/src/test/java/important_test/DatasetCheckInTest.testTime()测试中得到
         Long endCheckInTimeSlot = 1379373855000L;
         Long timeInterval = ConfigureUtils.getTimeInterval("checkIn");
@@ -229,7 +229,7 @@ public class CheckInDatasetPreprocessRun {
         BasicRead basicRead = new BasicRead(",");
         BasicWrite basicWrite = new BasicWrite(",");
         List<String> tempDataList;
-        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = CheckInPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "join"));
+        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = CheckInPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "join"));
         CheckInSimplifiedBean tempBean;
         String tempOutputLineData;
         BasicPair<Long, String> tempBasicPair;
@@ -256,7 +256,7 @@ public class CheckInDatasetPreprocessRun {
      * 根据每个时间段中的数据依次更新每个用户的位置状态并记录该时间段中最晚的用户状态
      */
     public static void mergeToExperimentRawData(String outputFileName) {
-        String path = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "shuffle_by_time_slot");
+        String path = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "shuffle_by_time_slot");
         File directoryFile = new File(path);
         File[] files = directoryFile.listFiles(new TxtFilter());
 //        File[] files = directoryFile.listFiles();
@@ -264,8 +264,8 @@ public class CheckInDatasetPreprocessRun {
         BasicWrite basicWrite = new BasicWrite(",");
         List<String> tempDataList;
         CheckInSimplifiedBean tempBean;
-        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = CheckInPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "join"));
-        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, outputFileName);
+        Map<Integer, BasicPair<Long, String>> userTimeSlotLocationMap = CheckInPreprocessRunUtils.getInitialUserTimeSlotLocationMap(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "join"));
+        String outputDirectoryPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, outputFileName);
 
         for (File file : files) {
             basicRead.startReading(file.getAbsolutePath());
@@ -295,8 +295,8 @@ public class CheckInDatasetPreprocessRun {
     }
 
     public static void main3(String[] args) {
-        String inputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "taxi_log_2008_by_id_filter");
-        String outputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.trajectoriesFilePath, "filter_sample");
+        String inputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "taxi_log_2008_by_id_filter");
+        String outputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.TrajectoriesFilePath, "filter_sample");
         Double ratio = Constant.Sample_Ratio_For_Picture;
         int bufferSize = 1000;
         TrajectoryTools.sampleData(inputDir, outputDir, ratio, bufferSize);
@@ -322,7 +322,7 @@ public class CheckInDatasetPreprocessRun {
     }
 
     public static void recordCountryInfo() {
-        String countryReadDirPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "join");
+        String countryReadDirPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "join");
 
         File dirFile = new File(countryReadDirPath);
         File[] files = dirFile.listFiles(new TxtFilter());
@@ -341,7 +341,7 @@ public class CheckInDatasetPreprocessRun {
         }
         List<String> countryList = new ArrayList<>(countrySet);
         BasicWrite basicWrite = new BasicWrite(",");
-        basicWrite.startWriting(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "basic_info", "country.txt"));
+        basicWrite.startWriting(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "basic_info", "country.txt"));
         basicWrite.writeStringListWithoutSize(countryList);
         basicWrite.endWriting();
     }
@@ -350,14 +350,14 @@ public class CheckInDatasetPreprocessRun {
 
     public static void recordBasicInformation() {
         recordCountryInfo();
-        PreprocessRunUtils.recordUserInfo(Constant.checkInFilePath, "runInput_raw", "user_raw.txt");
-        PreprocessRunUtils.recordTimeStampInfo(Constant.checkInFilePath, "runInput_raw");
+        PreprocessRunUtils.recordUserInfo(Constant.CheckInFilePath, "runInput_raw", "user_raw.txt");
+        PreprocessRunUtils.recordTimeStampInfo(Constant.CheckInFilePath, "runInput_raw");
     }
 
     @Deprecated
     public static void extractUserBefore() {
         Double ratio = 0.05;
-        String basicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "basic_info");
+        String basicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "basic_info");
         String rawDataPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "user.txt");
         String newRawDataPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "user_raw.txt");
         List<String> rawData, newData = new ArrayList<>();
@@ -393,7 +393,7 @@ public class CheckInDatasetPreprocessRun {
     }
     public static void extractUser() {
         Double ratio = 0.05;
-        String basicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "basic_info");
+        String basicPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "basic_info");
         String rawDataPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "user_raw.txt");
         String extractDataPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "user.txt");
         List<String> rawData, extractData = new ArrayList<>();
@@ -413,9 +413,9 @@ public class CheckInDatasetPreprocessRun {
 
     public static void extractUserDataBefore() {
         // 保证basic_info/user.txt是抽取过的user
-        String rawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput");
-        String newRawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput_raw");
-        String userIDPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "basic_info", "user.txt");
+        String rawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "runInput");
+        String newRawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "runInput_raw");
+        String userIDPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "basic_info", "user.txt");
         File newRawFile = new File(newRawDir);
         File[] rawFileArray;
         if (newRawFile.exists()) {
@@ -459,7 +459,7 @@ public class CheckInDatasetPreprocessRun {
             if (!newRawFile.exists() || newRawFile.listFiles(new TxtFilter()).length < 1) {
                 return;
             }
-            File tempCopyRunInputFile = new File(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "tempRunInput"+System.currentTimeMillis()+".txt"));
+            File tempCopyRunInputFile = new File(StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "tempRunInput"+System.currentTimeMillis()+".txt"));
             rawFile.renameTo(tempCopyRunInputFile);
             newRawFile.renameTo(rawFile);
             e.printStackTrace();
@@ -468,9 +468,9 @@ public class CheckInDatasetPreprocessRun {
     }
     public static void extractUserData() {
         // 保证basic_info/user.txt是抽取过的user
-        String rawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput_raw");
-        String extractInputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "runInput");
-        String userIDPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.checkInFilePath, "basic_info", "user.txt");
+        String rawDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "runInput_raw");
+        String extractInputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "runInput");
+        String userIDPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.CheckInFilePath, "basic_info", "user.txt");
         File extractInputDirFile = new File(extractInputDir);
         File[] rawFileArray;
         if (extractInputDirFile.exists()) {

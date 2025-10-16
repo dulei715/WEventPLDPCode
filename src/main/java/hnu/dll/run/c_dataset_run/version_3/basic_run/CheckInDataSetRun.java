@@ -29,7 +29,7 @@ public class CheckInDataSetRun {
 //    }
 
     public static void runCheckInContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String basicPath = Constant.checkInFilePath;
+        String basicPath = Constant.CheckInFilePath;
         String dataTypeFileName = "country.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");

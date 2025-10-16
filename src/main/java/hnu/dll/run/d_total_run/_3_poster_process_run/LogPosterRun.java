@@ -12,7 +12,7 @@ public class LogPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.logFilePath;
+        String datasetPath = Constant.LogFilePath;
         String finalResultDirName = "5.log_result";
 
         String basicOutputFileString = "../1.result";

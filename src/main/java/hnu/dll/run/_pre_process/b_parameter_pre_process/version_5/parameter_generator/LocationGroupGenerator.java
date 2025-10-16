@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Random;
 
 public class LocationGroupGenerator {
-    public static void generateLocationToIndex(String basicPath, Integer indexSize, Random random) {
-        String locationNameInputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "cell.txt");
+    public static void generateLocationToIndex(String basicPath, String locationFileName, Integer indexSize, Random random) {
+        String locationNameInputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", locationFileName);
         String outputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", Constant.LocationToIndexFileName);
         List<String> locationToIndexData = ParameterGroupUtils.getLocationToIndex(locationNameInputPath, indexSize, random);
         ListWriteUtils.writeList(outputPath, locationToIndexData, ",");

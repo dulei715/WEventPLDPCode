@@ -22,7 +22,7 @@ public class TLNSDatasetPreprocessRun {
 
     public static void generateDataset() {
         String datasetName = "tlns";
-        String datasetPath = Constant.tlnsFilePath;
+        String datasetPath = Constant.TLNSFilePath;
         String positionFileName = "status.txt";
 
         // 1. 生成时刻文件 time_stamp.txt

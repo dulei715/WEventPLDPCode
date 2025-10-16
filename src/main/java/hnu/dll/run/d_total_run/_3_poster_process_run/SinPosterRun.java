@@ -12,7 +12,7 @@ public class SinPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.sinFilePath;
+        String datasetPath = Constant.SinFilePath;
         String finalResultDirName = "4.sin_result";
 
         String basicOutputFileString = "../1.result";

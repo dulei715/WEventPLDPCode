@@ -267,7 +267,7 @@ public class RepeatUtils {
     public static void main(String[] args) {
 //        String inputDir = args[0];
 //        String outputDir = args[1];
-        String inputDir = Constant.trajectoriesFilePath;
+        String inputDir = Constant.TrajectoriesFilePath;
         String outputDir = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "1.result");
         String roundSizeStr = ConfigureUtils.getFileHandleInfo("trajectories", "combineRound");
         combineMultipleMainRound(inputDir, outputDir, Integer.parseInt(roundSizeStr));

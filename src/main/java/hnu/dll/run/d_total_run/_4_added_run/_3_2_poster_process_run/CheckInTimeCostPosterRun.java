@@ -13,7 +13,7 @@ public class CheckInTimeCostPosterRun {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
-        String datasetPath = Constant.checkInFilePath;
+        String datasetPath = Constant.CheckInFilePath;
         String finalResultDirName = "2.check_in_time_cost_result";
 
         String basicOutputFileString = "../3.result_time_cost";
