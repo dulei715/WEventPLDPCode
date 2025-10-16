@@ -340,7 +340,8 @@ public class MechanismBasicTest {
         Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap:");
         MyPrint.showMap(newAggregationWeightMap);
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbMap, domainSize);
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap);

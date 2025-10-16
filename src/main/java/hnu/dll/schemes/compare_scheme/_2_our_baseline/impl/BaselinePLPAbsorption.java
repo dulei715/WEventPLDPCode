@@ -8,10 +8,7 @@ import hnu.dll.schemes.compare_scheme._2_our_baseline.BaselinePLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class BaselinePLPAbsorption extends BaselinePLPMechanism {
     protected AbsorptionLastInfo lastInfo;
@@ -30,6 +27,7 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
         if (this.currentTime - lastTimeSlot <= nullifiedLength) {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
             Integer publicationSamplingSize = this.chosenSamplingSize * Math.min(absorbedLength, this.chosenWindowSize);
@@ -51,6 +49,7 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
             } else {
                 flag = false;
                 normalizedEstimation = this.lastReleaseEstimation;
+                this.publicationSubMechanismHistoryQueue.offer(new HashSet());
             }
         }
 
@@ -59,7 +58,9 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
         return new CombinePair<>(flag, normalizedEstimation);

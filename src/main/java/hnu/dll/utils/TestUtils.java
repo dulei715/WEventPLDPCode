@@ -52,7 +52,8 @@ public class TestUtils {
         Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
         Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOUtils.getAggregationWeightMap(subBudgetCountMap, domainSize);
         Double errorWithoutRePerturb = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
-        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(perturbedData, domainSize);
         Map<Integer, Double> estimationWithoutRePerturb = PFOUtils.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
         System.out.println("aggregation weighted map without re-perturb:");
         MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
@@ -99,7 +100,8 @@ public class TestUtils {
         Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbMap, domainSize);
         Double grrError = PFOUtils.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
         System.out.println("grrError: " + grrError);
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
@@ -187,7 +189,8 @@ public class TestUtils {
         Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
         Map<Double, Double> aggregationWeightMapWithoutRePerturb = PFOUtils.getAggregationWeightMap(subBudgetCountMap, domainSize);
         Double errorWithoutRePerturb = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, totalUserSize, samplingSize, domainSize);
-        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(subBudgetCountMap, perturbedData, domainSize);
+        Map<Double, Map<Integer, Double>> aggregationWithoutRePerturb = PFOUtils.getAggregation(perturbedData, domainSize);
         Map<Integer, Double> estimationWithoutRePerturb = PFOUtils.getEstimation(aggregationWithoutRePerturb, newParameterP, newParameterQ, aggregationWeightMapWithoutRePerturb);
         System.out.println("aggregation weighted map without re-perturb:");
         MyPrint.showMap(aggregationWeightMapWithoutRePerturb, "; ");
@@ -234,7 +237,8 @@ public class TestUtils {
         Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
         System.out.println("newAggregationWeightedMap (alpha):");
         MyPrint.showMap(newAggregationWeightMap, "; ");
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbMap, domainSize);
         Double grrError = PFOUtils.getGPRRErrorBySpecificUsers(rePerturbedEpsilonCount, totalUserSize, samplingSize, domainSize);
         System.out.println("grrError: " + grrError);
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);

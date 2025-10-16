@@ -1,6 +1,5 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator;
 
-import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.io.print.MyPrint;
@@ -146,20 +145,27 @@ public class DiscreteParameterGenerator {
 
 
 
-    public static void generatePrivacyBudgetAndWindowSize(String dirPath, String parameterFileNameForPerson,
-                                             final Integer userSize,
-                                             final List<Double> privacyBudgetList, final Double defaultPrivacyBudget, final List<Double> candidateSortedBudgetList,
-                                             final List<Integer> windowSizeList, final Integer defaultWindowSize, final List<Integer> candidateSortedWindowSizeList,
-                                             Random random){
+    public static void generatePersonalizedPrivacyBudgetAndWindowSize(String dirPath, String parameterFileNameForPerson,
+                                                                      final Integer userSize,
+                                                                      final List<Double> privacyBudgetList, final Double defaultPrivacyBudget, final List<Double> candidateSortedBudgetList,
+                                                                      final List<Integer> windowSizeList, final Integer defaultWindowSize, final List<Integer> candidateSortedWindowSizeList,
+                                                                      Random random){
 //        Double privacyUpperBound = ConfigureUtils.getPrivacyBudgetUpperBound();
         File tempDir;
         String tempFileAbsolutePath;
 
         String innerFileName;
-        List<Double> tempSubBudgetList;
-        List<Integer> tempSubWindowSizeList;
+        List<Double> tempSubBudgetList, defaultSubBudgetList;
+        List<Integer> tempSubWindowSizeList, defaultSubWindowSizeList;
         List<UserParameter> tempUserParameterList;
         Integer focusIndex;
+        Integer defaultBudgetIndex, defaultWindowSizeIndex;
+
+        defaultBudgetIndex = candidateSortedBudgetList.indexOf(defaultPrivacyBudget);
+        defaultWindowSizeIndex = candidateSortedWindowSizeList.indexOf(defaultWindowSize);
+        defaultSubBudgetList = candidateSortedBudgetList.subList(defaultBudgetIndex, candidateSortedBudgetList.size());
+        defaultSubWindowSizeList = candidateSortedWindowSizeList.subList(0, defaultWindowSizeIndex + 1);
+
         for (Double tempBudget : privacyBudgetList) {
             innerFileName = ParameterGroupInitializeUtils.toPathName(tempBudget, defaultWindowSize);
             tempDir = new File(dirPath, innerFileName);
@@ -169,7 +175,8 @@ public class DiscreteParameterGenerator {
             // 根据候选列表抽出子列表
             focusIndex = candidateSortedBudgetList.indexOf(tempBudget);
             tempSubBudgetList = candidateSortedBudgetList.subList(focusIndex, candidateSortedBudgetList.size());
-            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, tempSubBudgetList, defaultWindowSize, random);
+
+            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, tempSubBudgetList, defaultSubWindowSizeList, random);
             tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), parameterFileNameForPerson);
             UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
@@ -185,7 +192,7 @@ public class DiscreteParameterGenerator {
             }
             focusIndex = candidateSortedWindowSizeList.indexOf(tempWindowSize);
             tempSubWindowSizeList = candidateSortedWindowSizeList.subList(0, focusIndex + 1);
-            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, defaultPrivacyBudget, tempSubWindowSizeList, random);
+            tempUserParameterList = UserParameterGenerationUtils.generateUserParameterList(userSize, defaultSubBudgetList, tempSubWindowSizeList, random);
             tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), Constant.PersonalizedParameterFileName);
             UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
@@ -266,8 +273,6 @@ public class DiscreteParameterGenerator {
                                                     String basicParameterGenerationDirectoryName,
                                                     String privacyBudgetFileNameForPerson,
                                                     Random random) {
-//        String privacyBudgetDirName = "1.privacy_budget";
-//        String windowSizeDirName = "2.window_size";
 
         String datasetParameterBasicPath = StringUtil.join(ConstantValues.FILE_SPLIT, datasetBasicPath, basicParameterGenerationDirectoryName);
         // 从xml参数文件中获取 budget
@@ -281,13 +286,10 @@ public class DiscreteParameterGenerator {
         List<Double> candidatePrivacyBudgetList = ConfigureUtils.getGenerationPrivacyBudgetList()[0];
 
         List<Integer> candidateWindowSizeList = ConfigureUtils.getGenerationWindowSizeList()[0];
-        /* for test */ List<Integer> datasetUserTypeIDList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, 4);
-        generatePrivacyBudgetAndWindowSize(datasetParameterBasicPath, privacyBudgetFileNameForPerson, userSize,
+        generatePersonalizedPrivacyBudgetAndWindowSize(datasetParameterBasicPath, privacyBudgetFileNameForPerson, userSize,
                 privacyBudgetList, defaultPrivacyBudget, candidatePrivacyBudgetList,
                 windowSizeList, defaultWindowSize, candidateWindowSizeList,
                 random);
-//        generatePrivacyBudget(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, privacyBudgetDirName), privacyBudgetFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, privacyBudgetList, candidatePrivacyBudgetList, random);
-//        generateWindowSize(StringUtil.join(ConstantValues.FILE_SPLIT, datasetParameterBasicPath, windowSizeDirName), windowSizeFileNameForPersonalized, datasetUserTypeIDList, datasetTimeStampList, windowSizeList, candidateWindowSizeList, random);
     }
 
     @Deprecated

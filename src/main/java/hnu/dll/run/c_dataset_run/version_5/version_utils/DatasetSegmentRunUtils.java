@@ -4,16 +4,15 @@ import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.struct.pair.CombineTriple;
 import hnu.dll._config.ConfigureUtils;
-import hnu.dll._config.ParameterUtils;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.LocationGroupGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.utils.GenerateParameters;
 import hnu.dll.run.b_parameter_run.FixedSegmentBasicParameterParallelRun;
 import hnu.dll.run.b_parameter_run.FixedSegmentBasicParameterSerialRun;
 import hnu.dll.run.b_parameter_run.FixedSegmentEnhancedParameterParallelRun;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
-import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.run2.utils.io.UserParameterIOUtils;
 import hnu.dll.run2.utils.structs.UserParameter;
+import hnu.dll.utils.file.FileUtils;
 import hnu.dll.utils.filters.NumberTxtFilter;
 
 import java.io.File;
@@ -21,13 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class DatasetSegmentRunUtils {
     public static void basicDatasetRun(
-            String basicPath, String dataTypeFileName,
-            String groupParameterFileName, String personalizedParameterFileName,
+            String basicPath,
+            String groupParameterDirectoryName, String personalizedParameterFileName,
             Integer singleBatchSize,
             Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         /**
@@ -45,12 +43,14 @@ public class DatasetSegmentRunUtils {
         Thread tempThread;
 
         Map<Integer, Integer> userToIndexMap = UserGroupGenerator.getUserToIndexMap(basicPath);
+        Map<String, String> locationToMappedStrMap = LocationGroupGenerator.getLocationToMappedStrMap(basicPath);
 
         File dirFile = new File(basicPath, "runInput");
-        File[] timeStampDataFiles = dirFile.listFiles(new NumberTxtFilter());
+//        File[] timeStampDataFiles = dirFile.listFiles(new NumberTxtFilter());
+        File[] timeStampDataFiles = FileUtils.listFilesByFileName(dirFile, new NumberTxtFilter());
         int totalFileSize = timeStampDataFiles.length;
 
-        Set<String> dataType = DatasetParameterUtils.getDataTypeSet(basicPath, dataTypeFileName);
+//        Set<String> dataType = DatasetParameterUtils.getDataTypeSet(basicPath, dataTypeFileName);
 
 //        Integer segmentUnitSize = 4;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("SegmentUnitSize", "default", "default");
@@ -78,10 +78,10 @@ public class DatasetSegmentRunUtils {
 
             for (Double budget : budgetChangeList) {
                 parameterFileName = ParameterGroupInitializeUtils.toPathName(budget, windowSizeDefault);
-                inputDataFileName = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, groupParameterFileName, parameterFileName, personalizedParameterFileName);
+                inputDataFileName = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, groupParameterDirectoryName, parameterFileName, personalizedParameterFileName);
                 userParameterList = UserParameterIOUtils.readUserParameters(inputDataFileName);
                 tempRunnable =  new FixedSegmentBasicParameterParallelRun(
-                        basicPath, dataType, /** 路径和文件相关参数 */
+                        basicPath, locationToMappedStrMap, /** 路径和文件相关参数 */
                         singleBatchSize, /** 传入 的batch 大小参数 */
                         budget, windowSizeDefault, userParameterList, userToIndexMap, /** 用户参数 */
                         timeStampDataFiles, startIndex, endIndex, segmentID, /** 当前 segement 对应的时间段数据 */
@@ -97,10 +97,10 @@ public class DatasetSegmentRunUtils {
                     continue;
                 }
                 parameterFileName = ParameterGroupInitializeUtils.toPathName(budgetDefault, windowSize);
-                inputDataFileName = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, groupParameterFileName, parameterFileName, personalizedParameterFileName);
+                inputDataFileName = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, groupParameterDirectoryName, parameterFileName, personalizedParameterFileName);
                 userParameterList = UserParameterIOUtils.readUserParameters(inputDataFileName);
                 tempRunnable =  new FixedSegmentBasicParameterParallelRun(
-                        basicPath, dataType,
+                        basicPath, locationToMappedStrMap,
                         singleBatchSize,
                         budgetDefault, windowSize, userParameterList, userToIndexMap,
                         timeStampDataFiles, startIndex, endIndex, segmentID,

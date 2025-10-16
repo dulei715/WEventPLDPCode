@@ -40,4 +40,13 @@ public class InputDataStruct {
         Long timeStamp = Long.valueOf(dataArray[2]);
         return new InputDataStruct(userID, location, timeStamp);
     }
+
+    @Override
+    public String toString() {
+        return "InputDataStruct{" +
+                "userID=" + userID +
+                ", location='" + location + '\'' +
+                ", timeStamp=" + timeStamp +
+                '}';
+    }
 }

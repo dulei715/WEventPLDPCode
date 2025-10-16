@@ -3,6 +3,7 @@ package hnu.dll.run.c_dataset_run.utils;
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
+import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.io.read.BasicRead;
 import hnu.dll.run.b_parameter_run.utils.InputDataStruct;
 
@@ -46,13 +47,13 @@ public class DatasetParameterUtils {
         }
         return resultList;
     }
-    public static List<Integer> getDataMappedToIndex(String dataPath, List<String> dataType, Map<Integer, Integer> userIDToIndexMap) {
+    public static List<Integer> getDataMappedToIndex(String dataPath, List<String> dataType, Map<Integer, Integer> userIDToIndexMap, Map<String, String> locationNameToMappedStrMap) {
         BasicRead basicRead = new BasicRead(",");
         basicRead.startReading(dataPath);
         List<String> strDataList = basicRead.readAllWithoutLineNumberRecordInFile();
         basicRead.endReading();
         InputDataStruct bean;
-        String location;
+        String location, locationMappedStr;
         TreeMap<String, Boolean> tempMap;
 
         List<Integer> resultList = BasicArrayUtil.getInitializedList(0, userIDToIndexMap.size());
@@ -62,8 +63,18 @@ public class DatasetParameterUtils {
             bean = InputDataStruct.toBean(basicRead.split(str));
             userIndex = userIDToIndexMap.get(bean.getUserID());
             location = bean.getLocation();
-            tempElement = dataType.indexOf(location);
-            resultList.add(userIndex, tempElement);
+            locationMappedStr = locationNameToMappedStrMap.get(location);
+            tempElement = dataType.indexOf(locationMappedStr);
+            // for test
+//            if (tempElement < 0) {
+//                System.out.println("not find " + locationMappedStr + " in dataType: ");
+//                MyPrint.showList(dataType, "; ");
+//                System.out.println("real location is " + location + ", the locationNameToMappedStrMap is :");
+//                MyPrint.showMap(locationNameToMappedStrMap, "; ");
+//                System.out.println(bean);
+//                System.out.println(dataPath);
+//            }
+            resultList.set(userIndex, tempElement);
         }
         return resultList;
     }

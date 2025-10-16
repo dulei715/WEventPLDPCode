@@ -32,7 +32,8 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
      * 1. 文件路径相关信息
      */
     private String basicPath;
-    private Set<String> dataType;
+    private Map<String, String> locationToMappedStrMap;
+    private Set<String> dataType; // dataType 定义为map之后的Str集合
 
     /**
      * 2. batch 相关信息
@@ -75,14 +76,15 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
 
 
 
-    public FixedSegmentBasicParameterParallelRun(String basicPath, final Set<String> dataType,
+    public FixedSegmentBasicParameterParallelRun(String basicPath, final Map<String, String> locationToMappedStrMap,
                                                  Integer singleBatchSize,
                                                  Double defaultPrivacyBudget, Integer defaultWindowSize, List<UserParameter> userParameterList, Map<Integer, Integer> userToIndexMap,
                                                  File[] timeStampDataFiles, int startFileIndex, int endFileIndex, Integer segmentID,
                                                  Random random,
                                                  CountDownLatch latch, CountDownLatch innerLatch) {
         this.basicPath = basicPath;
-        this.dataType = dataType;
+        this.locationToMappedStrMap = locationToMappedStrMap;
+        this.dataType = new HashSet<>(locationToMappedStrMap.values());
         this.singleBatchSize = singleBatchSize;
         this.defaultPrivacyBudget = defaultPrivacyBudget;
         this.defaultWindowSize = defaultWindowSize;
@@ -162,7 +164,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
 
         String parameterRelativeFileName = ParameterGroupInitializeUtils.toPathName(defaultPrivacyBudget, defaultWindowSize);
 
-        String basicOutputPathDir = StringUtil.join(ConstantValues.FILE_SPLIT,basicPath, Constant.groupOutputFileName, parameterRelativeFileName, "segment_"+segmentID);
+        String basicOutputPathDir = StringUtil.join(ConstantValues.FILE_SPLIT,basicPath, Constant.GroupOutputDirName, parameterRelativeFileName, "segment_"+segmentID);
         File basicOutputFile = new File(basicOutputPathDir);
         if (!basicOutputFile.exists()) {
             basicOutputFile.mkdirs();
@@ -171,7 +173,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         String outputFilePath;
         for (int i = startFileIndex; i <= endFileIndex; i++) {
             file = timeStampDataFiles[i];
-            dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap);
+            dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap, locationToMappedStrMap);
 
             batchDataList.add(dataList);
 

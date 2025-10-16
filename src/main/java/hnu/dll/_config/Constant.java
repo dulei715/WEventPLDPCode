@@ -192,8 +192,9 @@ public class Constant {
     public static final String GroupParameterDirectoryName = "group_generated_parameters";
     public static final String PersonalizedParameterFileName = "userParameterFile.txt";
     public static final String UserToIndexFileName = "user_to_Index.txt";
+    public static final String LocationToIndexFileName = "location_to_Index.txt";
 
-    public static final String groupOutputFileName = "group_output";
+    public static final String GroupOutputDirName = "group_output";
 
 
     public static void main(String[] args) {

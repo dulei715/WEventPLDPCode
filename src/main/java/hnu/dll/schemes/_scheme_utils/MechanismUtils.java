@@ -80,7 +80,8 @@ public class MechanismUtils {
 
         // 2. PFO.Aggregate 聚合
         Map<Double, Integer> perturbedEpsilonCount = BasicUtils.getGroupDataCount(perturbedData);
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(perturbedEpsilonCount, perturbedData, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(perturbedEpsilonCount, perturbedData, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(perturbedData, domainSize);
 
 
         // 3. PFO.Estimate 估计
@@ -103,7 +104,8 @@ public class MechanismUtils {
 
         // 3. PFO.Aggregate 聚合
         Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbData);
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbData, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbData, domainSize);
+        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbData, domainSize);
 
 
         // 4. PFO.Estimate 估计

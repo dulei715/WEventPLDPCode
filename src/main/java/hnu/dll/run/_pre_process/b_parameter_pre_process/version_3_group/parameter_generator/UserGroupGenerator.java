@@ -3,7 +3,7 @@ package hnu.dll.run._pre_process.b_parameter_pre_process.version_3_group.paramet
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
 import hnu.dll._config.ConfigureUtils;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.utils.UserGroupUtils;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.utils.ParameterGroupUtils;
 import hnu.dll.utils.io.ListWriteUtils;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class UserGroupGenerator {
     public static void generateUserIDType(String basicPath) {
         String outputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "userTypeID.txt");
         Integer userTypeSize = ConfigureUtils.getDefaultUserTypeSize();
-        List<String> userTypeStringList = UserGroupUtils.getUserIDType(userTypeSize);
+        List<String> userTypeStringList = ParameterGroupUtils.getUserIDType(userTypeSize);
         ListWriteUtils.writeList(outputPath, userTypeStringList, ",");
     }
     @Deprecated
@@ -22,7 +22,7 @@ public class UserGroupGenerator {
         String userTypeIDInputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "userTypeID.txt");
         String outputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "user_to_type.txt");
 
-        List<String> userToTypeData = UserGroupUtils.getUserToTypeInAverage(userIDInputPath, userTypeIDInputPath);
+        List<String> userToTypeData = ParameterGroupUtils.getUserToTypeInAverage(userIDInputPath, userTypeIDInputPath);
         ListWriteUtils.writeList(outputPath, userToTypeData, ",");
     }
 

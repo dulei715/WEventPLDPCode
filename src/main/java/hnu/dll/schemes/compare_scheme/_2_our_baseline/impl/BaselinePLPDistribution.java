@@ -7,10 +7,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._2_our_baseline.BaselinePLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class BaselinePLPDistribution extends BaselinePLPMechanism {
     public BaselinePLPDistribution(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
@@ -45,6 +42,7 @@ public class BaselinePLPDistribution extends BaselinePLPMechanism {
         } else {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         }
 
         // recycle
@@ -52,7 +50,9 @@ public class BaselinePLPDistribution extends BaselinePLPMechanism {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
         return new CombinePair<>(flag, normalizedEstimation);

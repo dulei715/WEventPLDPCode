@@ -7,10 +7,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.LPMechanism;
 import hnu.dll.special_tools.FOUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class LDPPopulationDistribution extends LPMechanism {
     public LDPPopulationDistribution(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
@@ -44,6 +41,7 @@ public class LDPPopulationDistribution extends LPMechanism {
         } else {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         }
 
         // recycle
@@ -51,7 +49,9 @@ public class LDPPopulationDistribution extends LPMechanism {
         Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
         if (currentTime >= windowSize) {
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
         return new CombinePair<>(flag, normalizedEstimation);

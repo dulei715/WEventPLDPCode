@@ -1,16 +1,14 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.utils;
 
 import cn.edu.dll.basic.StringUtil;
-import cn.edu.dll.constant_values.ConstantValues;
-import cn.edu.dll.io.print.MyPrint;
-import hnu.dll._config.Constant;
 import hnu.dll.utils.io.ListReadUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
-public class UserGroupUtils {
+public class ParameterGroupUtils {
     public static List<String> getUserIDType(Integer userTypeSize) {
         List<String> userTypeStringList = new ArrayList<>();
         for (int i = 0; i < userTypeSize; i++) {
@@ -62,6 +60,17 @@ public class UserGroupUtils {
             ++index;
         }
         return userToIndexTypeData;
+    }
+
+    public static List<String> getLocationToIndex(String locationNameInputPath, Integer indexSize, Random random) {
+        String tempOutputString;
+        List<String> locationNameDataList = ListReadUtils.readAllDataList(locationNameInputPath, ",");
+        List<String> locationToIndexDataList = new ArrayList<>();
+        for (String locationName : locationNameDataList) {
+            tempOutputString = StringUtil.join(",", locationName, random.nextInt(indexSize));
+            locationToIndexDataList.add(tempOutputString);
+        }
+        return locationToIndexDataList;
     }
 
 

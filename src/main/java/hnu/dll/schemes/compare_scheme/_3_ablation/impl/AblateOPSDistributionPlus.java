@@ -7,10 +7,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._3_ablation.AblateOPSMechanism;
 import hnu.dll.special_tools.PFOUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class AblateOPSDistributionPlus extends AblateOPSMechanism {
     public AblateOPSDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
@@ -44,6 +41,7 @@ public class AblateOPSDistributionPlus extends AblateOPSMechanism {
         } else {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         }
 
         // recycle
@@ -51,7 +49,9 @@ public class AblateOPSDistributionPlus extends AblateOPSMechanism {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
         return new CombinePair<>(flag, normalizedEstimation);

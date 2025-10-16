@@ -9,16 +9,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Random;
 
-public class TrajectoryDataSetRun {
-    public static void runTrajectory(Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+public class DataSetRun {
+    public static void runDataSet(String basicPath, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        String basicPath = Constant.trajectoriesFilePath;
-        String dataTypeFileName = "cell.txt";
-        String userToIndexFileName = "user_to_Index.txt";
+//        String basicPath = Constant.trajectoriesFilePath;
+//        String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
         CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
         Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.basicDatasetRun(basicPath, dataTypeFileName,
+        DatasetSegmentRunUtils.basicDatasetRun(basicPath,
                 Constant.GroupParameterDirectoryName, Constant.PersonalizedParameterFileName,
                 singleBatchSize, random);
     }

@@ -4,6 +4,8 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
+import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
 import hnu.dll.schemes.main_scheme.impl.PLDPPopulationAbsorptionPlus;
 import hnu.dll.schemes.main_scheme.impl.PLDPPopulationDistributionPlus;
 import org.junit.Before;
@@ -82,6 +84,45 @@ public class MechanismTotalTest {
         for (int i = 0; i < timeSlotSize; i++) {
             System.out.println("time slot " + i);
             CombinePair<Boolean, Map<Integer, Double>> resultPair = pLPAPlus.updateNextPublicationResult(this.timeSlotDataArray[i]);
+            Boolean whetherPublishingNew = resultPair.getKey();
+            Map<Integer, Double> statistic = resultPair.getValue();
+            System.out.println(whetherPublishingNew);
+            MyPrint.showMap(statistic, ";");
+            MyPrint.showSplitLine("*", 150);
+        }
+    }
+
+    @Test
+    public void nonPersonalizedDistributionTest() {
+        Double privacyBudget = this.privacyBudgetList.get(this.privacyBudgetList.size() / 2);
+        Integer windowSize = this.windowSizeList.get(this.windowSizeList.size() / 2);
+        Integer userSize = this.privacyBudgetList.size();
+        LDPPopulationDistribution lPD = new LDPPopulationDistribution(this.dataType, privacyBudget, windowSize, userSize, this.random);
+//        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
+//        System.out.println(optimalSamplingSize);
+
+        Integer timeSlotSize = 100;
+        for (int i = 0; i < timeSlotSize; i++) {
+            System.out.println("time slot " + i);
+            CombinePair<Boolean, Map<Integer, Double>> resultPair = lPD.updateNextPublicationResult(this.timeSlotDataArray[i]);
+            Boolean whetherPublishingNew = resultPair.getKey();
+            Map<Integer, Double> statistic = resultPair.getValue();
+            System.out.println(whetherPublishingNew);
+            MyPrint.showMap(statistic, ";");
+            MyPrint.showSplitLine("*", 150);
+        }
+    }
+    @Test
+    public void ablateRePerturbDistributionPlusTest() {
+
+        AblateRePerturbDistributionPlus ablateRPDP = new AblateRePerturbDistributionPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, this.random);
+//        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
+//        System.out.println(optimalSamplingSize);
+
+        Integer timeSlotSize = 100;
+        for (int i = 0; i < timeSlotSize; i++) {
+            System.out.println("time slot " + i);
+            CombinePair<Boolean, Map<Integer, Double>> resultPair = ablateRPDP.updateNextPublicationResult(this.timeSlotDataArray[i]);
             Boolean whetherPublishingNew = resultPair.getKey();
             Map<Integer, Double> statistic = resultPair.getValue();
             System.out.println(whetherPublishingNew);

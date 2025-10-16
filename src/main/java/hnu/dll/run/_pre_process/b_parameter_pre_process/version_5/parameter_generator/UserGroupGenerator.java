@@ -2,22 +2,22 @@ package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_gen
 
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
-import cn.edu.dll.io.read.BasicRead;
 import hnu.dll._config.Constant;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.utils.UserGroupUtils;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.utils.ParameterGroupUtils;
 import hnu.dll.utils.io.ListReadUtils;
 import hnu.dll.utils.io.ListWriteUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class UserGroupGenerator {
 
     public static void generateUserToIndex(String basicPath) {
         String userIDInputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "user.txt");
         String outputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", Constant.UserToIndexFileName);
-        List<String> userToIndexData = UserGroupUtils.getUserToIndex(userIDInputPath);
+        List<String> userToIndexData = ParameterGroupUtils.getUserToIndex(userIDInputPath);
         ListWriteUtils.writeList(outputPath, userToIndexData, ",");
     }
 
@@ -26,7 +26,6 @@ public class UserGroupGenerator {
         String elementSplit = ",";
         String inputPath = StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", Constant.UserToIndexFileName);
         List<String> strList = ListReadUtils.readAllDataList(inputPath, elementSplit);
-        String keyStr, valueStr;
         String[] splitStr;
         for (String str : strList) {
             splitStr = str.split(elementSplit);
@@ -34,6 +33,8 @@ public class UserGroupGenerator {
         }
         return resultMap;
     }
+
+
 
     public static String getUserAbsolutePath(String basicPath) {
         return StringUtil.join(ConstantValues.FILE_SPLIT, basicPath, "basic_info", "user.txt");

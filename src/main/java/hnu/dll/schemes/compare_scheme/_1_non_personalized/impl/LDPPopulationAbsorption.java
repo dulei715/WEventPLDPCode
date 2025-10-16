@@ -9,10 +9,7 @@ import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class LDPPopulationAbsorption extends LPMechanism {
     protected AbsorptionLastInfo lastInfo;
@@ -31,6 +28,7 @@ public class LDPPopulationAbsorption extends LPMechanism {
         if (this.currentTime - lastTimeSlot <= nullifiedLength) {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
             Integer publicationSamplingSize = this.samplingSize * Math.min(absorbedLength, this.windowSize);
@@ -50,6 +48,7 @@ public class LDPPopulationAbsorption extends LPMechanism {
             } else {
                 flag = false;
                 normalizedEstimation = this.lastReleaseEstimation;
+                this.publicationSubMechanismHistoryQueue.offer(new HashSet());
             }
         }
 
@@ -58,7 +57,9 @@ public class LDPPopulationAbsorption extends LPMechanism {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
         return new CombinePair<>(flag, normalizedEstimation);

@@ -7,10 +7,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme.EnhancedPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
     public PLDPPopulationDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
@@ -45,6 +42,7 @@ public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
         } else {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
+            this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         }
 
         // recycle
@@ -52,7 +50,9 @@ public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
-            this.candidateUserIndexSet.addAll(publicationRecycle);
+            if (publicationRecycle != null) {
+                this.candidateUserIndexSet.addAll(publicationRecycle);
+            }
         }
 
 

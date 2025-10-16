@@ -121,7 +121,7 @@ public class PFOUtils {
         return aggregationWeightMap;
     }
 
-    public static Map<Double, Map<Integer, Double>> getAggregation(Map<Double, Integer> distinctBudgetMap, Map<Double, List<Integer>> obfuscatedMap, Integer domainSize) {
+    public static Map<Double, Map<Integer, Double>> getAggregation(Map<Double, List<Integer>> obfuscatedMap, Integer domainSize) {
         Double epsilon;
         List<Integer> obfuscatedReportList;
         Map<Double, Map<Integer, Double>> result = new TreeMap<>();
@@ -280,6 +280,10 @@ public class PFOUtils {
             for (Integer data : originalDataList) {
 //                obfuscatedData = frequencyOracle.perturb(data);
                 obfuscatedData = FOUtils.gRRSinglePerturb(epsilon, data, domainSize, random);
+                // for test
+//                if (obfuscatedData < 0) {
+//                    System.out.println("obfuscated data < 0" + "; obfuscatedData = " + obfuscatedData + "; originalData = " + data);
+//                }
                 obfuscatedDataList.add(obfuscatedData);
             }
             result.put(epsilon, obfuscatedDataList);
