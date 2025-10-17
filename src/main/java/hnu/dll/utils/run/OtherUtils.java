@@ -7,6 +7,11 @@ import hnu.dll._config.Constant;
 import java.io.File;
 
 public class OtherUtils {
+    /**
+     * 识别形如${number}.${datasetName}_result的文件
+     * @param superFile
+     * @return
+     */
     public static File getSubDatasetNameFile(File superFile) {
         File[] dirFiles = superFile.listFiles(new DirectoryFileFilter());
         String fileName;

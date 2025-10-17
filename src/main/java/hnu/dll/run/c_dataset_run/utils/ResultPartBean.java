@@ -143,10 +143,7 @@ public class ResultPartBean implements BeanInterface<ResultPartBean> {
         Double tempDouble = Double.valueOf(data[5]);
         Integer windowSize = (int)Math.round(tempDouble);
         Double bRE = Double.valueOf(data[6]);
-        Double bJSD = 0D;
-        if (data.length > 7) {
-            bJSD = Double.valueOf(data[7]);
-        }
+        Double bJSD = Double.valueOf(data[7]);
         return new ResultPartBean(name, batchID, batchSize, timeCost, privacyBudget, windowSize, bRE, bJSD);
     }
 

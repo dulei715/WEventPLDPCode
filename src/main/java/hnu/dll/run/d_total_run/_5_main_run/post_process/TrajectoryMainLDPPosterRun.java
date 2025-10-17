@@ -8,35 +8,22 @@ import hnu.dll._config.Constant;
 import hnu.dll.utils.run.CombineForEachRound;
 import hnu.dll.utils.run.RepeatUtils;
 
-public class TrajectoryContainingLDPPosterRun {
+public class TrajectoryMainLDPPosterRun {
     public static void main(String[] args) {
         CatchSignal catchSignal = new CatchSignal();
         catchSignal.startCatch();
 
         String datasetPath = Constant.TrajectoriesFilePath;
         String finalResultDirName = "1.trajectory_result";
+        String configDatasetFileHandleName = "trajectories";
 
-        String basicOutputFileString = "../4.result";
-        String roundPattern = "round_%d_containing_ldp";
+        String basicOutputFileString = "../1.main_ldp_result";
+        String roundPattern = "round_%d_main_ldp";
         String outputDir = Constant.GroupOutputDirName; // "group_output"
         String extractDir = "extract_result";
         String basicOutputPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, basicOutputFileString);
 
-//        int roundSize = 10;
-//        int roundSize = 2;
-//        int roundSize = 4;
-        String configDatasetFileHandleName = "trajectories";
         int roundSize = Integer.parseInt(ConfigureUtils.getFileHandleInfo(configDatasetFileHandleName, "combineRound"));
-
-
-//        for (int i = 1; i <= roundSize; i++) {
-//            // 3. 后处理
-//            String rawDataDir = StringUtil.join(ConstantValues.FILE_SPLIT, datasetPath, String.format(roundFormat, i), rawDirName);
-//            String extractResultDir = StringUtil.join(ConstantValues.FILE_SPLIT, datasetPath, String.format(roundFormat, i), extractDirName);
-//            String finalResultDir = StringUtil.join(ConstantValues.FILE_SPLIT, datasetPath, String.format(roundFormat, i), finalResultDirName);
-//            PostProcessUtils.combineAndExtractCombineResult(rawDataDir, extractResultDir);
-//            PostProcessUtils.furtherCombine(extractResultDir, finalResultDir);
-//        }
 
         // 3. 后处理
         CombineForEachRound.combineAllRound(datasetPath, finalResultDirName, roundSize, roundPattern, outputDir, extractDir);

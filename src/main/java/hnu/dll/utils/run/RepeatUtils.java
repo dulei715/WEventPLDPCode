@@ -22,13 +22,20 @@ import java.util.Set;
 public class RepeatUtils {
 
     private static final String[] nameStringArray = new String[]{
-            "NP", "BD", "BA", "PBD", "PBA"
-            , "PDBD", "PDBA"
-            , "PLBU"
+            "NP",
+            "LPD", "LPA",
+            "PLPD", "PLPA",
+            "AOPS-PLPD+", "AOPS-PLPA+",
+            "ARP-PLPD+", "ARP-PLPA+",
+            "PLPD+", "PLPA+"
     };
     private static final String[] nameStringArrayOnlyForTimeCost = new String[]{
-            "NP", "BD", "BA", "PBD", "PBA"
-            , "PDBD", "PDBA"
+            "NP",
+            "LPD", "LPA",
+            "PLPD", "PLPA",
+            "AOPS-PLPD+", "AOPS-PLPA+",
+            "ARP-PLPD+", "ARP-PLPA+",
+            "PLPD+", "PLPA+"
     };
 
     /**
@@ -179,10 +186,6 @@ public class RepeatUtils {
         File outputMethodDirFile;
         File[] roundDirs = inputDirFile.listFiles(roundDirectoryFileFilter);
 
-//        MyPrint.showSplitLine("-", 50);
-//        MyPrint.showArray(roundDirs);
-//        MyPrint.showSplitLine("-", 50);
-
         File tempInputMethodDirFile = OtherUtils.getSubDatasetNameFile(roundDirs[0]);
         String methodName = tempInputMethodDirFile.getName();
         outputMethodDirFile = new File(outputDir, methodName);
@@ -198,11 +201,6 @@ public class RepeatUtils {
         for (File paramFile : paramDirFileArray) {
             outputParamsFileNameSet.add(paramFile.getName());
         }
-//        for (File roundDir : roundDirs) {
-//            File methodDirFile =  OtherUtils.getSubDatasetNameFile(roundDir);
-//            roundDir.listFiles(directoryFilter);
-//            datasetRoundList.add(methodDirFile);
-//        }
         for (int i = 0; i < roundDirs.length; ++i) {
             if (i >= roundSize) {
                 break;
@@ -231,12 +229,6 @@ public class RepeatUtils {
         List<File> datasetRoundList = new ArrayList<>();
         Set<String> outputParamsFileNameSet = new HashSet<>();
         outputMethodDirFile = fillRoundAndParameterInfoAndGetOutputMethodDirFile(outputDir, inputDirFile, roundDirectoryFileFilter, outputDirFile, outputParamsFileNameSet, datasetRoundList, roundSize);
-
-//        MyPrint.showSplitLine("*", 150);
-//        System.out.println(inputDir);
-//        System.out.println(outputDir);
-//        MyPrint.showList(datasetRoundList);
-//        MyPrint.showSplitLine("+", 150);
 
         combineMainProcess(outputMethodDirFile, datasetRoundList, outputParamsFileNameSet);
     }
