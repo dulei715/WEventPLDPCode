@@ -142,8 +142,8 @@ public class Constant {
      *
      */
     public static final String NonPrivacySchemeName = "NonPrivacy-Scheme";
-    public static final String LPDSchemeName = "LBD-Scheme";
-    public static final String LPASchemeName = "LBA-Scheme";
+    public static final String LPDSchemeName = "LBD-Scheme"; // 应该是LPD-Scheme
+    public static final String LPASchemeName = "LBA-Scheme"; // 应该是LPA-Scheme
     public static final String BasePLPDSchemeName = "PLPD-Basic-Scheme";
     public static final String BasePLPASchemeName = "PLPA-Basic-Scheme";
     public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
