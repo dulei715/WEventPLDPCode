@@ -69,7 +69,7 @@
         <!-- backward的window size lower bound 和 window size lower bound 共用 -->
         <attribute name="GenPrivacyBudget">
 <!--            <value name="default">0.2,0.4,0.6,0.8,1.0</value>-->
-            <value name="default">0.5,1,1.5,2,2.5</value>
+            <value name="default">0.5,1.0,1.5,2,2.5</value>
             <value name="case1">0.5,1,1.5,2,2.5</value>
             <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
         </attribute>
@@ -95,7 +95,7 @@
             <single name="case1">1.5</single>
             <single name="1">2.5</single>
 <!--            <variance name="default">0.2,0.4,0.6,0.8,1.0</variance>-->
-            <variance name="default">0.5,1,1.5,2,2.5</variance>
+            <variance name="default">0.5,1.0,1.5,2,2.5</variance>
             <variance name="case1">0.5,1,1.5,2,2.5</variance>
             <variance name="1">0.1,0.325,0.55,0.775,1.0</variance>
         </attribute>
