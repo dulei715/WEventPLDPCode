@@ -14,6 +14,8 @@ import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.run2.utils.io.UserParameterIOUtils;
 import hnu.dll.run2.utils.structs.UserParameter;
+import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
+import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbAbsorptionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
 import hnu.dll.utils.file.FileUtils;
@@ -203,29 +205,30 @@ public class MechanismOnRealDatasetTest {
         }
     }
 
-    public void mechanismTest0() {
+    @Test
+    public void mechanismTest3() {
         Integer timeSlotSize = timeStampDataFiles.length;
         File file;
         List<Integer> dataList;
 
         System.out.println(dataType.size());
 
-        AblateRePerturbAbsorptionPlus ablateRPAPlus = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
+        //todo:对比一下
+        AblateOPSDistributionPlus ablateOPSDPlus = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             System.out.println(i);
             file = timeStampDataFiles[i];
             dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap, locationToStrMap);
 
-            CombinePair<Boolean, Map<Integer, Double>> booleanMapCombinePair = ablateRPAPlus.updateNextPublicationResult(dataList);
+            CombinePair<Boolean, Map<Integer, Double>> booleanMapCombinePair = ablateOPSDPlus.updateNextPublicationResult(dataList);
             System.out.println(booleanMapCombinePair.getKey());
             MyPrint.showMap(booleanMapCombinePair.getValue(), "; ");
 
             MyPrint.showSplitLine("*", 150);
-//            if (i == 10) {
-//                break;
-//            }
         }
     }
+
 
 }

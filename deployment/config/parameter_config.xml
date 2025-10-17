@@ -67,19 +67,18 @@
 <!--            <value name="default">1.0</value>-->
 <!--        </attribute>-->
         <!-- backward的window size lower bound 和 window size lower bound 共用 -->
-        <version_2>
-            <attribute name="GenPrivacyBudget">
-                <value name="default">0.2,0.4,0.6,0.8,1.0</value>
-                <value name="case1">0.5,1,1.5,2,2.5</value>
-                <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
-            </attribute>
-            <attribute name="GenWindowSize">
-                <value name="default">40,80,120,160,200</value>
-                <value name="case1">10,20,30,40,50</value>
-                <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
-            </attribute>
-        </version_2>
-<!--        <attribute name="TwoFixedPrivacyBudget">-->
+        <attribute name="GenPrivacyBudget">
+<!--            <value name="default">0.2,0.4,0.6,0.8,1.0</value>-->
+            <value name="default">0.5,1,1.5,2,2.5</value>
+            <value name="case1">0.5,1,1.5,2,2.5</value>
+            <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
+        </attribute>
+        <attribute name="GenWindowSize">
+            <value name="default">40,80,120,160,200</value>
+            <value name="case1">10,20,30,40,50</value>
+            <ratio name="default">0.2,0.2,0.2,0.2,0.2</ratio>
+        </attribute>
+        <!--        <attribute name="TwoFixedPrivacyBudget">-->
 <!--            <value name="default">1.0,0.6</value>-->
 <!--        </attribute>-->
 <!--        <attribute name="TwoFixedWindowSize">-->

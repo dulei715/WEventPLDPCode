@@ -38,7 +38,7 @@ public class ConfigureUtils {
     public static List[] getGenerationPrivacyBudgetList() {
         Document document = Constant.xmlConfigure.getDocument();
         Element candidateSet = document.getRootElement().element("candidateSet");
-        Element elementPrivacyBudget = (Element)candidateSet.selectNodes("./version_2/attribute[@name='GenPrivacyBudget']").get(0);
+        Element elementPrivacyBudget = (Element)candidateSet.selectNodes("./attribute[@name='GenPrivacyBudget']").get(0);
         String[] privacyBudgetValueStrArr = elementPrivacyBudget.element("value").getTextTrim().split(",");
         String[] privacyBudgetRatioStrArr = elementPrivacyBudget.element("ratio").getTextTrim().split(",");
         List<Double> valueList = new ArrayList<>(), ratioList = new ArrayList<>();
@@ -51,7 +51,7 @@ public class ConfigureUtils {
     public static List[] getGenerationWindowSizeList() {
         Document document = Constant.xmlConfigure.getDocument();
         Element candidateSet = document.getRootElement().element("candidateSet");
-        Element elementWindowSize = (Element)candidateSet.selectNodes("./version_2/attribute[@name='GenWindowSize']").get(0);
+        Element elementWindowSize = (Element)candidateSet.selectNodes("./attribute[@name='GenWindowSize']").get(0);
         String[] windowSizeValueStrArr = elementWindowSize.element("value").getTextTrim().split(",");
         String[] windowSizeRatioStrArr = elementWindowSize.element("ratio").getTextTrim().split(",");
         List<Integer> valueList = new ArrayList<>();
