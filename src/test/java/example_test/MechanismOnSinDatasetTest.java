@@ -33,7 +33,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class MechanismOnRealDatasetTest {
+public class MechanismOnSinDatasetTest {
 
     public Random random;
     public String finalResultDirName;
@@ -69,8 +69,8 @@ public class MechanismOnRealDatasetTest {
     // Test Trajectory
     @Before
     public void before() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        basicPath = Constant.TrajectoriesFilePath;
-        finalResultDirName = "1.trajectory_result";
+        basicPath = Constant.SinFilePath;
+        finalResultDirName = "4.sin_result";
         Integer randomIndex = 0;
         random = Constant.randomArray[randomIndex];
 
@@ -141,7 +141,7 @@ public class MechanismOnRealDatasetTest {
 
         System.out.println(dataType.size());
 
-        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             file = timeStampDataFiles[i];
@@ -170,7 +170,7 @@ public class MechanismOnRealDatasetTest {
 
         System.out.println(dataType.size());
 
-        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             file = timeStampDataFiles[i];
@@ -223,8 +223,8 @@ public class MechanismOnRealDatasetTest {
 
         NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
 
-        AblateOPSDistributionPlus ablateOPSDPlus = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        AblateOPSDistributionPlus ablateOPSDPlus = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Double baseError = 0D, tempBaseError;
         Double ablateOPSDPlusError = 0D, tempAblateOPSDPlusError;
         Map<Integer, Integer> realData = null;
@@ -351,9 +351,10 @@ public class MechanismOnRealDatasetTest {
 
             MyPrint.showSplitLine("*", 150);
 
-//            Thread.sleep(4000);
+            Thread.sleep(6000);
         }
     }
+
 
 
 }

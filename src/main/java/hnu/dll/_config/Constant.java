@@ -176,14 +176,18 @@ public class Constant {
      *  ------------------------------------------------------------------------------
      */
 
-    public static final List<Double> CandidatePrivacyBudgetList = Arrays.asList(
-            0.5, 1.0, 1.5, 2.0, 2.5
-    );
+//    public static final List<Double> CandidatePrivacyBudgetList = Arrays.asList(
+//            0.5, 1.0, 1.5, 2.0, 2.5
+//    );
+//
+//    public static final List<Integer> CandidateWindowSizeList = Arrays.asList(
+//            10, 20, 30, 40, 50
+//    );
 
-    public static final List<Integer> CandidateWindowSizeList = Arrays.asList(
-            10, 20, 30, 40, 50
-    );
-
+    /**
+     * population distribution 类 methods 独有的参数
+     */
+    public static final Integer PopulationLowerBound = 100;
 
     /**
      * file directories

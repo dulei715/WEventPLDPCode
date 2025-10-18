@@ -78,6 +78,12 @@ public class FOUtils {
         return totalVariance;
     }
 
+    public static Double getLDPApproximateVariance(Double privacyBudget, Integer userSize, Integer domainSize) {
+        BasicPair<Double, Double> tempPair;
+        Double tempParam = Math.exp(privacyBudget) - 1;
+        return (tempParam - 1 + domainSize) / (userSize * Math.pow(tempParam, 2));
+    }
+
     /**
      * 调用之前要保证前两个数据各项的对应关系
      * @param estimationList
@@ -94,9 +100,13 @@ public class FOUtils {
         return (differSum - pldpVarianceSum) / size;
     }
 
-    public static Double getGPRRError(Double privacyBudget, Integer sampleSize, Integer domainSize) {
+    public static Double getGRRError(Double privacyBudget, Integer sampleSize, Integer domainSize) {
         Double pldpVariance = getLDPVarianceSum(privacyBudget, sampleSize, domainSize);
         return pldpVariance / domainSize;
+    }
+
+    public static Double getGRRApproximateError(Double privacyBudget, Integer sampleSize, Integer domainSize) {
+        return getLDPApproximateVariance(privacyBudget, sampleSize, domainSize);
     }
 
 }

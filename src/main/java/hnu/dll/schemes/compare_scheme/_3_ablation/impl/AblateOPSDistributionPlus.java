@@ -10,8 +10,10 @@ import hnu.dll.special_tools.PFOUtils;
 import java.util.*;
 
 public class AblateOPSDistributionPlus extends AblateOPSMechanism {
-    public AblateOPSDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    protected Integer populationSizeLowerBound;
+    public AblateOPSDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class AblateOPSDistributionPlus extends AblateOPSMechanism {
 
         Boolean flag;
 
-        if (dissimilarity > error) {
+        if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
             normalizedEstimation = MechanismUtils.enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
