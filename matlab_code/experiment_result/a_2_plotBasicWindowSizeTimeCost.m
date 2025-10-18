@@ -71,8 +71,8 @@ y_ablate_ops_plpa = data(:,7);
 y_ablate_rp_plpd = data(:,8);
 y_ablate_rp_plpa = data(:,9);
 
-y_enhanced_plpd = data(:,9);
-y_enhanced_plpa = data(:,10);
+y_enhanced_plpd = data(:,10);
+y_enhanced_plpa = data(:,11);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,7 +1,8 @@
 function y = b_4_plotMainWindowSizeChangeForError(input_basicPath, output_basicPath)
 dataset_dirs = ["1.trajectory_result", "2.checkIn_result", "3.tlns_result", "4.sin_result", "5.log_result"];
-output_dataset_names = ["trajectory", "check_in", "tlns", "sin", "log"];
-default_budget = 0.6;
+output_dataset_names = ["trajectory", "check_in", "tlns", "sin", "log"];%
+%default_budget = 0.6;
+default_budget = 1.5;
 
 i = 0;
 metric_col_index = 9; % 
