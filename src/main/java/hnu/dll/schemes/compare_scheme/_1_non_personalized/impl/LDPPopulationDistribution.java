@@ -10,8 +10,10 @@ import hnu.dll.special_tools.FOUtils;
 import java.util.*;
 
 public class LDPPopulationDistribution extends LPMechanism {
-    public LDPPopulationDistribution(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
+    protected Integer populationSizeLowerBound;
+    public LDPPopulationDistribution(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, privacyBudget, windowSize, userSize, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     // M_{r,t}
@@ -21,13 +23,13 @@ public class LDPPopulationDistribution extends LPMechanism {
         Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.windowSize - 1);
         Integer publicationSamplingSize = remainingPublicationUserSize / 2;
 
-        Double error = FOUtils.getGPRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
+        Double error = FOUtils.getGRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
 
         Map<Integer, Double> normalizedEstimation;
 
         Boolean flag;
 
-        if (dissimilarity > error) {
+        if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
             List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);

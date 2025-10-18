@@ -6,7 +6,6 @@ import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.LPMechanism;
 import hnu.dll.special_tools.FOUtils;
-import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
 import java.util.*;
@@ -33,7 +32,7 @@ public class LDPPopulationAbsorption extends LPMechanism {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
             Integer publicationSamplingSize = this.samplingSize * Math.min(absorbedLength, this.windowSize);
 
-            Double error = FOUtils.getGPRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
+            Double error = FOUtils.getGRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
             if (dissimilarity > error) {
                 flag = true;
                 Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);

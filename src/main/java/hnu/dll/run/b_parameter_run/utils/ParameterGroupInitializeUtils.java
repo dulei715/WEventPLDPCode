@@ -28,20 +28,20 @@ public class ParameterGroupInitializeUtils {
         resultMap.put(Constant.NonPrivacySchemeName, nonPrivacyMechanism);
 
         // 1. non personalized schemes
-        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, staticPrivacyBudget, staticWindowSize, userSize, random);
+        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, staticPrivacyBudget, staticWindowSize, userSize, Constant.PopulationLowerBound, random);
         LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, staticPrivacyBudget, staticWindowSize, userSize, random);
         resultMap.put(Constant.LPDSchemeName, lPD);
         resultMap.put(Constant.LPASchemeName, lPA);
 
 
-        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
+        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
         BaselinePLPAbsorption basePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
         resultMap.put(Constant.BasePLPDSchemeName, basePLPD);
         resultMap.put(Constant.BasePLPASchemeName, basePLPA);
 
-        AblateOPSDistributionPlus AblateOPSPLPD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
+        AblateOPSDistributionPlus AblateOPSPLPD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
         AblateOPSAbsorptionPlus AblateOPSPLPA = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        AblateRePerturbDistributionPlus AblateRPPLPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
+        AblateRePerturbDistributionPlus AblateRPPLPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
         AblateRePerturbAbsorptionPlus AblateRPPLPA = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
         resultMap.put(Constant.AblateRPPLPDSchemeName, AblateRPPLPD);
         resultMap.put(Constant.AblateRPPLPASchemeName, AblateRPPLPA);

@@ -1,6 +1,7 @@
 package hnu.dll.metric;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.constant_values.ConstantValues;
 import cn.edu.dll.statistic.StatisticTool;
 
 import java.util.List;
@@ -17,6 +18,20 @@ public class Measurement {
             squareSum += Math.pow(sanitizedData.get(i) - rawData.get(i), 2);
         }
         return squareSum;
+    }
+    public static Double getMRE(List<Double> rawData, List<Double> sanitizedData) {
+        int size = rawData.size();
+        if (sanitizedData.size() != size) {
+            throw new RuntimeException("The lengths of rawData and sanitizedData are not equal!");
+        }
+        Double squareSum = 0D;
+        for (int i = 0; i < size; i++) {
+            if (Math.abs(rawData.get(i)) < ConstantValues.DOUBLE_PRECISION) {
+                continue;
+            }
+            squareSum += Math.abs((rawData.get(i) - sanitizedData.get(i)) / rawData.get(i));
+        }
+        return squareSum / size;
     }
 
     public static Double get2NormSquareErrorSum(List<List<Double>> rawDataList, List<List<Double>> sanitizedDataList) {

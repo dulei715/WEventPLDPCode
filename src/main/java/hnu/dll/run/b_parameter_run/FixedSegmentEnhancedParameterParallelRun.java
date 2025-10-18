@@ -87,7 +87,7 @@ public class FixedSegmentEnhancedParameterParallelRun implements Runnable {
         /**
          * 1. NonPersonalizedSchemes
          */
-        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, privacyBudget, windowSize, userSize, random);
+        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, privacyBudget, windowSize, userSize, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.LPDSchemeName, lPD);
         LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, privacyBudget, windowSize, userSize, random);
         this.mechanismMap.put(Constant.LPASchemeName, lPA);
@@ -103,7 +103,7 @@ public class FixedSegmentEnhancedParameterParallelRun implements Runnable {
         /**
          * 2. BaselineSchemes
          */
-        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, privacyBudgetList, windowSizeList, random);
+        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.BasePLPDSchemeName, baselinePLPD);
         BaselinePLPAbsorption baselinePLPA = new BaselinePLPAbsorption(dataType, privacyBudgetList, windowSizeList, random);
         this.mechanismMap.put(Constant.BasePLPASchemeName, baselinePLPA);
@@ -111,7 +111,7 @@ public class FixedSegmentEnhancedParameterParallelRun implements Runnable {
         /**
          * AblationSchemes
          */
-        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, privacyBudgetList, windowSizeList, random);
+        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.AblateOPSPLPDSchemeName, ablateOPSD);
         AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, privacyBudgetList, windowSizeList, random);
         this.mechanismMap.put(Constant.AblateOPSPLPASchemeName, ablateOPSA);

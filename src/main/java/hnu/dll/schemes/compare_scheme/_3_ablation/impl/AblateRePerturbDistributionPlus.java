@@ -10,8 +10,10 @@ import hnu.dll.special_tools.PFOUtils;
 import java.util.*;
 
 public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
-    public AblateRePerturbDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    protected Integer populationSizeLowerBound;
+    public AblateRePerturbDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
 
         Boolean flag;
 
-        if (dissimilarity > error) {
+        if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
             normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();

@@ -3,6 +3,7 @@ package hnu.dll.schemes.main_scheme.impl;
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll.schemes._basic_struct.PopulationDistributionInterface;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme.EnhancedPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
@@ -10,8 +11,11 @@ import hnu.dll.special_tools.PFOUtils;
 import java.util.*;
 
 public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
-    public PLDPPopulationDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    protected Integer populationSizeLowerBound;
+
+    public PLDPPopulationDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     // M_{t,r}
@@ -33,7 +37,7 @@ public class PLDPPopulationDistributionPlus extends EnhancedPLPMechanism {
 
         Boolean flag;
 
-        if (dissimilarity > error) {
+        if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
             normalizedEstimation = MechanismUtils.enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();

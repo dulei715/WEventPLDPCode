@@ -10,8 +10,10 @@ import hnu.dll.special_tools.PFOUtils;
 import java.util.*;
 
 public class BaselinePLPDistribution extends BaselinePLPMechanism {
-    public BaselinePLPDistribution(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    protected Integer populationSizeLowerBound;
+    public BaselinePLPDistribution(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     // M_{r,t}
@@ -33,7 +35,7 @@ public class BaselinePLPDistribution extends BaselinePLPMechanism {
 
         Boolean flag;
 
-        if (dissimilarity > error) {
+        if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
             normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();

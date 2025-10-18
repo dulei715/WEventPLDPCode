@@ -114,7 +114,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
          * 1. NonPersonalizedSchemes
          */
         Integer userSize = userParameterList.size();
-        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, defaultPrivacyBudget, defaultWindowSize, userSize, random);
+        LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, defaultPrivacyBudget, defaultWindowSize, userSize, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.LPDSchemeName, lPD);
         LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, defaultPrivacyBudget, defaultWindowSize, userSize, random);
         this.mechanismMap.put(Constant.LPASchemeName, lPA);
@@ -125,7 +125,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
          */
         List<Double> personalizedPrivacyBudgetList = UserParameter.extractPrivacyBudgetList(userParameterList);
         List<Integer> personalizedWindowSizeList = UserParameter.extractWindowSizeList(userParameterList);
-        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.BasePLPDSchemeName, baselinePLPD);
         BaselinePLPAbsorption baselinePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.BasePLPASchemeName, baselinePLPA);
@@ -133,11 +133,11 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         /**
          * 3. AblationSchemes
          */
-        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.AblateOPSPLPDSchemeName, ablateOPSD);
         AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.AblateOPSPLPASchemeName, ablateOPSA);
-        AblateRePerturbDistributionPlus ablateRPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        AblateRePerturbDistributionPlus ablateRPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.AblateRPPLPDSchemeName, ablateRPD);
         AblateRePerturbAbsorptionPlus ablateRPA = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.AblateRPPLPASchemeName, ablateRPA);
@@ -145,7 +145,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         /**
          * 4. EnhancedSchemes
          */
-        PLDPPopulationDistributionPlus enhancedPLPD = new PLDPPopulationDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        PLDPPopulationDistributionPlus enhancedPLPD = new PLDPPopulationDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         this.mechanismMap.put(Constant.EnhancedPLPDSchemeName, enhancedPLPD);
         PLDPPopulationAbsorptionPlus enhancedPLPA = new PLDPPopulationAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         this.mechanismMap.put(Constant.EnhancedPLPASchemeName, enhancedPLPA);
