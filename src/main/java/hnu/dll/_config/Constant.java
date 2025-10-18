@@ -187,7 +187,7 @@ public class Constant {
     /**
      * population distribution 类 methods 独有的参数
      */
-    public static final Integer PopulationLowerBound = 100;
+    public static final Integer PopulationLowerBound = 5;
 
     /**
      * file directories

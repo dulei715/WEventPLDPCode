@@ -504,8 +504,8 @@ public class MechanismOnTrajectoryDatasetTest {
 //        BaselinePLPAbsorption basePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
 //        PLDPPopulationAbsorptionPlus pLPAPlus = new PLDPPopulationAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
 
-//        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.5, 0.5, 2.5));
-        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.2, 0.6, 2.6));
+        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.5, 0.5, 2.5));
+//        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.2, 0.6, 2.6));
         Integer trajectoryUserSize = 10269;
         List<LDPPopulationDistribution> lpdMechanismList = new ArrayList<>(budgetChangeList.size());
         List<Double> finalError = new ArrayList<>(budgetChangeList.size());
@@ -555,7 +555,7 @@ public class MechanismOnTrajectoryDatasetTest {
         NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
 
 
-        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.2, 0.2, 2.0));
+        List<Double> budgetChangeList = Arrays.asList(BasicArrayUtil.getIncreaseDoubleNumberArray(0.5, 0.5, 2.5));
         Integer trajectoryUserSize = 10269;
         List<LDPPopulationAbsorption> lpaMechanismList = new ArrayList<>(budgetChangeList.size());
         List<Double> finalError = new ArrayList<>(budgetChangeList.size());
