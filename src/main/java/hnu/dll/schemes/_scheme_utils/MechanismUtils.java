@@ -42,7 +42,8 @@ public class MechanismUtils {
 
             newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
             tempError = PFOUtils.getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
-//            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
+            //todo: for test
+            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;
