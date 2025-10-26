@@ -1,6 +1,7 @@
 package hnu.dll.schemes._scheme_utils;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
@@ -44,6 +45,7 @@ public class MechanismUtils {
             tempError = PFOUtils.getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
             //todo: for test
             System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
+//            MyPrint.showList(tempBudgetList, "; ");
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;

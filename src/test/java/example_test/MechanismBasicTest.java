@@ -2,6 +2,7 @@ package example_test;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.constant_values.ConstantValues;
+import cn.edu.dll.differential_privacy.ldp.consistent.Normalization;
 import cn.edu.dll.differential_privacy.ldp.frequency_oracle.foImp.GeneralizedRandomizedResponse;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.BasicPair;
@@ -13,6 +14,7 @@ import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 import hnu.dll.utils.TestUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -345,6 +347,9 @@ public class MechanismBasicTest {
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
         System.out.println("estimationMap:");
         MyPrint.showMap(estimationMap);
+        System.out.println("normalizedEstimationList:");
+        List<Double> normalizedList = Normalization.normalizedBySimplexProjection(new ArrayList<>(estimationMap.values()));
+        MyPrint.showList(normalizedList, "; ");
         MyPrint.showSplitLine("*", 150);
 
         Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
