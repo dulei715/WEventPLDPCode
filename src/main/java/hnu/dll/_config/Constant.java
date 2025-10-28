@@ -95,23 +95,6 @@ public class Constant {
 
 
 
-
-
-
-
-
-
-    public static final Double PRIVACY_LOWER_BOUND = 0.1;
-    public static final Double PRIVACY_UPPER_BOUND = 10D;
-    public static final Integer WINDOW_LOWER_BOUND = 20;
-    public static final Integer WINDOW_UPPER_BOUND = 100;
-
-
-
-    public static Double MIN_UNION_PRIVACY_BUDGET = 0.1D;
-
-
-
     public static Double Sample_Ratio_For_Picture = 0.01;
 
 
@@ -156,19 +139,8 @@ public class Constant {
 
 
 
-    // for trajectory
-    public static final Integer SampleTrajectoryGridSideLength = 300;
-    //    public static final Integer TrajectorySamplingSize = 10000;
-    public static final Integer TrajectorySamplingSize = 1000;
-    //    public static final Integer TrajectorySamplingSize = 10;
-    // 这里的轨迹长度是指轨迹中关注点的数量
-    public static final Integer TrajectorySamplingLengthLowerBound = 2;
-    public static final Integer TrajectorySamplingLengthUpperBound = 200;
 
 
-    public static final Integer generatingTrajectorySizeFromSynthetic = TrajectorySamplingSize;
-
-    public static final List<Integer> CandidateSectorSizeListForNYC = Arrays.asList(5, 10, 15, 20);
 
 
     /**

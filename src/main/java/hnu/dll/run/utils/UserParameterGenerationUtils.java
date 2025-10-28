@@ -1,9 +1,6 @@
-package hnu.dll.run2.utils;
+package hnu.dll.run.utils;
 
-import cn.edu.dll.basic.BasicArrayUtil;
-import cn.edu.dll.basic.RandomUtil;
-import cn.edu.dll.struct.pair.CombineTriple;
-import hnu.dll.run2.utils.structs.UserParameter;
+import hnu.dll.run.utils.structs.UserParameter;
 
 import java.util.ArrayList;
 import java.util.List;

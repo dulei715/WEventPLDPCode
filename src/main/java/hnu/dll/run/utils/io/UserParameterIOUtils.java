@@ -1,10 +1,9 @@
-package hnu.dll.run2.utils.io;
+package hnu.dll.run.utils.io;
 
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.io.read.BasicRead;
 import cn.edu.dll.io.write.BasicWrite;
-import cn.edu.dll.reflect.BeanUtils;
-import hnu.dll.run2.utils.structs.UserParameter;
+import hnu.dll.run.utils.structs.UserParameter;
 
 import java.util.ArrayList;
 import java.util.List;

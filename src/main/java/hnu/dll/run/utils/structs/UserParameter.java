@@ -1,4 +1,4 @@
-package hnu.dll.run2.utils.structs;
+package hnu.dll.run.utils.structs;
 
 import java.util.ArrayList;
 import java.util.List;

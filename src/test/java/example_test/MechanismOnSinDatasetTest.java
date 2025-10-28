@@ -13,8 +13,8 @@ import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_gene
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
-import hnu.dll.run2.utils.io.UserParameterIOUtils;
-import hnu.dll.run2.utils.structs.UserParameter;
+import hnu.dll.run.utils.io.UserParameterIOUtils;
+import hnu.dll.run.utils.structs.UserParameter;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPAbsorption;
 import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPDistribution;
