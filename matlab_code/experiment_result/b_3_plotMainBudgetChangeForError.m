@@ -5,7 +5,7 @@ default_window_size = 120;
 
 i = 0;
 metric_col_index = 9; % metric_name = "AMRE";
-metric_name = "AMRE";
+metric_name = "AMSE";
 shrink_ratio = 1;
 metric_whether_log = 1;
 for dir_name = dataset_dirs
