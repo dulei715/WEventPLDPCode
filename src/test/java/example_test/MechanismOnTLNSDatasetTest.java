@@ -18,13 +18,13 @@ import hnu.dll.run.utils.io.UserParameterIOUtils;
 import hnu.dll.run.utils.structs.UserParameter;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPAbsorption;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
-import hnu.dll.schemes.main_scheme.impl.PLDPPopulationAbsorptionPlus;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
 import hnu.dll.utils.BasicUtils;
 import hnu.dll.utils.file.FileUtils;
 import hnu.dll.utils.filters.NumberTxtFilter;
@@ -143,7 +143,7 @@ public class MechanismOnTLNSDatasetTest {
 
         System.out.println(dataType.size());
 
-        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        BasicPLPDistribution ablateRPDPlus = new BasicPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             file = timeStampDataFiles[i];
@@ -172,7 +172,7 @@ public class MechanismOnTLNSDatasetTest {
 
         System.out.println(dataType.size());
 
-        AblateRePerturbDistributionPlus ablateRPDPlus = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        BasicPLPDistribution ablateRPDPlus = new BasicPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             file = timeStampDataFiles[i];
@@ -197,7 +197,7 @@ public class MechanismOnTLNSDatasetTest {
 
         System.out.println(dataType.size());
 
-        AblateRePerturbAbsorptionPlus ablateRPAPlus = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        BasicPLPAbsorption ablateRPAPlus = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             System.out.println(i);
@@ -226,7 +226,7 @@ public class MechanismOnTLNSDatasetTest {
         NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
 
         AblateOPSDistributionPlus ablateOPSDPlus = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
-        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        DirectPLPDistribution basePLPD = new DirectPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Double baseError = 0D, tempBaseError;
         Double ablateOPSDPlusError = 0D, tempAblateOPSDPlusError;
         Map<Integer, Integer> realData = null;
@@ -290,8 +290,8 @@ public class MechanismOnTLNSDatasetTest {
         NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
 
         AblateOPSAbsorptionPlus ablateOPSAPlus = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        BaselinePLPAbsorption basePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        PLDPPopulationAbsorptionPlus pLPAPlus = new PLDPPopulationAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        UnionPLDPPopulationAbsorption pLPAPlus = new UnionPLDPPopulationAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
 
         Double baseError = 0D, tempBaseError;
         Double ablateOPSError = 0D, tempAblateOPSError;

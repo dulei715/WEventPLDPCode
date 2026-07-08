@@ -6,13 +6,12 @@ import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbsorption;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPAbsorption;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
-import hnu.dll.utils.io.ListReadUtils;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
 
 import java.util.*;
 
@@ -34,17 +33,17 @@ public class ParameterGroupInitializeUtils {
         resultMap.put(Constant.LPASchemeName, lPA);
 
 
-        BaselinePLPDistribution basePLPD = new BaselinePLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
-        BaselinePLPAbsorption basePLPA = new BaselinePLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        resultMap.put(Constant.BasePLPDSchemeName, basePLPD);
-        resultMap.put(Constant.BasePLPASchemeName, basePLPA);
+        DirectPLPDistribution basePLPD = new DirectPLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
+        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
+        resultMap.put(Constant.DirectPLPDSchemeName, basePLPD);
+        resultMap.put(Constant.DirectPLPASchemeName, basePLPA);
 
         AblateOPSDistributionPlus AblateOPSPLPD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
         AblateOPSAbsorptionPlus AblateOPSPLPA = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        AblateRePerturbDistributionPlus AblateRPPLPD = new AblateRePerturbDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
-        AblateRePerturbAbsorptionPlus AblateRPPLPA = new AblateRePerturbAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        resultMap.put(Constant.AblateRPPLPDSchemeName, AblateRPPLPD);
-        resultMap.put(Constant.AblateRPPLPASchemeName, AblateRPPLPA);
+        BasicPLPDistribution AblateRPPLPD = new BasicPLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
+        BasicPLPAbsorption AblateRPPLPA = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
+        resultMap.put(Constant.BasicPLPDSchemeName, AblateRPPLPD);
+        resultMap.put(Constant.BasicPLPASchemeName, AblateRPPLPA);
 
         return resultMap;
     }

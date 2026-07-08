@@ -10,6 +10,7 @@ import hnu.dll.structure.AbsorptionLastInfo;
 
 import java.util.*;
 
+@Deprecated
 public class AblateOPSAbsorptionPlus extends AblateOPSMechanism {
     protected AbsorptionLastInfo lastInfo;
     public AblateOPSAbsorptionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
@@ -69,6 +70,6 @@ public class AblateOPSAbsorptionPlus extends AblateOPSMechanism {
 
     @Override
     public String getSimpleName() {
-        return "AblateOPS-PLPA+";
+        return "AblateOPS-PLPA+(@Deprecated)";
     }
 }

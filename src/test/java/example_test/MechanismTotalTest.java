@@ -6,12 +6,11 @@ import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll._config.Constant;
 import hnu.dll.metric.Measurement;
-import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
-import hnu.dll.schemes.main_scheme.impl.PLDPPopulationAbsorptionPlus;
-import hnu.dll.schemes.main_scheme.impl.PLDPPopulationDistributionPlus;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationDistribution;
 import hnu.dll.utils.BasicUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -63,7 +62,7 @@ public class MechanismTotalTest {
 
     @Test
     public void pLPDTest() {
-        PLDPPopulationDistributionPlus pLPDPlus = new PLDPPopulationDistributionPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, this.random);
+        UnionPLDPPopulationDistribution pLPDPlus = new UnionPLDPPopulationDistribution(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, this.random);
         pLPDPlus.initializeOptimalParameters();
 //        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
 //        System.out.println(optimalSamplingSize);
@@ -83,7 +82,7 @@ public class MechanismTotalTest {
 
     @Test
     public void pLPATest() {
-        PLDPPopulationAbsorptionPlus pLPAPlus = new PLDPPopulationAbsorptionPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, this.random);
+        UnionPLDPPopulationAbsorption pLPAPlus = new UnionPLDPPopulationAbsorption(this.dataType, this.privacyBudgetList, this.windowSizeList, this.random);
         pLPAPlus.initializeOptimalParameters();
 //        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
 //        System.out.println(optimalSamplingSize);
@@ -123,7 +122,7 @@ public class MechanismTotalTest {
     @Test
     public void ablateRePerturbDistributionPlusTest() {
 
-        AblateRePerturbDistributionPlus ablateRPDP = new AblateRePerturbDistributionPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, this.random);
+        BasicPLPDistribution ablateRPDP = new BasicPLPDistribution(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, this.random);
 //        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
 //        System.out.println(optimalSamplingSize);
 

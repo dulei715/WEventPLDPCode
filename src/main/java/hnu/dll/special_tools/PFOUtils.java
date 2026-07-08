@@ -260,6 +260,8 @@ public class PFOUtils {
         return (differSum - pldpVarianceSum) / size;
     }
 
+
+
     /**
      * 8. 扰动
      * @param originalDataMap

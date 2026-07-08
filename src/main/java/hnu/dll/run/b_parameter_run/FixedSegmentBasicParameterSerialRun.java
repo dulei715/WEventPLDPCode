@@ -12,14 +12,14 @@ import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbsorption;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPAbsorption;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.impl.BaselinePLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateRePerturbDistributionPlus;
-import hnu.dll.schemes.main_scheme.impl.PLDPPopulationAbsorptionPlus;
-import hnu.dll.schemes.main_scheme.impl.PLDPPopulationDistributionPlus;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationDistribution;
 
 import java.io.File;
 import java.util.*;
@@ -92,18 +92,18 @@ public class FixedSegmentBasicParameterSerialRun {
         /**
          * 2. BaselineSchemes
          */
-        BaselinePLPDistribution baselinePLPD = new BaselinePLPDistribution(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
-        this.mechanismMap.put(Constant.BasePLPDSchemeName, baselinePLPD);
-        BaselinePLPAbsorption baselinePLPA = new BaselinePLPAbsorption(dataType, privacyBudgetList, windowSizeList, random);
-        this.mechanismMap.put(Constant.BasePLPASchemeName, baselinePLPA);
+        DirectPLPDistribution baselinePLPD = new DirectPLPDistribution(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
+        this.mechanismMap.put(Constant.DirectPLPDSchemeName, baselinePLPD);
+        DirectPLPAbsorption baselinePLPA = new DirectPLPAbsorption(dataType, privacyBudgetList, windowSizeList, random);
+        this.mechanismMap.put(Constant.DirectPLPASchemeName, baselinePLPA);
 
         /**
          * AblationSchemes
          */
-        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
-        this.mechanismMap.put(Constant.AblateOPSPLPDSchemeName, ablateOPSD);
-        AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, privacyBudgetList, windowSizeList, random);
-        this.mechanismMap.put(Constant.AblateOPSPLPASchemeName, ablateOPSA);
+//        AblateOPSDistributionPlus ablateOPSD = new AblateOPSDistributionPlus(dataType, privacyBudgetList, windowSizeList, Constant.PopulationLowerBound, random);
+//        this.mechanismMap.put(Constant.AblateOPSPLPDSchemeName, ablateOPSD);
+//        AblateOPSAbsorptionPlus ablateOPSA = new AblateOPSAbsorptionPlus(dataType, privacyBudgetList, windowSizeList, random);
+//        this.mechanismMap.put(Constant.AblateOPSPLPASchemeName, ablateOPSA);
     }
 
 
@@ -158,29 +158,29 @@ public class FixedSegmentBasicParameterSerialRun {
                 /**
                  * 2. Baseline mechanisms
                  */
-                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((BaselinePLPDistribution)mechanismMap.get(Constant.BasePLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((DirectPLPDistribution)mechanismMap.get(Constant.DirectPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
-                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((BaselinePLPAbsorption)mechanismMap.get(Constant.BasePLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
-                experimentResultList.add(tempResult);
-
-
-                tempResult = _3_1_PersonalizedWEventLDPAblateOPSMechanismRun.runBatch((AblateOPSDistributionPlus)mechanismMap.get(Constant.AblateOPSPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
-                experimentResultList.add(tempResult);
-
-                tempResult = _3_1_PersonalizedWEventLDPAblateOPSMechanismRun.runBatch((AblateOPSAbsorptionPlus)mechanismMap.get(Constant.AblateOPSPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
-                experimentResultList.add(tempResult);
-
-                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((AblateRePerturbDistributionPlus)mechanismMap.get(Constant.AblateRPPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
-                experimentResultList.add(tempResult);
-
-                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((AblateRePerturbAbsorptionPlus)mechanismMap.get(Constant.AblateRPPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((DirectPLPAbsorption)mechanismMap.get(Constant.DirectPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 
+//                tempResult = _3_1_PersonalizedWEventLDPAblateOPSMechanismRun.runBatch((AblateOPSDistributionPlus)mechanismMap.get(Constant.AblateOPSPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+//                experimentResultList.add(tempResult);
+//
+//                tempResult = _3_1_PersonalizedWEventLDPAblateOPSMechanismRun.runBatch((AblateOPSAbsorptionPlus)mechanismMap.get(Constant.AblateOPSPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+//                experimentResultList.add(tempResult);
 
-                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((PLDPPopulationDistributionPlus)mechanismMap.get(Constant.EnhancedPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((BasicPLPDistribution)mechanismMap.get(Constant.BasicPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
-                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((PLDPPopulationAbsorptionPlus)mechanismMap.get(Constant.EnhancedPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+
+                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((BasicPLPAbsorption)mechanismMap.get(Constant.BasicPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+                experimentResultList.add(tempResult);
+
+
+
+                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((UnionPLDPPopulationDistribution)mechanismMap.get(Constant.UnionPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                experimentResultList.add(tempResult);
+                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((UnionPLDPPopulationAbsorption)mechanismMap.get(Constant.UnionPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
                 // write result
                 outputFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicOutputPathDir, "batch_"+batchID+".txt");

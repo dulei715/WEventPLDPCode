@@ -1,18 +1,20 @@
-package hnu.dll.schemes.compare_scheme._3_ablation.impl;
+package hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.schemes.compare_scheme._3_ablation.AblateRePerturbMechanism;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.UnionEnhancedPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
 import java.util.*;
 
-public class AblateRePerturbAbsorptionPlus extends AblateRePerturbMechanism {
+@Deprecated
+public class UnionPLDPPopulationAbsorption extends UnionEnhancedPLPMechanism {
     protected AbsorptionLastInfo lastInfo;
-    public AblateRePerturbAbsorptionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public UnionPLDPPopulationAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
     }
@@ -43,7 +45,7 @@ public class AblateRePerturbAbsorptionPlus extends AblateRePerturbMechanism {
             if (dissimilarity > error) {
                 flag = true;
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-                normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+                normalizedEstimation = MechanismUtils.enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
                 this.lastReleaseEstimation = normalizedEstimation;
                 this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
                 this.lastInfo.update(this.currentTime, publicationSamplingSize);
@@ -69,7 +71,10 @@ public class AblateRePerturbAbsorptionPlus extends AblateRePerturbMechanism {
     }
 
     @Override
+//    public String getSimpleName() {
+//        return "PLPA+";
+//    }
     public String getSimpleName() {
-        return "AblateRP-PLPA+";
+        return Constant.UnionPLPASchemeName;
     }
 }

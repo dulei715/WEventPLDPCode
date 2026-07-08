@@ -9,6 +9,7 @@ import hnu.dll.special_tools.PFOUtils;
 
 import java.util.*;
 
+@Deprecated
 public class AblateOPSDistributionPlus extends AblateOPSMechanism {
     protected Integer populationSizeLowerBound;
     public AblateOPSDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
@@ -61,6 +62,6 @@ public class AblateOPSDistributionPlus extends AblateOPSMechanism {
 
     @Override
     public String getSimpleName() {
-        return "AblateOPS-PLPD+";
+        return "AblateOPS-PLPD+(@Deprecated)";
     }
 }

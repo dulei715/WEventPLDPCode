@@ -1,29 +1,32 @@
-package hnu.dll.schemes.compare_scheme._2_our_baseline;
+package hnu.dll.schemes.main_scheme._1_simple_scheme;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
+import hnu.dll.schemes._scheme_utils.BasicSchemeUtils;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
+import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class BaselinePLPMechanism extends PersonalizedMechanism {
+public abstract class BasicPLPMechanism extends PersonalizedMechanism {
     protected Random random;
 
     protected int currentTime;
     protected List<Double> originalPrivacyBudgetList;
+    protected List<Double> newPrivacyBudgetList;
     protected List<Integer> windowSizeList;
     protected List<Integer> domainIndexList;
     protected Integer domainSize;
     protected Integer userSize;
 
-    protected Integer chosenWindowSize;
-    protected Integer chosenSamplingSize;
+    protected OptimalSelectionStruct optimalSelectionStruct;
+    protected Integer optimalWindowSize;
 
     protected Set<Integer> candidateUserIndexSet;
 
@@ -50,7 +53,7 @@ public abstract class BaselinePLPMechanism extends PersonalizedMechanism {
         return domainIndexList;
     }
 
-    public BaselinePLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public BasicPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
@@ -69,21 +72,39 @@ public abstract class BaselinePLPMechanism extends PersonalizedMechanism {
         initializeOptimalParameters();
     }
 
+//    protected abstract void setCalculationPrivacyBudgetList();
+//
+//    protected abstract void setPublicationPrivacyBudgetList();
+
 
     public List<Double> getOriginalPrivacyBudgetList() {
         return originalPrivacyBudgetList;
     }
 
+    public List<Double> getNewPrivacyBudgetList() {
+        return newPrivacyBudgetList;
+    }
 
-    public Integer getChosenWindowSize() {
-        return this.chosenWindowSize;
+    public Integer getOptimalWindowSize() {
+        return this.optimalWindowSize;
     }
 
     /**
-     * 关于window 和 sampling size的选择信息
+     * 关于Optimal Population Selection相关信息
      * @return
      */
-
+    public OptimalSelectionStruct getOptimalSelectionStruct() {
+        return optimalSelectionStruct;
+    }
+    public Double getOptimalError() {
+        return this.optimalSelectionStruct.getError();
+    }
+    public Integer getOptimalSamplingSize() {
+        return this.optimalSelectionStruct.getOptimalSamplingSize();
+    }
+    public List<Double> getOptimalNewBudgetList() {
+        return this.optimalSelectionStruct.getNewPrivacyBudgetList();
+    }
 
     public List<Integer> getWindowSizeList() {
         return windowSizeList;
@@ -98,21 +119,22 @@ public abstract class BaselinePLPMechanism extends PersonalizedMechanism {
      */
     public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
-        this.chosenWindowSize = BasicArrayUtil.getIntegerMaxValue(this.windowSizeList);
-        // Integer 除法保证其向下取整
-        this.chosenSamplingSize = this.userSize / (2 * this.chosenWindowSize);
+        List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
+        this.optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
+        this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
+        this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
         // 这里初始化历史窗口大小为 w_opt - 1
-        this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.chosenWindowSize);
-        this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.chosenWindowSize);
+        this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
+        this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
     }
 
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 
         ++this.currentTime;
-        // M_{t,s}
+        // M_{s,t}
         Double dissimilarity = samplingSubMechanism(nextDataIndexList);
 
-        // M_{t,r}
+        // M_{r,t}
         return reportingSubMechanism(nextDataIndexList, dissimilarity);
     }
 
@@ -123,11 +145,12 @@ public abstract class BaselinePLPMechanism extends PersonalizedMechanism {
      * @return
      */
     protected Double samplingSubMechanism(List<Integer> nextDataIndexList) {
-        Set<Integer> samplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, this.chosenSamplingSize, random);
+        Integer optimalSamplingSize = this.getOptimalSamplingSize();
+        Set<Integer> samplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, optimalSamplingSize, random);
         this.candidateUserIndexSet.removeAll(samplingUserIndexSetForCalculation);
         this.samplingSubMechanismHistoryQueue.offer(samplingUserIndexSetForCalculation);
         // 获取当前 privacy budget 列表
-        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForCalculation);
+        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForCalculation);
         // 获取当前 data 列表
         List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForCalculation);
 

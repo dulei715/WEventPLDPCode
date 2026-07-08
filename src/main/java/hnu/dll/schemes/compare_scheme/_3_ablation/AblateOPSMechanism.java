@@ -13,6 +13,7 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
+@Deprecated
 public abstract class AblateOPSMechanism extends PersonalizedMechanism {
     protected Random random;
 

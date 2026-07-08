@@ -1,10 +1,9 @@
-package hnu.dll.schemes.main_scheme;
+package hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
-import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.*;
 import hnu.dll.special_tools.PFOUtils;
@@ -14,7 +13,8 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
+@Deprecated
+public abstract class UnionEnhancedPLPMechanism extends PersonalizedMechanism {
     protected Random random;
 
     protected int currentTime;
@@ -48,7 +48,7 @@ public abstract class EnhancedPLPMechanism extends PersonalizedMechanism {
         return distinctWindowSizeList;
     }
 
-    public EnhancedPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public UnionEnhancedPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);

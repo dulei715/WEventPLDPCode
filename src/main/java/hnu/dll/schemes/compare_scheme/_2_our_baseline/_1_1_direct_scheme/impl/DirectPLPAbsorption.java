@@ -1,18 +1,19 @@
-package hnu.dll.schemes.main_scheme.impl;
+package hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.schemes.main_scheme.EnhancedPLPMechanism;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.DirectPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
 import java.util.*;
 
-public class PLDPPopulationAbsorptionPlus extends EnhancedPLPMechanism {
+public class DirectPLPAbsorption extends DirectPLPMechanism {
     protected AbsorptionLastInfo lastInfo;
-    public PLDPPopulationAbsorptionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public DirectPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
     }
@@ -21,20 +22,19 @@ public class PLDPPopulationAbsorptionPlus extends EnhancedPLPMechanism {
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
         Boolean flag;
         Map<Integer, Double> normalizedEstimation;
-        Integer optimalSamplingSize = this.getOptimalSamplingSize();
         Integer lastTimeSlot = this.lastInfo.getTimeSlot();
         Integer lastPublicationPopulationConsumption = this.lastInfo.getPopulationSize();
-        Integer nullifiedLength = lastPublicationPopulationConsumption / optimalSamplingSize - 1;
+        Integer nullifiedLength = lastPublicationPopulationConsumption / this.chosenSamplingSize - 1;
         if (this.currentTime - lastTimeSlot <= nullifiedLength) {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
             this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
-            Integer publicationSamplingSize = optimalSamplingSize * Math.min(absorbedLength, this.optimalWindowSize);
+            Integer publicationSamplingSize = this.chosenSamplingSize * Math.min(absorbedLength, this.chosenWindowSize);
             Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
             // 获取当前 privacy budget 列表
-            List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
+            List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForPublication);
             // 获取当前 data 列表
             List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
             Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
@@ -43,7 +43,7 @@ public class PLDPPopulationAbsorptionPlus extends EnhancedPLPMechanism {
             if (dissimilarity > error) {
                 flag = true;
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-                normalizedEstimation = MechanismUtils.enhancedGPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+                normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
                 this.lastReleaseEstimation = normalizedEstimation;
                 this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
                 this.lastInfo.update(this.currentTime, publicationSamplingSize);
@@ -55,7 +55,7 @@ public class PLDPPopulationAbsorptionPlus extends EnhancedPLPMechanism {
         }
 
         // recycle
-        if (this.currentTime >= this.optimalWindowSize) {
+        if (this.currentTime >= this.chosenWindowSize) {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
@@ -69,7 +69,10 @@ public class PLDPPopulationAbsorptionPlus extends EnhancedPLPMechanism {
     }
 
     @Override
+//    public String getSimpleName() {
+//        return "PLPA";
+//    }
     public String getSimpleName() {
-        return "PLPA+";
+        return Constant.DirectPLPASchemeName;
     }
 }

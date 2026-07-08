@@ -1,18 +1,19 @@
-package hnu.dll.schemes.compare_scheme._2_our_baseline.impl;
+package hnu.dll.schemes.main_scheme._1_simple_scheme.impl;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.schemes.compare_scheme._2_our_baseline.BaselinePLPMechanism;
+import hnu.dll.schemes.main_scheme._1_simple_scheme.BasicPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
 
 import java.util.*;
 
-public class BaselinePLPAbsorption extends BaselinePLPMechanism {
+public class BasicPLPAbsorption extends BasicPLPMechanism {
     protected AbsorptionLastInfo lastInfo;
-    public BaselinePLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public BasicPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
     }
@@ -21,19 +22,20 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
         Boolean flag;
         Map<Integer, Double> normalizedEstimation;
+        Integer optimalSamplingSize = this.getOptimalSamplingSize();
         Integer lastTimeSlot = this.lastInfo.getTimeSlot();
         Integer lastPublicationPopulationConsumption = this.lastInfo.getPopulationSize();
-        Integer nullifiedLength = lastPublicationPopulationConsumption / this.chosenSamplingSize - 1;
+        Integer nullifiedLength = lastPublicationPopulationConsumption / optimalSamplingSize - 1;
         if (this.currentTime - lastTimeSlot <= nullifiedLength) {
             flag = false;
             normalizedEstimation = this.lastReleaseEstimation;
             this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
-            Integer publicationSamplingSize = this.chosenSamplingSize * Math.min(absorbedLength, this.chosenWindowSize);
+            Integer publicationSamplingSize = optimalSamplingSize * Math.min(absorbedLength, this.optimalWindowSize);
             Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
             // 获取当前 privacy budget 列表
-            List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForPublication);
+            List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
             // 获取当前 data 列表
             List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
             Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
@@ -54,7 +56,7 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
         }
 
         // recycle
-        if (this.currentTime >= this.chosenWindowSize) {
+        if (this.currentTime >= this.optimalWindowSize) {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
@@ -68,7 +70,10 @@ public class BaselinePLPAbsorption extends BaselinePLPMechanism {
     }
 
     @Override
+//    public String getSimpleName() {
+//        return "AblateRP-PLPA+";
+//    }
     public String getSimpleName() {
-        return "PLPA";
+        return Constant.BasicPLPASchemeName;
     }
 }

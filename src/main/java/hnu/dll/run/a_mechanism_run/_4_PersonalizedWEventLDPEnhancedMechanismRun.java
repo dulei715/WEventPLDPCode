@@ -5,7 +5,7 @@ import cn.edu.dll.result.ExperimentResult;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll._config.Constant;
 import hnu.dll.metric.Measurement;
-import hnu.dll.schemes.main_scheme.EnhancedPLPMechanism;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.UnionEnhancedPLPMechanism;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class _4_PersonalizedWEventLDPEnhancedMechanismRun {
      * dataList 的外层List代表timestamp，内层list代表user
      */
 
-    public static ExperimentResult runBatch(EnhancedPLPMechanism scheme, Integer batchID, List<List<Integer>> batchDataList, List<Map<Integer, Double>> rawPublicationBatchList) {
+    public static ExperimentResult runBatch(UnionEnhancedPLPMechanism scheme, Integer batchID, List<List<Integer>> batchDataList, List<Map<Integer, Double>> rawPublicationBatchList) {
         List<Double> privacyBudgetList = scheme.getDistinctBudgetList();
         List<Integer> windowSizeList = scheme.getDistinctWindowSizeList();
         List<Integer> domainIndexList = scheme.getDomainIndexList();

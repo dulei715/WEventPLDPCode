@@ -3,6 +3,7 @@ package hnu.dll.schemes.compare_scheme._1_non_personalized.impl;
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.LPMechanism;
 import hnu.dll.special_tools.FOUtils;
@@ -66,7 +67,10 @@ public class LDPPopulationAbsorption extends LPMechanism {
     }
 
     @Override
+//    public String getSimpleName() {
+//        return "LPA";
+//    }
     public String getSimpleName() {
-        return "LPA";
+        return Constant.LPASchemeName;
     }
 }

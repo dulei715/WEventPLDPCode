@@ -1,29 +1,31 @@
-package hnu.dll.schemes.compare_scheme._3_ablation.impl;
+package hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.schemes.compare_scheme._3_ablation.AblateRePerturbMechanism;
+import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.DirectPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 
 import java.util.*;
 
-public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
+public class DirectPLPDistribution extends DirectPLPMechanism {
     protected Integer populationSizeLowerBound;
-    public AblateRePerturbDistributionPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
+    public DirectPLPDistribution(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
+    // M_{r,t}
     @Override
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
 
-        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.optimalWindowSize - 1);
+        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.chosenWindowSize - 1);
         Integer publicationSamplingSize = remainingPublicationUserSize / 2;
         Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
         // 获取当前 privacy budget 列表
-        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
+        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.originalPrivacyBudgetList, samplingUserIndexSetForPublication);
         // 获取当前 data 列表
         List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForPublication);
         Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
@@ -47,7 +49,7 @@ public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
         }
 
         // recycle
-        if (this.currentTime >= this.optimalWindowSize) {
+        if (this.currentTime >= this.chosenWindowSize) {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);
@@ -60,7 +62,10 @@ public class AblateRePerturbDistributionPlus extends AblateRePerturbMechanism {
     }
 
     @Override
+//    public String getSimpleName() {
+//        return "PLPD";
+//    }
     public String getSimpleName() {
-        return "AblateRP-PLPD+";
+        return Constant.DirectPLPDSchemeName;
     }
 }

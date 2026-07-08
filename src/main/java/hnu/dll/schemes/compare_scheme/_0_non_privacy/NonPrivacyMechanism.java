@@ -2,6 +2,7 @@ package hnu.dll.schemes.compare_scheme._0_non_privacy;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.struct.pair.CombinePair;
+import hnu.dll._config.Constant;
 import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.structure.HistoryPopulationQueue;
 
@@ -44,8 +45,11 @@ public class NonPrivacyMechanism extends Mechanism {
 
 
 
+//    public String getSimpleName() {
+//        return "Non-Privacy";
+//    }
     public String getSimpleName() {
-        return "Non-Privacy";
+        return Constant.NonPrivacySchemeName;
     }
 
 }

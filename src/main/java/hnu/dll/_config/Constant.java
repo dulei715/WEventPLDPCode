@@ -5,8 +5,6 @@ import cn.edu.dll.configure.XMLConfigure;
 import cn.edu.dll.constant_values.ConstantValues;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class Constant {
@@ -107,19 +105,26 @@ public class Constant {
      *  (1) LDPPopulationDistribution (LPD)
      *  (2) LDPopulationAbsorption (LPA)
      *
-     * 2. BaselinePLPMechanism
-     *  (1) BaselinePLPDistribution (PLPD)
-     *  (2) BaselinePLPAbsorption (PLPA)
+     * 2. DirectPLPMechanism
+     *  (1) DirectPLPDistribution (Direct-PLPD)
+     *  (2) DirectPLPAbsorption (Direct-PLPA)
      *
-     * 3-1. AblateOPSMechanism
-     *  (1) AblateOPSDistributionPlus (A-OPS-PLPD+)
-     *  (2) AblateOPSAbsorptionPlus (A-OPS-PLPA+)
      *
-     * 3-2. AblateRePerturbMechanism
-     *  (1) AblateRePerturbDistributionPlus (A-RP-PLPD+)
-     *  (2) AblateRePerturbAbsorptionPlus (A-RP-PLPA+)
+     * 3. BasicPLPMechanism (只加了OPS)
+     *  (1) BasicPLPDistribution (Basic-PLPD)
+     *  (2) BasicPLPAbsorption (Basic-PLPA)
      *
-     * 4. EnhancedPLPMechanism
+     *
+     * 4-1. AblateBAPUEPLPMechanism (只加了GAOPS)
+     *  (1) AblateBAPUEPLPDistribution (Ablate-BAPUE-PLPD)
+     *  (2) AblateBAPUEPLPAbsorption (Ablate-BAPUE-PLPA)
+     *
+     * 4-2. AblateGAOPSPLPMechanism (只加了BAPUE)
+     *  (1) AblateGAOPSPLPDistribution (Ablate-GAOPS-PLPD)
+     *  (3) AblateGAOPSPLPAbsorption (Ablate-GAOPS-PLPA)
+     *
+     *
+     * 5. AdvancedPLPMechanism
      *  (1) PLDPPopulationDistributionPlus (PLPD+)
      *  (2) PLDPPopulationAbsorptionPlus (PLPA+)
      *
@@ -127,15 +132,23 @@ public class Constant {
     public static final String NonPrivacySchemeName = "NonPrivacy-Scheme";
     public static final String LPDSchemeName = "LBD-Scheme"; // 应该是LPD-Scheme
     public static final String LPASchemeName = "LBA-Scheme"; // 应该是LPA-Scheme
-    public static final String BasePLPDSchemeName = "PLPD-Basic-Scheme";
-    public static final String BasePLPASchemeName = "PLPA-Basic-Scheme";
-    public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
-    public static final String AblateOPSPLPASchemeName = "PLPA-Ablate-OPS-Scheme";
-    public static final String AblateRPPLPDSchemeName = "PLPD-Ablate-RP-Scheme";
-    public static final String AblateRPPLPASchemeName = "PLPA-Ablate-RP-Scheme";
+    public static final String DirectPLPDSchemeName = "PLPD-Direct-Scheme";
+    public static final String DirectPLPASchemeName = "PLPA-Direct-Scheme";
+//    public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
+//    public static final String AblateOPSPLPASchemeName = "PLPA-Ablate-OPS-Scheme";
+    public static final String BasicPLPDSchemeName = "PLPD-basic-Scheme";
+    public static final String BasicPLPASchemeName = "PLPA-basic-Scheme";
 
-    public static final String EnhancedPLPDSchemeName = "PLPD-Plus-Scheme";
-    public static final String EnhancedPLPASchemeName = "PLPA-Plus-Scheme";
+    public static final String UnionPLPDSchemeName = "PLPD-Union-Scheme";
+    public static final String UnionPLPASchemeName = "PLPA-Union-Scheme";
+
+    public static final String AblateBAPUEPLPDSchemeName = "PLPD-Ablate-BAPUE-Scheme";
+    public static final String AblateBAPUEPLPASchemeName = "PLPA-Ablate-BAPUE-Scheme";
+    public static final String AblateGAOPSPLPDSchemeName = "PLPD-Ablate-GAOPS-Scheme";
+    public static final String AblateGAOPSPLPASchemeName = "PLPA-Ablate-GAOPS-Scheme";
+
+    public static final String AdvancedPLPDSchemeName = "PLPD-Plus-Scheme";
+    public static final String AdvancedPLPASchemeName = "PLPA-Plus-Scheme";
 
 
 
