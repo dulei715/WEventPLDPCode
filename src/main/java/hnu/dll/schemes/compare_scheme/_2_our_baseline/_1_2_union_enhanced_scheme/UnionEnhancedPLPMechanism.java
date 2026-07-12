@@ -6,6 +6,7 @@ import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.*;
+import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.OptimalSelectionStruct;
 import hnu.dll.structure.HistoryPopulationQueue;
@@ -124,7 +125,7 @@ public abstract class UnionEnhancedPLPMechanism extends PersonalizedMechanism {
     public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
         List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
-        this.optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
+        this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
         this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
         this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
         // 这里初始化历史窗口大小为 w_opt - 1
