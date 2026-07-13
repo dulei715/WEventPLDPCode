@@ -68,9 +68,8 @@ public class FOUtils {
     }
 
     public static Double getLDPVarianceSum(Double privacyBudget, Integer userSize, Integer domainSize) {
-        Double totalVariance = 0D;
-        BasicPair<Double, Double> tempPair;
-        Double tempParam = Math.exp(privacyBudget) - 1;
+        double totalVariance = 0D;
+        double tempParam = Math.exp(privacyBudget) - 1;
         // todo: 这里改正了LDP-IDS (SIGMOD 2022)中的err计算问题。这里应该在第二项多乘个1/d
         //  按理说err = 1/d \sum_{k=1}^{d} Var = (d-2+e^{\epsilon})/(N(e^{\epsilon}-1)) + (d-2)/(N(e^{\epsilon}-1)) * 1/d
         //  因此 \sum var 应该是如下表达
@@ -79,8 +78,7 @@ public class FOUtils {
     }
 
     public static Double getLDPApproximateVariance(Double privacyBudget, Integer userSize, Integer domainSize) {
-        BasicPair<Double, Double> tempPair;
-        Double tempParam = Math.exp(privacyBudget) - 1;
+        double tempParam = Math.exp(privacyBudget) - 1;
         return (tempParam - 1 + domainSize) / (userSize * Math.pow(tempParam, 2));
     }
 
@@ -107,6 +105,13 @@ public class FOUtils {
 
     public static Double getGRRApproximateError(Double privacyBudget, Integer sampleSize, Integer domainSize) {
         return getLDPApproximateVariance(privacyBudget, sampleSize, domainSize);
+    }
+
+
+    public static Double getGPRRErrorBySamplingSize(Double effectivePrivacyBudget, Integer userSize, Integer sampleSize, Integer domainSize) {
+        Double samplingVariance = SamplingUtils.getSamplingVariance(userSize, sampleSize);
+        Double ldpVariance = getLDPVarianceSum(effectivePrivacyBudget, sampleSize, domainSize);
+        return (samplingVariance + ldpVariance) / domainSize;
     }
 
 }

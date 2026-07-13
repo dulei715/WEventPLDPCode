@@ -196,6 +196,10 @@ public class Constant {
     public static final String SinLocationFileName = "status.txt";
     public static final String LogLocationFileName = "status.txt";
 
+
+
+    public static final double EigenvaluesLowerBound = Math.pow(10, -6);
+
     public static void main(String[] args) {
 //        System.out.println(configPath);
         String datasetBasicPath = ConfigureUtils.getDatasetBasicPath();

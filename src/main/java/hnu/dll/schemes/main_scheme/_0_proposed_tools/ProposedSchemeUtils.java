@@ -1,9 +1,14 @@
 package hnu.dll.schemes.main_scheme._0_proposed_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
+import hnu.dll.structure.GroupAwareOptimalSelectionStruct;
 import hnu.dll.structure.OptimalSelectionStruct;
+import hnu.dll.structure.matrix_data.RiskMatrixStructure;
 import hnu.dll.structure.personalized_data.PrivacyGroupTriple;
+import org.ejml.simple.SimpleEVD;
+import org.ejml.simple.SimpleMatrix;
 
 import java.util.*;
 
@@ -41,7 +46,7 @@ public class ProposedSchemeUtils {
             newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
             tempError = PFOUtils.getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
             //todo: for test
-            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
+//            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
 //            MyPrint.showList(tempBudgetList, "; ");
             if (tempError < finalError) {
                 finalError = tempError;
@@ -69,25 +74,54 @@ public class ProposedSchemeUtils {
         return candidateSamplingSizeSet;
     }
 
-    public static OptimalSelectionStruct groupAwareOptimalPopulationSelection(List<PrivacyGroupTriple> privacyGroupTripleList, Double samplingRatio, Integer domainSize) {
+    public static GroupAwareOptimalSelectionStruct groupAwareOptimalPopulationSelection(List<PrivacyGroupTriple> privacyGroupTripleList, Double samplingRatio, Integer domainSize) {
         List<Double> errorList = new ArrayList<>();
         List<Integer> optimalSamplingSizeList = new ArrayList<>();
         List<Double> effectivePrivacyBudgetList = new ArrayList<>();
         int groupListSize = privacyGroupTripleList.size(), tempWindowSize;
-        int tempMaximumSamplingSize, repeatSize;
-        double tempPrivacyBudget, tempEffectiveBudget;
+        Integer tempMaximumSamplingSize, repeatSize, tempOptimalSamplingSize = null;
+        Double tempPrivacyBudget, tempEffectiveBudget, optimalEffectiveBudget = null, tempError, tempCurrentError;
         Set<Integer> tempCandidateSamplingSizeSet;
         for (PrivacyGroupTriple privacyGroupTriple : privacyGroupTripleList) {
             tempMaximumSamplingSize = (int)Math.ceil(privacyGroupTriple.getUserSize() * samplingRatio);
             tempWindowSize = privacyGroupTriple.getWindowSize();
             tempPrivacyBudget = privacyGroupTriple.getEpsilon();
             tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 1);
+            tempCurrentError = Double.MAX_VALUE;
             for (Integer candidateSamplingSize : tempCandidateSamplingSizeSet) {
                 repeatSize = (int) Math.ceil(candidateSamplingSize * tempWindowSize * 1.0 / tempMaximumSamplingSize);
                 tempEffectiveBudget = tempPrivacyBudget / repeatSize;
-                xxx
+                tempError = FOUtils.getGPRRErrorBySamplingSize(tempEffectiveBudget, tempMaximumSamplingSize, candidateSamplingSize, domainSize);
+                if (tempError < tempCurrentError) {
+                    tempCurrentError = tempError;
+                    tempOptimalSamplingSize = candidateSamplingSize;
+                    optimalEffectiveBudget = tempEffectiveBudget;
+                }
             }
+            errorList.add(tempCurrentError);
+            optimalSamplingSizeList.add(tempOptimalSamplingSize);
+            effectivePrivacyBudgetList.add(optimalEffectiveBudget);
         }
+        return new GroupAwareOptimalSelectionStruct(errorList, optimalSamplingSizeList, effectivePrivacyBudgetList);
+    }
+
+
+
+    protected static RiskMatrixStructure getPositiveDefiniteEigenvalueClipping(RiskMatrixStructure empiricalRiskMatrix, Double eigenvalueLowerBound) {
+        Double targetVariance = empiricalRiskMatrix.getTargetVariance();
+        SimpleMatrix empiricalVarianceMatrix = empiricalRiskMatrix.getDominatingVarianceMatrix();
+        int matrixDimSize = empiricalVarianceMatrix.numRows();
+        SimpleEVD<SimpleMatrix> empiricalEig = empiricalVarianceMatrix.eig();
+        SimpleMatrix correctedEigenvalueMatrix = new SimpleMatrix(matrixDimSize, matrixDimSize);
+        SimpleMatrix eigenvectorMatrix = new SimpleMatrix(matrixDimSize, matrixDimSize);
+        for (int i = 0; i < matrixDimSize; i++) {
+            double eigenvalue = empiricalEig.getEigenvalue(i).getReal();
+            SimpleMatrix eigenvector = empiricalEig.getEigenVector(i);
+            eigenvectorMatrix.insertIntoThis(0, i, eigenvector);
+            correctedEigenvalueMatrix.set(i, i, Math.max(eigenvalue, eigenvalueLowerBound));
+        }
+        SimpleMatrix correctedVarianceMatrix = eigenvectorMatrix.mult(correctedEigenvalueMatrix).mult(eigenvectorMatrix.transpose());
+        return new RiskMatrixStructure(targetVariance, correctedVarianceMatrix);
     }
 
 

@@ -214,14 +214,11 @@ public class PFOUtils {
     }
 
     /**
-     * 6.2 获取采样误差
+     * 6.2 获取采样误差(见 samplingUtils)
      * @param userSize
      * @param sampleSize
      * @return
      */
-    public static Double getSamplingVariance(Integer userSize, Integer sampleSize) {
-        return (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
-    }
 
     /**
      * 6.3. 计算Error
@@ -232,13 +229,13 @@ public class PFOUtils {
      */
     public static Double getGPRRErrorBySpecificUsers(Map<Double, Integer> distinctBudgetSamplingCountMap, Integer userSize, Integer sampleSize, Integer domainSize) {
         // 假设重扰动不影响sampling带来的误差。那么传入的userSize是重扰动前的userSize
-        Double sampleVariance = getSamplingVariance(userSize, sampleSize);
+        Double sampleVariance = SamplingUtils.getSamplingVariance(userSize, sampleSize);
         Double pldpVariance = getPLDPVarianceSumBySpecificUsers(distinctBudgetSamplingCountMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
     }
     public static Double getGPRRErrorByGroupUserRatio(Map<Double, Double> distinctBudgetRatioMap, Integer userSize, Integer sampleSize, Integer domainSize) {
         // 该方法只用于optimal population selection，这里假设不考虑重扰动。那么传入的userSize就是整体的userSize
-        Double sampleVariance = getSamplingVariance(userSize, sampleSize);
+        Double sampleVariance = SamplingUtils.getSamplingVariance(userSize, sampleSize);
         Double pldpVariance = getPLDPVarianceSumByGroupUserRatio(sampleSize, distinctBudgetRatioMap, domainSize);
         return (sampleVariance + pldpVariance) / domainSize;
     }
