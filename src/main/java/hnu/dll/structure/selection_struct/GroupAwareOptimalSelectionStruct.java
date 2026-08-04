@@ -1,4 +1,4 @@
-package hnu.dll.structure;
+package hnu.dll.structure.selection_struct;
 
 import java.util.List;
 

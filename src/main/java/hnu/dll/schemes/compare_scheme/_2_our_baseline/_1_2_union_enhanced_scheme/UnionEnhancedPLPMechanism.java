@@ -8,7 +8,7 @@ import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.*;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.special_tools.PFOUtils;
-import hnu.dll.structure.OptimalSelectionStruct;
+import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import hnu.dll.structure.HistoryPopulationQueue;
 import hnu.dll.utils.BasicUtils;
 

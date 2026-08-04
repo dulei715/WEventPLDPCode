@@ -1,11 +1,9 @@
 package example_test;
 
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.structure.OptimalSelectionStruct;
-import hnu.dll.utils.BasicUtils;
+import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

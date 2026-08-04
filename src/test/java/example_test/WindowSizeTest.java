@@ -4,8 +4,7 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.BasicPair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.special_tools.PFOUtils;
-import hnu.dll.structure.OptimalSelectionStruct;
+import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 import org.junit.Test;
 
