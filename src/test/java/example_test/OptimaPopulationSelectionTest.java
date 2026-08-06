@@ -1,6 +1,7 @@
 package example_test;
 
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class OptimaPopulationSelectionTest {
 //            samplingSizeList.addAll(basicSamplingSizeList);
 //            budgetList.addAll(basicBudgetList);
 //        }
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
     }
 }

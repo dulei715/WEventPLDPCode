@@ -4,6 +4,7 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.BasicPair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class WindowSizeTest {
         MyPrint.showSplitLine("*", 120);
         MyPrint.showMap(budgetCountList);
         MyPrint.showSplitLine("*", 120);
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 120);
 

@@ -8,6 +8,7 @@ import cn.edu.dll.io.print.MyPrint;
 import cn.edu.dll.struct.pair.BasicPair;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.special_tools.PersonalizedFrequencyOracle;
 import hnu.dll.special_tools.impl.GeneralizedPersonalizedRandomResponse;
@@ -145,7 +146,7 @@ public class MechanismBasicTest {
 
     @Test
     public void optimalSamplingSizeTest() {
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
         Map<BasicPair<Integer, Double>, Integer> newPairCount = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
@@ -188,7 +189,7 @@ public class MechanismBasicTest {
 
 
 
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
@@ -266,7 +267,7 @@ public class MechanismBasicTest {
 //        MyPrint.showMap(BasicUtils.getStatisticByCount(this.budgetCountMap));
 //        MyPrint.showSplitLine("*", 150);
 
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
         MyPrint.showSplitLine("*", 150);
 
@@ -404,7 +405,7 @@ public class MechanismBasicTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -463,7 +464,7 @@ public class MechanismBasicTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -523,7 +524,7 @@ public class MechanismBasicTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
@@ -584,7 +585,7 @@ public class MechanismBasicTest {
         MyPrint.showMap(samplingSizeCountMap, "; ");
 
         MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = MechanismUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
         System.out.println(optimalSelectionStruct);
 
         Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();

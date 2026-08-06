@@ -15,6 +15,7 @@ import java.util.*;
 public class ProposedSchemeUtils {
     /**
      * 整体选择最优 sampling size
+     * 对应论文的 Algorithm 1
      * @param samplingSizeRequirementList
      * @param privacyBudgetList
      * @param domainSize
@@ -74,11 +75,18 @@ public class ProposedSchemeUtils {
         return candidateSamplingSizeSet;
     }
 
+    /**
+     * 对应论文的 Algorithm 3
+     * @param privacyGroupTripleList
+     * @param samplingRatio
+     * @param domainSize
+     * @return
+     */
     public static GroupAwareOptimalSelectionStruct groupAwareOptimalPopulationSelection(List<PrivacyGroupTriple> privacyGroupTripleList, Double samplingRatio, Integer domainSize) {
         List<Double> errorList = new ArrayList<>();
         List<Integer> optimalSamplingSizeList = new ArrayList<>();
         List<Double> effectivePrivacyBudgetList = new ArrayList<>();
-        int groupListSize = privacyGroupTripleList.size(), tempWindowSize;
+        int tempWindowSize;
         Integer tempMaximumSamplingSize, repeatSize, tempOptimalSamplingSize = null;
         Double tempPrivacyBudget, tempEffectiveBudget, optimalEffectiveBudget = null, tempError, tempCurrentError;
         Set<Integer> tempCandidateSamplingSizeSet;

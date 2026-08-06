@@ -3,8 +3,8 @@ package example_test;
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.BasicCalculation;
 import cn.edu.dll.io.print.MyPrint;
-import cn.edu.dll.matrix.MatrixUtil;
-import cn.edu.dll.matrix.VectorUtil;
+import cn.edu.dll.matrix.SimpleMatrixUtil;
+import cn.edu.dll.matrix.SimpleVectorUtil;
 import cn.edu.dll.statistic.StatisticTool;
 import hnu.dll.special_tools.PFOUtils;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class MechanismExampleTest {
         );
 
         List<List<Double>> capPiList = Arrays.asList(piList);
-        List<List<Double>> gammaListList = MatrixUtil.multiple(capPiList, lamdabaStarList);
+        List<List<Double>> gammaListList = SimpleMatrixUtil.multiple(capPiList, lamdabaStarList);
         List<Double> gammaList = gammaListList.get(0);
         MyPrint.showList(gammaList);
 
@@ -55,7 +55,7 @@ public class MechanismExampleTest {
         Double bhPower2 = 0.00047;
         List<Double> pubVarianceList = Arrays.asList(0.006, 0.01, 0.014);
         List<Double> gammaPower2List = BasicArrayUtil.toPowerValue(gammaList, 2);
-        Double tempValue = VectorUtil.getInnerProduct(gammaPower2List, pubVarianceList) + bhPower2;
+        Double tempValue = SimpleVectorUtil.getInnerProduct(gammaPower2List, pubVarianceList) + bhPower2;
         System.out.println(tempValue / d);
 
     }
