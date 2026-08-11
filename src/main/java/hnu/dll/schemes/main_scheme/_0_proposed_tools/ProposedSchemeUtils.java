@@ -5,7 +5,7 @@ import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.selection_struct.GroupAwareOptimalSelectionStruct;
 import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
-import hnu.dll.structure.matrix_data.RiskMatrixStructure;
+import hnu.dll.structure.matrix_data.BlockedRiskMatrixStructure;
 import hnu.dll.structure.personalized_data.PrivacyGroupTriple;
 import org.ejml.simple.SimpleEVD;
 import org.ejml.simple.SimpleMatrix;
@@ -21,6 +21,10 @@ public class ProposedSchemeUtils {
      * @param domainSize
      * @return
      */
+
+    public static final boolean CurrentStatus = false;
+    public static final boolean GeneralStatus = true;
+
     public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, Integer domainSize) {
         Map<Integer, Integer> uniqueSamplingSizeMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithFirstAppearanceIndex(samplingSizeRequirementList));
         Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
@@ -115,7 +119,7 @@ public class ProposedSchemeUtils {
 
 
 
-    protected static RiskMatrixStructure getPositiveDefiniteEigenvalueClipping(RiskMatrixStructure empiricalRiskMatrix, Double eigenvalueLowerBound) {
+    protected static BlockedRiskMatrixStructure getPositiveDefiniteEigenvalueClipping(BlockedRiskMatrixStructure empiricalRiskMatrix, Double eigenvalueLowerBound, boolean status) {
         Double targetVariance = empiricalRiskMatrix.getTargetVariance();
         SimpleMatrix empiricalVarianceMatrix = empiricalRiskMatrix.getDominatingVarianceMatrix();
         int matrixDimSize = empiricalVarianceMatrix.numRows();
@@ -129,7 +133,7 @@ public class ProposedSchemeUtils {
             correctedEigenvalueMatrix.set(i, i, Math.max(eigenvalue, eigenvalueLowerBound));
         }
         SimpleMatrix correctedVarianceMatrix = eigenvectorMatrix.mult(correctedEigenvalueMatrix).mult(eigenvectorMatrix.transpose());
-        return new RiskMatrixStructure(targetVariance, correctedVarianceMatrix);
+        return new BlockedRiskMatrixStructure(targetVariance, correctedVarianceMatrix);
     }
 
 

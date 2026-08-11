@@ -2,20 +2,17 @@ package hnu.dll.structure.matrix_data;
 
 import org.ejml.simple.SimpleMatrix;
 
-public class RiskMatrixStructure {
-    protected Double targetVariance;
-    protected SimpleMatrix dominatingVarianceMatrix;
+public abstract class RiskMatrixStructure {
+    protected SimpleMatrix riskMatrix;
 
-    public RiskMatrixStructure(Double targetVariance, SimpleMatrix dominatingVarianceMatrix) {
-        this.targetVariance = targetVariance;
-        this.dominatingVarianceMatrix = dominatingVarianceMatrix;
+    public RiskMatrixStructure(SimpleMatrix riskMatrix) {
+        this.riskMatrix = riskMatrix;
     }
 
-    public Double getTargetVariance() {
-        return targetVariance;
+    public RiskMatrixStructure() {
     }
 
-    public SimpleMatrix getDominatingVarianceMatrix() {
-        return dominatingVarianceMatrix;
+    public SimpleMatrix getRiskMatrix() {
+        return riskMatrix;
     }
 }

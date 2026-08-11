@@ -1,6 +1,6 @@
 package hnu.dll.special_tools;
 
-import hnu.dll.structure.matrix_data.RiskMatrixStructure;
+import hnu.dll.structure.matrix_data.BlockedRiskMatrixStructure;
 import org.ejml.simple.SimpleMatrix;
 
 import java.util.Objects;
@@ -42,7 +42,7 @@ public class BAPUEActiveSetSolver {
      * @return 最优融合权重 lambda
      */
     public static double[] solveSimplexQP(
-            RiskMatrixStructure riskMatrix) {
+            BlockedRiskMatrixStructure riskMatrix) {
 
         return solveSimplexQP(
                 riskMatrix,
@@ -59,7 +59,7 @@ public class BAPUEActiveSetSolver {
      * @param tolerance     浮点误差容限
      * @return 最优融合权重 lambda
      */
-    public static double[] solveSimplexQP(RiskMatrixStructure riskMatrix, int maxIterations, double tolerance) {
+    public static double[] solveSimplexQP(BlockedRiskMatrixStructure riskMatrix, int maxIterations, double tolerance) {
 
         Objects.requireNonNull(riskMatrix, "riskMatrix 不能为 null");
 
