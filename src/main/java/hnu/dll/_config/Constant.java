@@ -3,6 +3,7 @@ package hnu.dll._config;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.configure.XMLConfigure;
 import cn.edu.dll.constant_values.ConstantValues;
+import hnu.dll.utils.comparator.PrivacyGroupComparator;
 
 import java.io.File;
 import java.util.Random;
@@ -199,6 +200,13 @@ public class Constant {
 
 
     public static final double EigenvaluesLowerBound = Math.pow(10, -6);
+
+
+    /**
+     * for privacy groups
+     * @param args
+     */
+    public static final PrivacyGroupComparator privacyGroupComparator = new PrivacyGroupComparator();
 
     public static void main(String[] args) {
 //        System.out.println(configPath);

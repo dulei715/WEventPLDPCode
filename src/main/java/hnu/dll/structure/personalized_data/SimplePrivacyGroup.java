@@ -1,12 +1,11 @@
 package hnu.dll.structure.personalized_data;
 
-import java.util.Objects;
 import java.util.Set;
 
-public class PrivacyGroup extends AbstractPrivacyGroup {
+public class SimplePrivacyGroup extends AbstractPrivacyGroup {
     protected Set<Integer> userIDSet;
 
-    public PrivacyGroup(Integer windowSize, Double epsilon, Set<Integer> userIDSet) {
+    public SimplePrivacyGroup(Integer windowSize, Double epsilon, Set<Integer> userIDSet) {
         super(windowSize, epsilon);
         this.userIDSet = userIDSet;
     }
