@@ -197,7 +197,11 @@ public class ProposedSchemeUtils {
                     tempDominatingMatrix.set(k, j, tempValue);
                 }
             }
+            RiskMatrixStructure riskMatrixStructure = new BlockedRiskMatrixStructure(targetVariance, tempDominatingMatrix);
+            riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, ProposedSchemeUtils.CurrentStatus);
+
             // todo: 分解
+
         }
         return null;
     }
