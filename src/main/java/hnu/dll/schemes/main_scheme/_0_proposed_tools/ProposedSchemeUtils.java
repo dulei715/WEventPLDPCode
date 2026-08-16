@@ -2,6 +2,7 @@ package hnu.dll.schemes.main_scheme._0_proposed_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.map.MapUtils;
+import cn.edu.dll.math_calculation.LinearAlgorithmUtils;
 import cn.edu.dll.matrix.VectorUtil;
 import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
@@ -166,8 +167,8 @@ public class ProposedSchemeUtils {
 
 
     public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final List<? extends AbstractPrivacyGroup> privacyGroupList, List<TreeMap<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
-        List<SimpleMatrix> resultList;
         int size = groupEstimateList.size();
+        List<SimpleMatrix> resultList = new ArrayList<>(size);
         Map<Integer, List<Integer>> indexSourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(privacyGroupList);
 //        TreeMap<T, Double> targetEstimate;
         SimpleMatrix targetEstimateVector, differA, differB;
@@ -200,10 +201,17 @@ public class ProposedSchemeUtils {
             RiskMatrixStructure riskMatrixStructure = new BlockedRiskMatrixStructure(targetVariance, tempDominatingMatrix);
             riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, ProposedSchemeUtils.CurrentStatus);
 
-            // todo: 分解
-
+            SimpleMatrix simpleMatrix = LinearAlgorithmUtils.solveSimplexConstrain(riskMatrixStructure.getRiskMatrix());
+            int k = 0;
+            // 初始化整个向量元素值为0
+            double[] extendVectorValue = new double[size];
+            extendVectorValue[i] = simpleMatrix.get(k++, 0);
+            for (int j = 0; j < dominatingSize; j++) {
+                extendVectorValue[sourceList.get(j)] = simpleMatrix.get(k++, 0);
+            }
+            resultList.add(new SimpleMatrix(size, 1, true, extendVectorValue));
         }
-        return null;
+        return resultList;
     }
 
 

@@ -18,6 +18,7 @@ import java.util.Objects;
  *
  * 其中 M 是 PDEC 修正后的正定风险矩阵 M_tilde_H。
  */
+@Deprecated
 public class BAPUEActiveSetSolver {
     /**
      * 默认最大迭代次数。
