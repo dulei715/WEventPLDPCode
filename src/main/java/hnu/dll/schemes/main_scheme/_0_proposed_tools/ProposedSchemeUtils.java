@@ -142,9 +142,17 @@ public class ProposedSchemeUtils {
             targetVariance = blockedRiskMatrix.getTargetVariance();
             SimpleMatrix empiricalVarianceMatrix = blockedRiskMatrix.getDominatingVarianceMatrix();
             matrixDimSize = empiricalVarianceMatrix.numRows();
+            if (matrixDimSize == 0) {
+                // 空矩阵（无 dominating 组）无需特征值裁剪，直接返回原结构
+                return blockedRiskMatrix;
+            }
             empiricalEig = empiricalVarianceMatrix.eig();
         } else {
             matrixDimSize = empiricalRiskMatrix.getRiskMatrix().numRows();
+            if (matrixDimSize == 0) {
+                // 空矩阵无需特征值裁剪，直接返回原结构
+                return empiricalRiskMatrix;
+            }
             empiricalEig = empiricalRiskMatrix.getRiskMatrix().eig();
         }
 
@@ -165,7 +173,17 @@ public class ProposedSchemeUtils {
         return resultMatrix;
     }
 
-
+    /**
+     *
+     * 对应论文的 Algorithm 5
+     * @param privacyGroupList
+     * @param groupEstimateList
+     * @param varianceList
+     * @param finalVarianceList
+     * @param lowerBound
+     * @return
+     * @param <T>
+     */
     public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final List<? extends AbstractPrivacyGroup> privacyGroupList, List<TreeMap<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
         int size = groupEstimateList.size();
         List<SimpleMatrix> resultList = new ArrayList<>(size);
@@ -212,6 +230,10 @@ public class ProposedSchemeUtils {
             resultList.add(new SimpleMatrix(size, 1, true, extendVectorValue));
         }
         return resultList;
+    }
+
+    public static <T> List<TreeMap<T, Double>> biasedAwarePersonalizedUtilityEnhancement(List<TreeMap<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
+
     }
 
 
