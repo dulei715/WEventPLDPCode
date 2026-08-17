@@ -4,6 +4,7 @@ import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.math_calculation.LinearAlgorithmUtils;
 import cn.edu.dll.matrix.VectorUtil;
+import cn.edu.dll.statistic.StatisticTool;
 import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.matrix_data.RiskMatrixStructure;
@@ -176,7 +177,7 @@ public class ProposedSchemeUtils {
     /**
      *
      * 对应论文的 Algorithm 5
-     * @param privacyGroupList
+     * @param indexSourceMap
      * @param groupEstimateList
      * @param varianceList
      * @param finalVarianceList
@@ -184,10 +185,10 @@ public class ProposedSchemeUtils {
      * @return
      * @param <T>
      */
-    public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final List<? extends AbstractPrivacyGroup> privacyGroupList, List<TreeMap<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
+    public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final Map<Integer, List<Integer>> indexSourceMap, List<TreeMap<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
         int size = groupEstimateList.size();
         List<SimpleMatrix> resultList = new ArrayList<>(size);
-        Map<Integer, List<Integer>> indexSourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(privacyGroupList);
+//        Map<Integer, List<Integer>> indexSourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(privacyGroupList);
 //        TreeMap<T, Double> targetEstimate;
         SimpleMatrix targetEstimateVector, differA, differB;
         Double targetVariance;
@@ -220,20 +221,44 @@ public class ProposedSchemeUtils {
             riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, ProposedSchemeUtils.CurrentStatus);
 
             SimpleMatrix simpleMatrix = LinearAlgorithmUtils.solveSimplexConstrain(riskMatrixStructure.getRiskMatrix());
-            int k = 0;
-            // 初始化整个向量元素值为0
-            double[] extendVectorValue = new double[size];
-            extendVectorValue[i] = simpleMatrix.get(k++, 0);
-            for (int j = 0; j < dominatingSize; j++) {
-                extendVectorValue[sourceList.get(j)] = simpleMatrix.get(k++, 0);
-            }
-            resultList.add(new SimpleMatrix(size, 1, true, extendVectorValue));
+//            int k = 0;
+//            // 初始化整个向量元素值为0
+//            double[] extendVectorValue = new double[size];
+//            extendVectorValue[i] = simpleMatrix.get(k++, 0);
+//            for (int j = 0; j < dominatingSize; j++) {
+//                extendVectorValue[sourceList.get(j)] = simpleMatrix.get(k++, 0);
+//            }
+//            resultList.add(new SimpleMatrix(size, 1, true, extendVectorValue));
+            resultList.add(simpleMatrix);
         }
         return resultList;
     }
 
-    public static <T> List<TreeMap<T, Double>> biasedAwarePersonalizedUtilityEnhancement(List<TreeMap<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
-
+    /**
+     * 对应论文的 Algorithm 6
+     * @param indexSourceMap
+     * @param groupEstimateList
+     * @param correctedWeightList
+     * @return
+     * @param <T>
+     */
+    public static <T> List<TreeMap<T, Double>> biasedAwarePersonalizedUtilityEnhancement(final Map<Integer, List<Integer>> indexSourceMap, List<TreeMap<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
+        int size = groupEstimateList.size();
+        List<TreeMap<T, Double>> resultList = new ArrayList<>(size);
+        SimpleMatrix tempWeight;
+        List<Double> tempWeightList;
+        TreeMap<T, Double> tempEstimate;
+        List<TreeMap<T, Double>> extendSourceEstimateList;
+        List<Integer> tempSourceIndexList;
+        for (int i = 0; i < size; i++) {
+            tempWeight = correctedWeightList.get(i);
+            tempSourceIndexList = indexSourceMap.get(i);
+            extendSourceEstimateList = BasicArrayUtil.getElementListInGivenMultipleIndexes(groupEstimateList, Collections.singletonList(i), tempSourceIndexList);
+            tempWeightList = VectorUtil.toList(tempWeight);
+            tempEstimate = StatisticTool.getWeightedStatisticMap(extendSourceEstimateList, tempWeightList);
+            resultList.add(tempEstimate);
+        }
+        return resultList;
     }
 
 
