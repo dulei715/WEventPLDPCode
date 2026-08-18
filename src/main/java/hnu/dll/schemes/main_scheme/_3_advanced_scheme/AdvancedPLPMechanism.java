@@ -10,6 +10,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
+import hnu.dll.structure.personalized_data.PrivacyGroupStatus;
 import hnu.dll.structure.selection_struct.GroupAwareOptimalSelectionStruct;
 import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
@@ -32,7 +33,9 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
 
     protected Set<Integer> candidateUserIndexSet;
 
-    protected Map<Integer, Double> lastReleaseEstimation;
+//    protected Map<Integer, Double> lastReleaseEstimation;
+    // 记录上个有效发布时刻的数据状态，注意不同组的上个时刻可能不同
+    protected List<PrivacyGroupStatus<Integer>> lastReleaseGroupStatusList;
 
     protected HistoryPopulationQueue samplingSubMechanismHistoryQueue;
     protected HistoryPopulationQueue publicationSubMechanismHistoryQueue;
@@ -61,7 +64,8 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
-        this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
+//        this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
+        this.lastReleaseGroupStatusList = PrivacyGroupStatus.getIntializedPrivacyGroupStatusList(this.domainIndexList, this.userSize);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
         this.windowSizeList = windowSizeList;
         if (this.originalPrivacyBudgetList.size() != this.windowSizeList.size()) {
@@ -97,25 +101,27 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
      * 关于Optimal Population Selection相关信息
      * @return
      */
-    public OptimalSelectionStruct getGroupAwareOptimalSelectionStruct() {
+    public GroupAwareOptimalSelectionStruct getGroupAwareOptimalSelectionStruct() {
         return groupAwareOptimalSelectionStruct;
     }
-    public Double getOptimalError() {
-        return this.groupAwareOptimalSelectionStruct.getError();
+    public List<Double> getOptimalPrivacyGroupErrorList() {
+        return this.groupAwareOptimalSelectionStruct.getOptimalErrorList();
     }
-    public Integer getOptimalSamplingSize() {
-        return this.groupAwareOptimalSelectionStruct.getOptimalSamplingSize();
+    public List<Integer> getOptimalSamplingSizeList() {
+        return this.groupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
     }
     public List<Double> getOptimalNewBudgetList() {
-        return this.groupAwareOptimalSelectionStruct.getNewPrivacyBudgetList();
+        return this.groupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
     }
+
+
 
     public List<Integer> getWindowSizeList() {
         return windowSizeList;
     }
 
-    public Map<Integer, Double> getReleaseNoiseCountMap() {
-        return this.lastReleaseEstimation;
+    public List<PrivacyGroupStatus<Integer>> getLastReleaseGroupStatusList() {
+        return this.lastReleaseGroupStatusList;
     }
 
     /**
