@@ -88,23 +88,25 @@ public class ProposedSchemeUtils {
 
     /**
      * 对应论文的 Algorithm 3
-     * @param privacyGroupTripleList
+     * @param privacyGroupList
      * @param samplingRatio
      * @param domainSize
      * @return
      */
-    public static GroupAwareOptimalSelectionStruct groupAwareOptimalPopulationSelection(List<PrivacyGroupTriple> privacyGroupTripleList, Double samplingRatio, Integer domainSize) {
-        List<Double> errorList = new ArrayList<>();
-        List<Integer> optimalSamplingSizeList = new ArrayList<>();
-        List<Double> effectivePrivacyBudgetList = new ArrayList<>();
+    public static <T extends AbstractPrivacyGroup> GroupAwareOptimalSelectionStruct groupAwareOptimalPopulationSelection(List<T> privacyGroupList, Double samplingRatio, Integer domainSize) {
+        int groupSize = privacyGroupList.size();
+        List<Double> errorList = new ArrayList<>(groupSize);
+        List<Integer> optimalSamplingSizeList = new ArrayList<>(groupSize);
+        List<Double> effectivePrivacyBudgetList = new ArrayList<>(groupSize);
+        List<Integer> windowSizeList = new ArrayList<>(groupSize);
         int tempWindowSize;
         Integer tempMaximumSamplingSize, repeatSize, tempOptimalSamplingSize = null;
         Double tempPrivacyBudget, tempEffectiveBudget, optimalEffectiveBudget = null, tempError, tempCurrentError;
         Set<Integer> tempCandidateSamplingSizeSet;
-        for (PrivacyGroupTriple privacyGroupTriple : privacyGroupTripleList) {
-            tempMaximumSamplingSize = (int)Math.ceil(privacyGroupTriple.getUserSize() * samplingRatio);
-            tempWindowSize = privacyGroupTriple.getWindowSize();
-            tempPrivacyBudget = privacyGroupTriple.getEpsilon();
+        for (T privacyGroup : privacyGroupList) {
+            tempMaximumSamplingSize = (int)Math.ceil(privacyGroup.getUserSize() * samplingRatio);
+            tempWindowSize = privacyGroup.getWindowSize();
+            tempPrivacyBudget = privacyGroup.getEpsilon();
             tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 1);
             tempCurrentError = Double.MAX_VALUE;
             for (Integer candidateSamplingSize : tempCandidateSamplingSizeSet) {
@@ -120,8 +122,9 @@ public class ProposedSchemeUtils {
             errorList.add(tempCurrentError);
             optimalSamplingSizeList.add(tempOptimalSamplingSize);
             effectivePrivacyBudgetList.add(optimalEffectiveBudget);
+            windowSizeList.add(tempWindowSize);
         }
-        return new GroupAwareOptimalSelectionStruct(errorList, optimalSamplingSizeList, effectivePrivacyBudgetList);
+        return new GroupAwareOptimalSelectionStruct(errorList, optimalSamplingSizeList, effectivePrivacyBudgetList, windowSizeList);
     }
 
 

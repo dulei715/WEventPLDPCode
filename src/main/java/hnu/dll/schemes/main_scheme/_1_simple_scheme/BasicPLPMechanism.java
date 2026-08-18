@@ -124,7 +124,7 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
         this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
         this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
-        // 这里初始化历史窗口大小为 w_opt - 1
+        // 这里初始化历史窗口大小为 w_opt
         this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
         this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
     }
