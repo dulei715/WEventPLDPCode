@@ -174,7 +174,10 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         int tempSamplingSize;
         SimplePrivacyGroup tempPrivacyGroup;
         Set<Integer> tempSamplingUserIndexSetForCalculation;
-        List<>
+        Double tempPrivacyBudget;
+        List<Integer> tempSamplingDataIndexList;
+        Map<Integer, Double> tempGRRInfo;
+        List<Double> tempNormalizedEstimationList;
         for (int i = 0; i < this.groupSize; i++) {
             tempSamplingSize = this.newSamplingSizeGroupList.get(i);
             tempPrivacyGroup = this.privacyGroupList.get(i);
@@ -182,16 +185,14 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
             this.candidateUserIndexSetList.get(i).removeAll(tempSamplingUserIndexSetForCalculation);
             this.samplingSubMechanismHistoryQueueList.get(i).offer(tempSamplingUserIndexSetForCalculation);
             // todo: 不用抽取epsilon list, 因为同一组的 epsilon 都一样
+            tempPrivacyBudget = this.newPrivacyBudgetGroupList.get(i);
+            tempSamplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, tempSamplingUserIndexSetForCalculation);
+            tempGRRInfo = MechanismUtils.gRR(tempPrivacyBudget, tempSamplingDataIndexList, this.domainSize, this.random);
+            tempNormalizedEstimationList = BasicUtils.toSortedListByKeys(tempGRRInfo, this.domainIndexList, 0D);
+
         }
 
-        // 获取当前 privacy budget 列表
-        List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetGroupList, samplingUserIndexSetForCalculation);
-        // 获取当前 data 列表
-        List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForCalculation);
 
-        CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRRInfo = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random);
-        Map<Integer, Double> normalizedEstimationMap = gPRRInfo.getKey();
-        Map<Double, Integer> rePerturbedEpsilonCount = gPRRInfo.getValue();
 
         List<Double> normalizedEstimationList = BasicUtils.toSortedListByKeys(normalizedEstimationMap, this.domainIndexList, 0D);
 

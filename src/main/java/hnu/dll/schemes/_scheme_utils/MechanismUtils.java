@@ -36,17 +36,17 @@ public class MechanismUtils {
 
 
         // 2. PFO.Aggregate 聚合
-        Map<Double, Integer> perturbedEpsilonCount = BasicUtils.getGroupDataCount(perturbedData);
+        Map<Double, Integer> perturbedCountGroupedByEpsilon = BasicUtils.getGroupDataCount(perturbedData);
 //        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(perturbedEpsilonCount, perturbedData, domainSize);
         Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(perturbedData, domainSize);
 
 
         // 3. PFO.Estimate 估计
-        Map<Double, Double> samplingAggregationWeightedMap = PFOUtils.getAggregationWeightMap(perturbedEpsilonCount, domainSize);
+        Map<Double, Double> samplingAggregationWeightedMap = PFOUtils.getAggregationWeightMap(perturbedCountGroupedByEpsilon, domainSize);
         Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(groupedDataMap.keySet(), domainSize);
         Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, samplingAggregationWeightedMap);
-        return new CombinePair<>(BasicUtils.normalizeValues(estimationMap), perturbedEpsilonCount);
+        return new CombinePair<>(BasicUtils.normalizeValues(estimationMap), perturbedCountGroupedByEpsilon);
     }
 
     @Deprecated
