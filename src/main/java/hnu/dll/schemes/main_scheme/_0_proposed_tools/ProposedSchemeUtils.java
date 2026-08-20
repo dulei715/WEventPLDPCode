@@ -77,10 +77,10 @@ public class ProposedSchemeUtils {
         for(; i < windowSize && tempCandidateSamplingSize < samplingSizeLowerBound; i++) {
             tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
         }
-
-
         for (; i < windowSize && tempCandidateSamplingSize <= samplingSize; i++) {
-            candidateSamplingSizeSet.add(tempCandidateSamplingSize);
+            if (tempCandidateSamplingSize >= samplingSizeLowerBound) {
+                candidateSamplingSizeSet.add(tempCandidateSamplingSize);
+            }
             tempCandidateSamplingSize = (int)Math.floor((i+1)*samplingSize*1.0/windowSize);
         }
         return candidateSamplingSizeSet;
@@ -107,7 +107,7 @@ public class ProposedSchemeUtils {
             tempMaximumSamplingSize = (int)Math.ceil(privacyGroup.getUserSize() * samplingRatio);
             tempWindowSize = privacyGroup.getWindowSize();
             tempPrivacyBudget = privacyGroup.getEpsilon();
-            tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 1);
+            tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 2);
             tempCurrentError = Double.MAX_VALUE;
             for (Integer candidateSamplingSize : tempCandidateSamplingSizeSet) {
                 repeatSize = (int) Math.ceil(candidateSamplingSize * tempWindowSize * 1.0 / tempMaximumSamplingSize);
