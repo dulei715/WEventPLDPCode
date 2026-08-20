@@ -1,13 +1,16 @@
 package hnu.dll.schemes.main_scheme._3_advanced_scheme;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.basic.BasicCalculation;
 import cn.edu.dll.basic.RandomUtil;
+import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
 import hnu.dll.schemes._scheme_utils.AdvancedSchemeUtils;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.BasicMethodUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
+import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
 import hnu.dll.structure.personalized_data.PrivacyGroupStatus;
@@ -39,7 +42,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
     protected List<Set<Integer>> candidateUserIndexSetList;
 
 //    protected Map<Integer, Double> lastReleaseEstimation;
-    // 记录上个有效发布时刻的数据状态，注意不同组的上个时刻可能不同
+    // 记录上个有效发布时刻的数据状态，注意不同组的上个时刻可能不同（PLPD+是相同的，但PLPA+是不同的）
     protected List<PrivacyGroupStatus<Integer>> lastReleaseGroupStatusList;
 
     protected List<HistoryPopulationQueue> samplingSubMechanismHistoryQueueList;
@@ -154,6 +157,8 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         }
     }
 
+    protected abstract Map<Integer, Double> getLastCombinedEstimation();
+
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 
         ++this.currentTime;
@@ -171,16 +176,20 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
      * @return
      */
     protected Double samplingSubMechanism(List<Integer> nextDataIndexList) {
-        int tempSamplingSize;
+        int tempSamplingSize, tempGroupInnerSize;
         SimplePrivacyGroup tempPrivacyGroup;
         Set<Integer> tempSamplingUserIndexSetForCalculation;
-        Double tempPrivacyBudget;
+        double tempPrivacyBudget, tempEstimationNormSquare, tempUnbiasedVariance, tempPi, totalPiWeightedUnbiasedVarianceSum = 0.0;
         List<Integer> tempSamplingDataIndexList;
         Map<Integer, Double> tempGRRInfo;
-        List<Double> tempNormalizedEstimationList;
+        List<Double> tempNormalizedEstimationList, piWeightedList = new ArrayList<>(this.groupSize);
+        List<List<Double>> populationEstimationListList = new ArrayList<>(this.groupSize);
+
         for (int i = 0; i < this.groupSize; i++) {
             tempSamplingSize = this.newSamplingSizeGroupList.get(i);
             tempPrivacyGroup = this.privacyGroupList.get(i);
+            tempGroupInnerSize = tempPrivacyGroup.getUserSize();
+            tempPi = tempGroupInnerSize * 1.0 / this.userSize;
             tempSamplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempPrivacyGroup.getUserIDSet(), tempSamplingSize, this.random);
             this.candidateUserIndexSetList.get(i).removeAll(tempSamplingUserIndexSetForCalculation);
             this.samplingSubMechanismHistoryQueueList.get(i).offer(tempSamplingUserIndexSetForCalculation);
@@ -188,17 +197,19 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
             tempPrivacyBudget = this.newPrivacyBudgetGroupList.get(i);
             tempSamplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, tempSamplingUserIndexSetForCalculation);
             tempGRRInfo = MechanismUtils.gRR(tempPrivacyBudget, tempSamplingDataIndexList, this.domainSize, this.random);
+            tempEstimationNormSquare = BasicCalculation.get2NormSquare(tempGRRInfo.values());
+            tempUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, tempGroupInnerSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
+            totalPiWeightedUnbiasedVarianceSum += tempPi * tempPi * tempUnbiasedVariance;
             tempNormalizedEstimationList = BasicUtils.toSortedListByKeys(tempGRRInfo, this.domainIndexList, 0D);
-
+            populationEstimationListList.add(tempNormalizedEstimationList);
+            piWeightedList.add(tempPi);
         }
 
+        List<Double> populationWeightedEstimationList = StatisticTool.getWeightedStatisticList(populationEstimationListList, piWeightedList);
+        Map<Integer, Double> lastCombinedEstimation = getLastCombinedEstimation();
+        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(lastCombinedEstimation, this.domainIndexList, 0D);
 
-
-        List<Double> normalizedEstimationList = BasicUtils.toSortedListByKeys(normalizedEstimationMap, this.domainIndexList, 0D);
-
-        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, this.domainSize);
-        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastReleaseEstimation, this.domainIndexList, 0D);
-        return PFOUtils.getDissimilarity(normalizedEstimationList, lastReleaseEstimationList, pldpVarianceSum);
+        return PFOUtils.getDissimilarity(populationWeightedEstimationList, lastReleaseEstimationList, totalPiWeightedUnbiasedVarianceSum);
     }
 
     // M_{r,t}

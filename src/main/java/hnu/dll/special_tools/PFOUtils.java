@@ -250,9 +250,10 @@ public class PFOUtils {
      */
     public static Double getDissimilarity(List<Double> estimationList, List<Double> lastEstimationList, Double pldpVarianceSum) {
         int size = estimationList.size();
-        Double differSum = 0D;
+        double differSum = 0.0, differ;
         for (int i = 0; i < size; i++) {
-            differSum += Math.pow(estimationList.get(i) - lastEstimationList.get(i), 2);
+            differ = estimationList.get(i) - lastEstimationList.get(i);
+            differSum += differ * differ;
         }
         return (differSum - pldpVarianceSum) / size;
     }

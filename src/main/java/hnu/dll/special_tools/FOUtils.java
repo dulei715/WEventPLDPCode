@@ -114,4 +114,12 @@ public class FOUtils {
         return (samplingVariance + ldpVariance) / domainSize;
     }
 
+
+    // 用于计算无偏方差
+    public static Double getUnbiasedVariance(Double effectivePrivacyBudget, Integer userSize, Integer sampleSize, Integer domainSize, Double estimateTwoNormSquare) {
+        double theta = (userSize - sampleSize) * 1.0 / (sampleSize * (userSize - 1));
+        Double ldpVariance = getLDPVarianceSum(effectivePrivacyBudget, sampleSize, domainSize);
+        return (theta * (1 - estimateTwoNormSquare) + ldpVariance) / (1 - theta);
+    }
+
 }
