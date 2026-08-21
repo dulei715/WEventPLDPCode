@@ -191,15 +191,19 @@ public class ProposedSchemeUtils {
      * @return
      * @param <T>
      */
-    public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final Map<Integer, List<Integer>> indexSourceMap, List<TreeMap<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
+    public static <T extends Comparable<T>> List<SimpleMatrix> getCorrectedWeight(final Map<Integer, List<Integer>> indexSourceMap, List<? extends Map<T, Double>> groupEstimateList, List<Double> varianceList, List<Double> finalVarianceList, Double lowerBound) {
         int size = groupEstimateList.size();
+        List<TreeMap<T, Double>> sortedGroupEstimateList = new ArrayList<>(size);
+        for (Map<T, Double> groupEstimate : groupEstimateList) {
+            sortedGroupEstimateList.add(new TreeMap<>(groupEstimate));
+        }
         List<SimpleMatrix> resultList = new ArrayList<>(size);
 //        Map<Integer, List<Integer>> indexSourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(privacyGroupList);
 //        TreeMap<T, Double> targetEstimate;
         SimpleMatrix targetEstimateVector, differA, differB;
         Double targetVariance;
         for (int i = 0; i < size; i++) {
-            targetEstimateVector = VectorUtil.toColumnVector(groupEstimateList.get(i).values());
+            targetEstimateVector = VectorUtil.toColumnVector(sortedGroupEstimateList.get(i).values());
             targetVariance = varianceList.get(i);
             List<Integer> sourceList = indexSourceMap.get(i);
             int dominatingSize = sourceList.size();
@@ -212,11 +216,11 @@ public class ProposedSchemeUtils {
                 sourceAIndex = sourceList.get(j);
                 sourceAVariance = varianceList.get(sourceAIndex);
                 sourceAVarianceFinal = finalVarianceList.get(sourceAIndex);
-                sourceAEstimateVector = VectorUtil.toColumnVector(groupEstimateList.get(sourceAIndex).values());
+                sourceAEstimateVector = VectorUtil.toColumnVector(sortedGroupEstimateList.get(sourceAIndex).values());
                 differA = sourceAEstimateVector.minus(targetEstimateVector);
                 for (int k = j; k < dominatingSize; k++) {
                     sourceBIndex = sourceList.get(k);
-                    sourceBEstimateVector = VectorUtil.toColumnVector(groupEstimateList.get(sourceBIndex).values());
+                    sourceBEstimateVector = VectorUtil.toColumnVector(sortedGroupEstimateList.get(sourceBIndex).values());
                     differB = sourceBEstimateVector.minus(targetEstimateVector);
                     tempValue = differA.dot(differB) - targetVariance + (sourceAVarianceFinal - sourceAVariance) * (j==k?1:0);
                     tempDominatingMatrix.set(j, k, tempValue);
@@ -248,18 +252,41 @@ public class ProposedSchemeUtils {
      * @return
      * @param <T>
      */
-    public static <T> List<TreeMap<T, Double>> biasedAwarePersonalizedUtilityEnhancement(final Map<Integer, List<Integer>> indexSourceMap, List<TreeMap<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
+//    public static <T> List<TreeMap<T, Double>> biasedAwarePersonalizedUtilityEnhancement(final Map<Integer, List<Integer>> indexSourceMap, List<TreeMap<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
+//        int size = groupEstimateList.size();
+//        List<TreeMap<T, Double>> resultList = new ArrayList<>(size);
+//        SimpleMatrix tempWeight;
+//        List<Double> tempWeightList;
+//        TreeMap<T, Double> tempEstimate;
+//        List<TreeMap<T, Double>> extendSourceEstimateList;
+//        List<Integer> tempSourceIndexList;
+//        for (int i = 0; i < size; i++) {
+//            tempWeight = correctedWeightList.get(i);
+//            tempSourceIndexList = indexSourceMap.get(i);
+//            extendSourceEstimateList = BasicArrayUtil.getElementListInGivenMultipleIndexes(groupEstimateList, Collections.singletonList(i), tempSourceIndexList);
+//            tempWeightList = VectorUtil.toList(tempWeight);
+//            tempEstimate = StatisticTool.getWeightedStatisticMap(extendSourceEstimateList, tempWeightList);
+//            resultList.add(tempEstimate);
+//        }
+//        return resultList;
+//    }
+    public static <T> List<Map<T, Double>> biasedAwarePersonalizedUtilityEnhancement(final Map<Integer, List<Integer>> indexSourceMap, List<? extends Map<T, Double>> groupEstimateList, List<SimpleMatrix> correctedWeightList) {
         int size = groupEstimateList.size();
-        List<TreeMap<T, Double>> resultList = new ArrayList<>(size);
+        List<Map<T, Double>> resultList = new ArrayList<>(size);
         SimpleMatrix tempWeight;
         List<Double> tempWeightList;
-        TreeMap<T, Double> tempEstimate;
-        List<TreeMap<T, Double>> extendSourceEstimateList;
+        Map<T, Double> tempEstimate;
+        List<Map<T, Double>> extendSourceEstimateList;
         List<Integer> tempSourceIndexList;
         for (int i = 0; i < size; i++) {
             tempWeight = correctedWeightList.get(i);
             tempSourceIndexList = indexSourceMap.get(i);
-            extendSourceEstimateList = BasicArrayUtil.getElementListInGivenMultipleIndexes(groupEstimateList, Collections.singletonList(i), tempSourceIndexList);
+            // 顺序与权重向量分量一致: [target, source_1, ..., source_k]
+            extendSourceEstimateList = new ArrayList<>();
+            extendSourceEstimateList.add(groupEstimateList.get(i));
+            for (Integer sourceIndex : tempSourceIndexList) {
+                extendSourceEstimateList.add(groupEstimateList.get(sourceIndex));
+            }
             tempWeightList = VectorUtil.toList(tempWeight);
             tempEstimate = StatisticTool.getWeightedStatisticMap(extendSourceEstimateList, tempWeightList);
             resultList.add(tempEstimate);

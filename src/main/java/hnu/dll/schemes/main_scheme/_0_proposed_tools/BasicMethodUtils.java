@@ -1,8 +1,10 @@
 package hnu.dll.schemes.main_scheme._0_proposed_tools;
 
+import cn.edu.dll.basic.BasicArrayUtil;
 import hnu.dll._config.Constant;
 import hnu.dll.structure.personalized_data.AbstractPrivacyGroup;
 import hnu.dll.utils.comparator.PrivacyGroupComparator;
+import org.ejml.simple.SimpleMatrix;
 
 import java.util.*;
 
@@ -81,4 +83,28 @@ public class BasicMethodUtils {
         }
         return result;
     }
+
+    public static List<Double> getGammaParameterList(final List<Double> piList, final Map<Integer, List<Integer>> indexSourceMap, final List<SimpleMatrix> lambdaList) {
+        int groupSize = piList.size();
+        Double[] resultArray = new Double[groupSize];
+        Arrays.fill(resultArray, 0D);
+        int tempTargetIndex;
+        List<Integer> tempSourceIndexList;
+        double tempTargetPi, tempSourcePi;
+        SimpleMatrix tempLambda;
+        for (Map.Entry<Integer, List<Integer>> entry : indexSourceMap.entrySet()) {
+            tempTargetIndex = entry.getKey();
+            tempTargetPi = piList.get(tempTargetIndex);
+            tempLambda = lambdaList.get(tempTargetIndex);
+            resultArray[tempTargetIndex] += tempTargetPi * tempLambda.get(0, 0);
+            tempSourceIndexList = entry.getValue();
+            for (int i = 0; i < tempSourceIndexList.size(); i++) {
+                int tempSourceIndex = tempSourceIndexList.get(i);
+                tempSourcePi = piList.get(tempSourceIndex);
+                resultArray[tempSourceIndex] += tempSourcePi * tempLambda.get(i + 1, 0);
+            }
+        }
+        return Arrays.asList(resultArray);
+    }
+
 }
