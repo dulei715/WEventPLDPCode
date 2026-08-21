@@ -3,6 +3,7 @@ package hnu.dll.schemes.main_scheme._3_advanced_scheme;
 import cn.edu.dll.basic.BasicArrayUtil;
 import cn.edu.dll.basic.BasicCalculation;
 import cn.edu.dll.basic.RandomUtil;
+import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
@@ -43,7 +44,8 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
 
 //    protected Map<Integer, Double> lastReleaseEstimation;
     // 记录上个有效发布时刻的数据状态，注意不同组的上个时刻可能不同（PLPD+是相同的，但PLPA+是不同的）
-    protected List<PrivacyGroupStatus<Integer>> lastReleaseGroupStatusList;
+//    protected List<PrivacyGroupStatus<Integer>> lastReleaseGroupStatusList;
+    protected Map<Integer, Double> lastCombinedEstimation;
 
     protected List<HistoryPopulationQueue> samplingSubMechanismHistoryQueueList;
     protected List<HistoryPopulationQueue> publicationSubMechanismHistoryQueueList;
@@ -74,8 +76,8 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
-//        this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
-        this.lastReleaseGroupStatusList = PrivacyGroupStatus.getIntializedPrivacyGroupStatusList(this.domainIndexList, this.userSize);
+        this.lastCombinedEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
+//        this.lastReleaseGroupStatusList = PrivacyGroupStatus.getIntializedPrivacyGroupStatusList(this.domainIndexList, this.userSize);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
         this.originalWindowSizeList = windowSizeList;
         if (this.originalPrivacyBudgetList.size() != this.originalWindowSizeList.size()) {
@@ -130,8 +132,8 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         return originalWindowSizeList;
     }
 
-    public List<PrivacyGroupStatus<Integer>> getLastReleaseGroupStatusList() {
-        return this.lastReleaseGroupStatusList;
+    public Map<Integer, Double> getLastReleaseGroupStatusList() {
+        return this.lastCombinedEstimation;
     }
 
     /**
@@ -157,7 +159,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         }
     }
 
-    protected abstract Map<Integer, Double> getLastCombinedEstimation();
+//    protected abstract Map<Integer, Double> getLastCombinedEstimation();
 
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
 
@@ -206,8 +208,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         }
 
         List<Double> populationWeightedEstimationList = StatisticTool.getWeightedStatisticList(populationEstimationListList, piWeightedList);
-        Map<Integer, Double> lastCombinedEstimation = getLastCombinedEstimation();
-        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(lastCombinedEstimation, this.domainIndexList, 0D);
+        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastCombinedEstimation, this.domainIndexList, 0D);
 
         return PFOUtils.getDissimilarity(populationWeightedEstimationList, lastReleaseEstimationList, totalPiWeightedUnbiasedVarianceSum);
     }

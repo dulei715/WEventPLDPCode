@@ -32,27 +32,29 @@ public class ProposedSchemeUtils {
     public static final boolean CurrentStatus = false;
     public static final boolean GeneralStatus = true;
 
-    public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, Integer domainSize) {
+    public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, List<Integer> windowSizeList, Double samplingRatio, Integer domainSize) {
         Map<Integer, Integer> uniqueSamplingSizeMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithFirstAppearanceIndex(samplingSizeRequirementList));
         Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
         int userSize = samplingSizeRequirementList.size();
         List<Double> tempBudgetList, finalBudgetList = null;
-        Integer originalSamplingSize;
+        Integer tempWindowSize, finalTau = -1, tempTau;
         Double originalBudget;
         LinkedHashMap<Double, Double> newUniqueBudgetStatisticMap;
         Double tempError, finalError = Double.MAX_VALUE;
         Integer finalSamplingSize = null, finalSamplingSizeIndex = null;
         for (Integer uniqueSamplingSize : uniqueSamplingSizeSet) {
+            tempTau = Math.max(1, (int)Math.floor(samplingRatio * userSize / uniqueSamplingSize));
             tempBudgetList = new ArrayList<>();
             for (int i = 0; i < userSize; ++i) {
-                originalSamplingSize = samplingSizeRequirementList.get(i);
+//                originalSamplingSize = samplingSizeRequirementList.get(i);
                 originalBudget = privacyBudgetList.get(i);
-                if (originalSamplingSize < uniqueSamplingSize) {
-//                    tempBudgetList.add(originalBudget * originalSamplingSize / uniqueSamplingSize);
-                    tempBudgetList.add(originalBudget / Math.ceil(uniqueSamplingSize * 1.0 / originalSamplingSize));
-                } else {
-                    tempBudgetList.add(originalBudget);
-                }
+//                if (originalSamplingSize < uniqueSamplingSize) {
+//                    tempBudgetList.add(originalBudget / Math.ceil(uniqueSamplingSize * 1.0 / originalSamplingSize));
+//                } else {
+//                    tempBudgetList.add(originalBudget);
+//                }
+                tempWindowSize = windowSizeList.get(i);
+                tempBudgetList.add(originalBudget / Math.ceil(tempWindowSize / tempTau));
             }
 
             newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
@@ -63,11 +65,12 @@ public class ProposedSchemeUtils {
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;
+                finalTau = tempTau;
                 finalBudgetList = tempBudgetList;
                 finalSamplingSizeIndex = uniqueSamplingSizeMap.get(finalSamplingSize);
             }
         }
-        return new OptimalSelectionStruct(finalSamplingSize, finalError, finalBudgetList, finalSamplingSizeIndex);
+        return new OptimalSelectionStruct(finalSamplingSize, finalTau, finalError, finalBudgetList, finalSamplingSizeIndex);
     }
 
     protected static Set<Integer> getCandidateSamplingSizeSet(Integer windowSize, Integer samplingSize, Integer samplingSizeLowerBound) {

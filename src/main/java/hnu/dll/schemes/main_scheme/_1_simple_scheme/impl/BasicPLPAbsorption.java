@@ -32,7 +32,7 @@ public class BasicPLPAbsorption extends BasicPLPMechanism {
             this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
             Integer absorbedLength = this.currentTime - lastTimeSlot - nullifiedLength;
-            Integer publicationSamplingSize = optimalSamplingSize * Math.min(absorbedLength, this.optimalWindowSize);
+            Integer publicationSamplingSize = optimalSamplingSize * Math.min(absorbedLength, this.recycleWindowSize);
             Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
             // 获取当前 privacy budget 列表
             List<Double> samplingPrivacyBudgetList = BasicArrayUtil.extractSubListInGivenIndexCollection(this.newPrivacyBudgetList, samplingUserIndexSetForPublication);
@@ -56,7 +56,7 @@ public class BasicPLPAbsorption extends BasicPLPMechanism {
         }
 
         // recycle
-        if (this.currentTime >= this.optimalWindowSize) {
+        if (this.currentTime >= this.recycleWindowSize) {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);

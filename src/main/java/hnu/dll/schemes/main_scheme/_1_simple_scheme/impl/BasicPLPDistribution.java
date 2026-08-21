@@ -20,7 +20,7 @@ public class BasicPLPDistribution extends BasicPLPMechanism {
     @Override
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
 
-        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.optimalWindowSize - 1);
+        Integer remainingPublicationUserSize = this.userSize / 2 - this.publicationSubMechanismHistoryQueue.getReverseSizeSum(this.recycleWindowSize - 1);
         Integer publicationSamplingSize = remainingPublicationUserSize / 2;
         Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
         // 获取当前 privacy budget 列表
@@ -48,7 +48,7 @@ public class BasicPLPDistribution extends BasicPLPMechanism {
         }
 
         // recycle
-        if (this.currentTime >= this.optimalWindowSize) {
+        if (this.currentTime >= this.recycleWindowSize) {
             Set samplingRecycle = this.samplingSubMechanismHistoryQueue.getFirst();
             Set publicationRecycle = this.publicationSubMechanismHistoryQueue.getFirst();
             this.candidateUserIndexSet.addAll(samplingRecycle);

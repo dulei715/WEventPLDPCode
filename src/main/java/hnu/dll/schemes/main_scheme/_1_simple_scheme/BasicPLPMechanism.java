@@ -27,7 +27,7 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
     protected Integer userSize;
 
     protected OptimalSelectionStruct optimalSelectionStruct;
-    protected Integer optimalWindowSize;
+    protected Integer recycleWindowSize;
 
     protected Set<Integer> candidateUserIndexSet;
 
@@ -86,8 +86,8 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         return newPrivacyBudgetList;
     }
 
-    public Integer getOptimalWindowSize() {
-        return this.optimalWindowSize;
+    public Integer getRecycleWindowSize() {
+        return this.recycleWindowSize;
     }
 
     /**
@@ -121,12 +121,13 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
     public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
         List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
-        this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.domainSize);
+        this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.windowSizeList, 0.5, this.domainSize);
         this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
-        this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
+//        this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
+        this.recycleWindowSize = this.optimalSelectionStruct.getPopulationRecycleWindowSize();
         // 这里初始化历史窗口大小为 w_opt
-        this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
-        this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.optimalWindowSize);
+        this.samplingSubMechanismHistoryQueue = new HistoryPopulationQueue(this.recycleWindowSize);
+        this.publicationSubMechanismHistoryQueue = new HistoryPopulationQueue(this.recycleWindowSize);
     }
 
     public CombinePair<Boolean, Map<Integer, Double>> updateNextPublicationResult(List<Integer> nextDataIndexList) {
