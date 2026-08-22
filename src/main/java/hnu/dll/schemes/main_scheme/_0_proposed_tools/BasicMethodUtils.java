@@ -90,7 +90,7 @@ public class BasicMethodUtils {
         Arrays.fill(resultArray, 0D);
         int tempTargetIndex;
         List<Integer> tempSourceIndexList;
-        double tempTargetPi, tempSourcePi;
+        double tempTargetPi;
         SimpleMatrix tempLambda;
         for (Map.Entry<Integer, List<Integer>> entry : indexSourceMap.entrySet()) {
             tempTargetIndex = entry.getKey();
@@ -100,8 +100,7 @@ public class BasicMethodUtils {
             tempSourceIndexList = entry.getValue();
             for (int i = 0; i < tempSourceIndexList.size(); i++) {
                 int tempSourceIndex = tempSourceIndexList.get(i);
-                tempSourcePi = piList.get(tempSourceIndex);
-                resultArray[tempSourceIndex] += tempSourcePi * tempLambda.get(i + 1, 0);
+                resultArray[tempSourceIndex] += tempTargetPi * tempLambda.get(i + 1, 0);
             }
         }
         return Arrays.asList(resultArray);

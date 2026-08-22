@@ -1,6 +1,7 @@
 package hnu.dll.schemes.main_scheme._0_proposed_tools;
 
 import cn.edu.dll.basic.BasicArrayUtil;
+import cn.edu.dll.basic.BasicCalculation;
 import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.math_calculation.LinearAlgorithmUtils;
 import cn.edu.dll.matrix.VectorUtil;
@@ -296,7 +297,31 @@ public class ProposedSchemeUtils {
 
 
 
+    public static Double getBAPUEError(final List<Double> piList, final Map<Integer, List<Integer>> indexSourceMap, final List<SimpleMatrix> lambdaList,
+                                       final List<Double> unknownEstimateVarianceList, final List<List<Double>> knownEstimateList, final List<Double> knownEstimateVarianceList, final int dimension) {
+        List<Double> gammaParameterList = BasicMethodUtils.getGammaParameterList(piList, indexSourceMap, lambdaList);
+        double mainPartSum = 0.0, partBSquare, partCSum = 0.0;
+        double tempGamma, tempUnknownVariance, tempKnownVariance, tempPi, tempDiffer;
+        int groupSize = piList.size();
+        List<Double> tempKnownEstimate, partBWeightedList = new ArrayList<>(groupSize);
+        for (int i = 0; i < groupSize; i++) {
+            tempGamma = gammaParameterList.get(i);
+            tempUnknownVariance = unknownEstimateVarianceList.get(i);
+            tempPi = piList.get(i);
+            tempKnownVariance = knownEstimateVarianceList.get(i);
 
+            mainPartSum += tempGamma * tempGamma * tempUnknownVariance;
+            tempDiffer = tempGamma - tempPi;
+            partBWeightedList.add(tempDiffer);
+            partCSum += tempDiffer * tempDiffer * tempKnownVariance;
+
+        }
+
+        List<Double> partBEstimate = StatisticTool.getWeightedStatisticList(knownEstimateList, partBWeightedList);
+        partBSquare = BasicCalculation.get2NormSquare(partBEstimate);
+        return 1.0 / dimension * (mainPartSum + Math.max(0, partBSquare - partCSum));
+
+    }
 
 
 
