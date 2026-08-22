@@ -99,6 +99,9 @@ public class PLPDPlus extends AdvancedPLPMechanism {
                 super.publicationSubMechanismHistoryQueueList.get(i).offer(new HashSet<>());
             }
         }
+
+        if (super.currentTime >= )
+
         return new CombinePair<>(false, finalEstimateMap);
     }
 
