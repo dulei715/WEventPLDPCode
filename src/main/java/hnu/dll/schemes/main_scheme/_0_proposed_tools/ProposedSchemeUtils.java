@@ -108,7 +108,7 @@ public class ProposedSchemeUtils {
         Double tempPrivacyBudget, tempEffectiveBudget, optimalEffectiveBudget = null, tempError, tempCurrentError;
         Set<Integer> tempCandidateSamplingSizeSet;
         for (T privacyGroup : privacyGroupList) {
-            tempMaximumSamplingSize = (int)Math.ceil(privacyGroup.getUserSize() * samplingRatio);
+            tempMaximumSamplingSize = (int)Math.floor(privacyGroup.getUserSize() * samplingRatio);
             tempWindowSize = privacyGroup.getWindowSize();
             tempPrivacyBudget = privacyGroup.getEpsilon();
             tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 2);

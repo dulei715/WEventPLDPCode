@@ -32,25 +32,31 @@ public class PLPDPlus extends AdvancedPLPMechanism {
     @Override
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
         int tempRecyclePeriod;
-        int tempGroupInnerSize, tempOptimalSamplingSize, remainingPopulationSize, potentialPublicationUserSize, tempSamplingSize;
-        List<Integer> groupOptimalSamplingSizeList = super.disGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
-        List<Integer> windowSizeList = super.disGroupAwareOptimalSelectionStruct.getWindowSizeList(), tempSamplingDataIndexList;
-        List<PrivacyGroupTriple> publicationPrivacyGroupTripleList = new ArrayList<>(super.groupSize);
+        int tempGroupInnerSize, tempOptimalSamplingSize, remainingPopulationSize, tempPotentialPublicationUserSize, tempSamplingSize;
+        List<Integer> groupOptimalSamplingSizeList = super.disGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList(), potentialPublicationUserSizeList = new ArrayList<>(super.groupSize);
+        List<Integer> tempSamplingDataIndexList;
+        List<Double> prePublicationVarianceList = new ArrayList<>(super.groupSize);
+//        List<PrivacyGroupTriple> publicationPrivacyGroupTripleList = new ArrayList<>(super.groupSize);
         Map<Integer, Double> tempInfo;
         Map<Integer, Double> finalEstimateMap;
+        Double tempPreVariance;
         for (int i = 0; i < super.groupSize; i++) {
             tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
-            tempOptimalSamplingSize = groupOptimalSamplingSizeList.get(i);
-            tempRecyclePeriod = Math.max(1, tempGroupInnerSize / tempOptimalSamplingSize);  // 这里用了整数除法截断性质实现向下取整
-            remainingPopulationSize = tempGroupInnerSize / 2 - super.publicationSubMechanismHistoryQueueList.get(i).getReverseSizeSum(windowSizeList.get(i) - 1);
-            potentialPublicationUserSize = remainingPopulationSize / 2;     // 这里用了整数除法截断性质实现向下取整
-            publicationPrivacyGroupTripleList.add(new PrivacyGroupTriple(windowSizeList.get(i), super.distinctBudgetList.get(i), potentialPublicationUserSize));
+//            tempOptimalSamplingSize = groupOptimalSamplingSizeList.get(i);
+//            tempRecyclePeriod = Math.max(1, tempGroupInnerSize / tempOptimalSamplingSize);  // 这里用了整数除法截断性质实现向下取整
+            remainingPopulationSize = tempGroupInnerSize / 2 - super.publicationSubMechanismHistoryQueueList.get(i).getReverseSizeSum(super.newWindowSizeGroupList.get(i) - 1);
+            tempPotentialPublicationUserSize = remainingPopulationSize / 2;     // 这里用了整数除法截断性质实现向下取整
+            potentialPublicationUserSizeList.add(tempPotentialPublicationUserSize);
+//            publicationPrivacyGroupTripleList.add(new PrivacyGroupTriple(super.newWindowSizeGroupList.get(i), super.distinctBudgetList.get(i), potentialPublicationUserSize));
+            tempPreVariance = FOUtils.getGPRRVarianceBySamplingSize(super.newPrivacyBudgetGroupList.get(i), tempGroupInnerSize / 2, tempPotentialPublicationUserSize, super.domainSize);
+            prePublicationVarianceList.add(tempPreVariance);
+
         }
-        this.pubGroupAwareOptimalSelectionStruct = ProposedSchemeUtils.groupAwareOptimalPopulationSelection(publicationPrivacyGroupTripleList, 1.0, super.domainSize);
-        List<Double> optimalErrorList = this.pubGroupAwareOptimalSelectionStruct.getOptimalErrorList();
-        List<Integer> optimalPubSamplingSizeList = this.pubGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
-        List<Double> optimalEffectivePublicationPrivacyBudgetList = this.pubGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
-        List<Double> prePublicationVarianceList = BasicArrayUtil.getLinearTransformToList(optimalErrorList, super.domainSize, 0);
+//        this.pubGroupAwareOptimalSelectionStruct = ProposedSchemeUtils.groupAwareOptimalPopulationSelection(publicationPrivacyGroupTripleList, 1.0, super.domainSize);
+//        List<Double> optimalErrorList = this.pubGroupAwareOptimalSelectionStruct.getOptimalErrorList();
+//        List<Integer> optimalPubSamplingSizeList = this.pubGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
+//        List<Double> optimalEffectivePublicationPrivacyBudgetList = this.pubGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
+//        List<Double> prePublicationVarianceList = BasicArrayUtil.getLinearTransformToList(optimalErrorList, super.domainSize, 0);
         List<SimpleMatrix> preCorrectedWeightList = ProposedSchemeUtils.getCorrectedWeight(super.sourceMap, super.currentDisEstimationMapList, super.currentDisUnbiasedVarianceList, prePublicationVarianceList, Constant.EigenvaluesLowerBound);
         Double errorPlus = ProposedSchemeUtils.getBAPUEError(super.piList, super.sourceMap, preCorrectedWeightList, prePublicationVarianceList, super.currentDisEstimationListList, super.currentDisUnbiasedVarianceList, this.domainSize);
         Boolean flag;
@@ -61,17 +67,17 @@ public class PLPDPlus extends AdvancedPLPMechanism {
         this.currentDisUnbiasedVarianceList = new ArrayList<>(super.groupSize);
         List<Double> tempNormalizedEstimationList;
         List<SimpleMatrix> finalWeightList;
-        if (dissimilarity > errorPlus && BasicArrayUtil.getIntegerMinValueIndex(optimalPubSamplingSizeList) >= Constant.PopulationLowerBound) {
+        if (dissimilarity > errorPlus && BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound) {
             flag = true;
             for (int i = 0; i < super.groupSize; i++) {
                 tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
                 tempGroupCandidateUserIndexSet = super.candidateUserIndexSetList.get(i);
-                tempSamplingSize = optimalPubSamplingSizeList.get(i);
+                tempSamplingSize = potentialPublicationUserSizeList.get(i);
                 tempSamplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempGroupCandidateUserIndexSet, tempSamplingSize, super.random);
                 tempGroupCandidateUserIndexSet.removeAll(tempSamplingUserIndexSetForPublication);
                 super.publicationSubMechanismHistoryQueueList.get(i).offer(tempSamplingUserIndexSetForPublication);
 
-                tempPrivacyBudget = optimalEffectivePublicationPrivacyBudgetList.get(i);
+                tempPrivacyBudget = super.newPrivacyBudgetGroupList.get(i);
                 tempSamplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, tempSamplingUserIndexSetForPublication);
                 tempInfo = MechanismUtils.gRR(tempPrivacyBudget, tempSamplingDataIndexList, super.domainSize, super.random);
                 this.currentPubEstimationMapList.add(tempInfo);
@@ -99,10 +105,21 @@ public class PLPDPlus extends AdvancedPLPMechanism {
                 super.publicationSubMechanismHistoryQueueList.get(i).offer(new HashSet<>());
             }
         }
+        Set<Integer> tempSamplingRecycle, tempPublicationRecycle;
+        for (int i = 0; i < super.groupSize; i++) {
+            if (super.currentTime >= super.newWindowSizeGroupList.get(i)) {
+                tempSamplingRecycle = super.samplingSubMechanismHistoryQueueList.get(i).getFirst();
+                tempPublicationRecycle = super.publicationSubMechanismHistoryQueueList.get(i).getFirst();
+                super.candidateUserIndexSetList.get(i).addAll(tempSamplingRecycle);
+                if (tempPublicationRecycle != null) {
+                    super.candidateUserIndexSetList.get(i).addAll(tempPublicationRecycle);
+                }
+            }
+        }
 
-        if (super.currentTime >= )
 
-        return new CombinePair<>(false, finalEstimateMap);
+        return new CombinePair<>(flag, finalEstimateMap);
+
     }
 
     @Override

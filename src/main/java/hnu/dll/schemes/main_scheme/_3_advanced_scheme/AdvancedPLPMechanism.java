@@ -33,7 +33,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
     protected List<Double> originalPrivacyBudgetList;
     protected List<Integer> originalWindowSizeList;
 
-    protected List<Integer> windowSizeGroupList;
+    protected List<Integer> newWindowSizeGroupList;
     protected List<Double> newPrivacyBudgetGroupList;
     protected List<Integer> newSamplingSizeGroupList;
 
@@ -155,7 +155,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         this.disGroupAwareOptimalSelectionStruct = ProposedSchemeUtils.groupAwareOptimalPopulationSelection(this.privacyGroupList, 0.5, this.domainSize);
         this.newPrivacyBudgetGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
         this.newSamplingSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
-        this.windowSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getWindowSizeList();
+        this.newWindowSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getWindowSizeList();
         // 这里初始化历史窗口大小为其个性化窗口
 //        int maxOptimalWindowSize = Collections.max(this.windowSizeGroupList);
         this.groupSize = this.disGroupAwareOptimalSelectionStruct.getGroupSize();
@@ -166,7 +166,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         int tempWindowSize;
         SimplePrivacyGroup tempGroup;
         for (int i = 0; i < this.groupSize; i++) {
-            tempWindowSize = this.windowSizeGroupList.get(i);
+            tempWindowSize = this.newWindowSizeGroupList.get(i);
             this.samplingSubMechanismHistoryQueueList.add(new HistoryPopulationQueue<Integer>(tempWindowSize));
             this.publicationSubMechanismHistoryQueueList.add(new HistoryPopulationQueue<Integer>(tempWindowSize));
             tempGroup = this.privacyGroupList.get(i);

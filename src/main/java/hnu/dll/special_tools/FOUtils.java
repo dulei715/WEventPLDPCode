@@ -114,6 +114,12 @@ public class FOUtils {
         return (samplingVariance + ldpVariance) / domainSize;
     }
 
+    public static Double getGPRRVarianceBySamplingSize(Double effectivePrivacyBudget, Integer userSize, Integer sampleSize, Integer domainSize) {
+        Double samplingVariance = SamplingUtils.getSamplingVariance(userSize, sampleSize);
+        Double ldpVariance = getLDPVarianceSum(effectivePrivacyBudget, sampleSize, domainSize);
+        return (samplingVariance + ldpVariance);
+    }
+
 
     // 用于计算无偏方差
     public static Double getUnbiasedVariance(Double effectivePrivacyBudget, Integer userSize, Integer sampleSize, Integer domainSize, Double estimateTwoNormSquare) {
