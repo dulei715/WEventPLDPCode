@@ -31,6 +31,7 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
 
     protected Set<Integer> candidateUserIndexSet;
 
+    protected Map<Integer, Double> lastRawReleaseEstimation;
     protected Map<Integer, Double> lastReleaseEstimation;
 
     protected HistoryPopulationQueue samplingSubMechanismHistoryQueue;
@@ -58,6 +59,7 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
+        this.lastRawReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
         this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
         this.windowSizeList = windowSizeList;
@@ -156,15 +158,15 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         // 获取当前 data 列表
         List<Integer> samplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, samplingUserIndexSetForCalculation);
 
-        CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRRInfo = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random);
-        Map<Integer, Double> normalizedEstimationMap = gPRRInfo.getKey();
-        Map<Double, Integer> rePerturbedEpsilonCount = gPRRInfo.getValue();
+        CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRRInfo = MechanismUtils.gPRRRaw(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random);
+        Map<Integer, Double> rawEstimationMap = gPRRInfo.getKey();
+        Map<Double, Integer> rePerturbedRawEpsilonCount = gPRRInfo.getValue();
 
-        List<Double> normalizedEstimationList = BasicUtils.toSortedListByKeys(normalizedEstimationMap, this.domainIndexList, 0D);
+        List<Double> rawEstimationList = BasicUtils.toSortedListByKeys(rawEstimationMap, this.domainIndexList, 0D);
 
-        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, this.domainSize);
-        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastReleaseEstimation, this.domainIndexList, 0D);
-        return PFOUtils.getDissimilarity(normalizedEstimationList, lastReleaseEstimationList, pldpVarianceSum);
+        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedRawEpsilonCount, this.domainSize);
+        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastRawReleaseEstimation, this.domainIndexList, 0D);
+        return PFOUtils.getDissimilarity(rawEstimationList, lastReleaseEstimationList, pldpVarianceSum);
     }
 
     // M_{r,t}

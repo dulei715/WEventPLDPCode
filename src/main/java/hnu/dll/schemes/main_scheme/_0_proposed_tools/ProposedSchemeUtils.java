@@ -55,7 +55,7 @@ public class ProposedSchemeUtils {
 //                    tempBudgetList.add(originalBudget);
 //                }
                 tempWindowSize = windowSizeList.get(i);
-                tempBudgetList.add(originalBudget / Math.ceil(tempWindowSize / tempTau));
+                tempBudgetList.add(originalBudget / Math.ceil(tempWindowSize * 1.0 / tempTau));
             }
 
             newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
@@ -75,19 +75,25 @@ public class ProposedSchemeUtils {
     }
 
     protected static Set<Integer> getCandidateSamplingSizeSet(Integer windowSize, Integer samplingSize, Integer samplingSizeLowerBound) {
-        Set<Integer> candidateSamplingSizeSet = new TreeSet<>();
-        int i = 1;
-        Integer tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
-        for(; i < windowSize && tempCandidateSamplingSize < samplingSizeLowerBound; i++) {
-            tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
-        }
-        for (; i < windowSize && tempCandidateSamplingSize <= samplingSize; i++) {
+        Set<Integer> result = new TreeSet<>();
+//        int i = 1;
+//        Integer tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
+//        for(; i < windowSize && tempCandidateSamplingSize < samplingSizeLowerBound; i++) {
+//            tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
+//        }
+//        for (; i <= windowSize && tempCandidateSamplingSize <= samplingSize; i++) {
+//            if (tempCandidateSamplingSize >= samplingSizeLowerBound) {
+//                result.add(tempCandidateSamplingSize);
+//            }
+//            tempCandidateSamplingSize = (int)Math.floor((i+1)*samplingSize*1.0/windowSize);
+//        }
+        for (int omega = 1; omega <= windowSize; omega++) {
+            int tempCandidateSamplingSize = (int) Math.floor(omega * samplingSize * 1.0 / windowSize);
             if (tempCandidateSamplingSize >= samplingSizeLowerBound) {
-                candidateSamplingSizeSet.add(tempCandidateSamplingSize);
+                result.add(tempCandidateSamplingSize);
             }
-            tempCandidateSamplingSize = (int)Math.floor((i+1)*samplingSize*1.0/windowSize);
         }
-        return candidateSamplingSizeSet;
+        return result;
     }
 
     /**
@@ -102,33 +108,46 @@ public class ProposedSchemeUtils {
         List<Double> errorList = new ArrayList<>(groupSize);
         List<Integer> optimalSamplingSizeList = new ArrayList<>(groupSize);
         List<Double> effectivePrivacyBudgetList = new ArrayList<>(groupSize);
-        List<Integer> windowSizeList = new ArrayList<>(groupSize);
+        List<Integer> effectiveWindowSizeList = new ArrayList<>(groupSize);
         int tempWindowSize;
-        Integer tempMaximumSamplingSize, repeatSize, tempOptimalSamplingSize = null;
-        Double tempPrivacyBudget, tempEffectiveBudget, optimalEffectiveBudget = null, tempError, tempCurrentError;
+        Integer tempMaximumSamplingSize, repeatSize, tempTau;
+        Double tempPrivacyBudget, tempEffectiveBudget, tempError;
         Set<Integer> tempCandidateSamplingSizeSet;
         for (T privacyGroup : privacyGroupList) {
+            Integer tempOptimalSamplingSize = null, optimalTau = null;
+            Double optimalEffectiveBudget = null;
+            double tempCurrentError = Double.MAX_VALUE;
+
             tempMaximumSamplingSize = (int)Math.floor(privacyGroup.getUserSize() * samplingRatio);
             tempWindowSize = privacyGroup.getWindowSize();
             tempPrivacyBudget = privacyGroup.getEpsilon();
             tempCandidateSamplingSizeSet = getCandidateSamplingSizeSet(tempWindowSize, tempMaximumSamplingSize, 2);
-            tempCurrentError = Double.MAX_VALUE;
             for (Integer candidateSamplingSize : tempCandidateSamplingSizeSet) {
-                repeatSize = (int) Math.ceil(candidateSamplingSize * tempWindowSize * 1.0 / tempMaximumSamplingSize);
+                tempTau = Math.max(1, tempMaximumSamplingSize / candidateSamplingSize);
+//                repeatSize = (int) Math.ceil(candidateSamplingSize * tempWindowSize * 1.0 / tempMaximumSamplingSize);
+                repeatSize = (int) Math.ceil(tempWindowSize * 1.0 / tempTau);
                 tempEffectiveBudget = tempPrivacyBudget / repeatSize;
                 tempError = FOUtils.getGPRRErrorBySamplingSize(tempEffectiveBudget, tempMaximumSamplingSize, candidateSamplingSize, domainSize);
                 if (tempError < tempCurrentError) {
                     tempCurrentError = tempError;
                     tempOptimalSamplingSize = candidateSamplingSize;
+                    optimalTau = tempTau;
                     optimalEffectiveBudget = tempEffectiveBudget;
                 }
+            }
+            if (tempOptimalSamplingSize == null) {
+                throw new IllegalArgumentException(
+                        "No feasible GA-OPS sampling size for group: " + privacyGroup
+                );
             }
             errorList.add(tempCurrentError);
             optimalSamplingSizeList.add(tempOptimalSamplingSize);
             effectivePrivacyBudgetList.add(optimalEffectiveBudget);
-            windowSizeList.add(tempWindowSize);
+            effectiveWindowSizeList.add(optimalTau);
+
+
         }
-        return new GroupAwareOptimalSelectionStruct(errorList, optimalSamplingSizeList, effectivePrivacyBudgetList, windowSizeList);
+        return new GroupAwareOptimalSelectionStruct(errorList, optimalSamplingSizeList, effectiveWindowSizeList, effectivePrivacyBudgetList);
     }
 
 
@@ -202,10 +221,11 @@ public class ProposedSchemeUtils {
 //        Map<Integer, List<Integer>> indexSourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(privacyGroupList);
 //        TreeMap<T, Double> targetEstimate;
         SimpleMatrix targetEstimateVector, differA, differB;
-        Double targetVariance;
+        Double targetEstimateVariance, targetRiskVariance;
         for (int i = 0; i < size; i++) {
             targetEstimateVector = VectorUtil.toColumnVector(sortedGroupEstimateList.get(i).values());
-            targetVariance = varianceList.get(i);
+            targetEstimateVariance = varianceList.get(i);
+            targetRiskVariance = finalVarianceList.get(i);
             List<Integer> sourceList = indexSourceMap.get(i);
             int dominatingSize = sourceList.size();
             SimpleMatrix tempDominatingMatrix = new SimpleMatrix(dominatingSize, dominatingSize);
@@ -223,12 +243,12 @@ public class ProposedSchemeUtils {
                     sourceBIndex = sourceList.get(k);
                     sourceBEstimateVector = VectorUtil.toColumnVector(sortedGroupEstimateList.get(sourceBIndex).values());
                     differB = sourceBEstimateVector.minus(targetEstimateVector);
-                    tempValue = differA.dot(differB) - targetVariance + (sourceAVarianceFinal - sourceAVariance) * (j==k?1:0);
+                    tempValue = differA.dot(differB) - targetEstimateVariance + (sourceAVarianceFinal - sourceAVariance) * (j == k ? 1 : 0);
                     tempDominatingMatrix.set(j, k, tempValue);
                     tempDominatingMatrix.set(k, j, tempValue);
                 }
             }
-            RiskMatrixStructure riskMatrixStructure = new BlockedRiskMatrixStructure(targetVariance, tempDominatingMatrix);
+            RiskMatrixStructure riskMatrixStructure = new BlockedRiskMatrixStructure(targetRiskVariance, tempDominatingMatrix);
             riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, ProposedSchemeUtils.CurrentStatus);
 
             SimpleMatrix simpleMatrix = LinearAlgorithmUtils.solveSimplexConstrain(riskMatrixStructure.getRiskMatrix());

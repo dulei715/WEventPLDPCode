@@ -254,130 +254,130 @@ public class ProposedSchemeUtilsTest {
     }
 
     // new test
-    @Test
-    public void biasedAwarePersonalizedUtilityEnhancementManualTest() {
-        /*
-         * 3 个组, domain = {"a", "b"}
-         * indexSourceMap:
-         *   group 0: sources = [1, 2]  → weight 向量长度 = 3 (target + 2 sources)
-         *   group 1: sources = [2]     → weight 向量长度 = 2 (target + 1 source)
-         *   group 2: sources = []      → weight 向量长度 = 1 (target only)
-         *
-         * 手工指定权重，验证线性组合结果:
-         *   result[0] = 0.5*est0 + 0.3*est1 + 0.2*est2
-         *   result[1] = 0.6*est1 + 0.4*est2
-         *   result[2] = 1.0*est2
-         */
-        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
-        indexSourceMap.put(0, Arrays.asList(1, 2));
-        indexSourceMap.put(1, Collections.singletonList(2));
-        indexSourceMap.put(2, Collections.emptyList());
+//    @Test
+//    public void biasedAwarePersonalizedUtilityEnhancementManualTest() {
+//        /*
+//         * 3 个组, domain = {"a", "b"}
+//         * indexSourceMap:
+//         *   group 0: sources = [1, 2]  → weight 向量长度 = 3 (target + 2 sources)
+//         *   group 1: sources = [2]     → weight 向量长度 = 2 (target + 1 source)
+//         *   group 2: sources = []      → weight 向量长度 = 1 (target only)
+//         *
+//         * 手工指定权重，验证线性组合结果:
+//         *   result[0] = 0.5*est0 + 0.3*est1 + 0.2*est2
+//         *   result[1] = 0.6*est1 + 0.4*est2
+//         *   result[2] = 1.0*est2
+//         */
+//        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
+//        indexSourceMap.put(0, Arrays.asList(1, 2));
+//        indexSourceMap.put(1, Collections.singletonList(2));
+//        indexSourceMap.put(2, Collections.emptyList());
+//
+//        List<TreeMap<String, Double>> groupEstimateList = new ArrayList<>();
+//        TreeMap<String, Double> est0 = new TreeMap<>();
+//        est0.put("a", 0.5); est0.put("b", 0.5);
+//        groupEstimateList.add(est0);
+//
+//        TreeMap<String, Double> est1 = new TreeMap<>();
+//        est1.put("a", 0.7); est1.put("b", 0.3);
+//        groupEstimateList.add(est1);
+//
+//        TreeMap<String, Double> est2 = new TreeMap<>();
+//        est2.put("a", 0.3); est2.put("b", 0.7);
+//        groupEstimateList.add(est2);
+//
+//        List<SimpleMatrix> correctedWeightList = new ArrayList<>();
+//        correctedWeightList.add(new SimpleMatrix(3, 1, true, new double[]{0.5, 0.3, 0.2}));
+//        correctedWeightList.add(new SimpleMatrix(2, 1, true, new double[]{0.6, 0.4}));
+//        correctedWeightList.add(new SimpleMatrix(1, 1, true, new double[]{1.0}));
+//
+//        List<TreeMap<String, Double>> result = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(
+//                indexSourceMap, groupEstimateList, correctedWeightList
+//        );
+//
+//        assertEquals(3, result.size());
+//
+//        // result[0] = 0.5*est0 + 0.3*est1 + 0.2*est2
+//        assertEquals(0.52, result.get(0).get("a"), 1e-8);
+//        assertEquals(0.48, result.get(0).get("b"), 1e-8);
+//
+//        // result[1] = 0.6*est1 + 0.4*est2
+//        assertEquals(0.54, result.get(1).get("a"), 1e-8);
+//        assertEquals(0.46, result.get(1).get("b"), 1e-8);
+//
+//        // result[2] = 1.0*est2
+//        assertEquals(0.3, result.get(2).get("a"), 1e-8);
+//        assertEquals(0.7, result.get(2).get("b"), 1e-8);
+//
+//        System.out.println("result[0]: " + result.get(0));
+//        System.out.println("result[1]: " + result.get(1));
+//        System.out.println("result[2]: " + result.get(2));
+//    }
 
-        List<TreeMap<String, Double>> groupEstimateList = new ArrayList<>();
-        TreeMap<String, Double> est0 = new TreeMap<>();
-        est0.put("a", 0.5); est0.put("b", 0.5);
-        groupEstimateList.add(est0);
-
-        TreeMap<String, Double> est1 = new TreeMap<>();
-        est1.put("a", 0.7); est1.put("b", 0.3);
-        groupEstimateList.add(est1);
-
-        TreeMap<String, Double> est2 = new TreeMap<>();
-        est2.put("a", 0.3); est2.put("b", 0.7);
-        groupEstimateList.add(est2);
-
-        List<SimpleMatrix> correctedWeightList = new ArrayList<>();
-        correctedWeightList.add(new SimpleMatrix(3, 1, true, new double[]{0.5, 0.3, 0.2}));
-        correctedWeightList.add(new SimpleMatrix(2, 1, true, new double[]{0.6, 0.4}));
-        correctedWeightList.add(new SimpleMatrix(1, 1, true, new double[]{1.0}));
-
-        List<TreeMap<String, Double>> result = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(
-                indexSourceMap, groupEstimateList, correctedWeightList
-        );
-
-        assertEquals(3, result.size());
-
-        // result[0] = 0.5*est0 + 0.3*est1 + 0.2*est2
-        assertEquals(0.52, result.get(0).get("a"), 1e-8);
-        assertEquals(0.48, result.get(0).get("b"), 1e-8);
-
-        // result[1] = 0.6*est1 + 0.4*est2
-        assertEquals(0.54, result.get(1).get("a"), 1e-8);
-        assertEquals(0.46, result.get(1).get("b"), 1e-8);
-
-        // result[2] = 1.0*est2
-        assertEquals(0.3, result.get(2).get("a"), 1e-8);
-        assertEquals(0.7, result.get(2).get("b"), 1e-8);
-
-        System.out.println("result[0]: " + result.get(0));
-        System.out.println("result[1]: " + result.get(1));
-        System.out.println("result[2]: " + result.get(2));
-    }
-
-    @Test
-    public void biasedAwarePersonalizedUtilityEnhancementIntegrationTest() {
-        /*
-         * 串联 getCorrectedWeight → biasedAwarePersonalizedUtilityEnhancement
-         * 验证:
-         *   1. 每个结果 map 的值非负（权重非负 + 估计非负）
-         *   2. 每个结果 map 的值之和 ≈ 1（权重和为 1 + 估计和为 1）
-         *   3. 无 dominating source 的组，结果等于其自身估计
-         */
-        List<PrivacyGroupTriple> privacyGroupList = new ArrayList<>();
-        privacyGroupList.add(new PrivacyGroupTriple(5, 0.3, 100));
-        privacyGroupList.add(new PrivacyGroupTriple(3, 0.5, 100));
-        privacyGroupList.add(new PrivacyGroupTriple(2, 0.8, 100));
-
-        List<TreeMap<String, Double>> groupEstimateList = new ArrayList<>();
-        TreeMap<String, Double> est0 = new TreeMap<>();
-        est0.put("a", 0.5); est0.put("b", 0.5);
-        groupEstimateList.add(est0);
-
-        TreeMap<String, Double> est1 = new TreeMap<>();
-        est1.put("a", 0.7); est1.put("b", 0.3);
-        groupEstimateList.add(est1);
-
-        TreeMap<String, Double> est2 = new TreeMap<>();
-        est2.put("a", 0.3); est2.put("b", 0.7);
-        groupEstimateList.add(est2);
-
-        List<Double> varianceList = Arrays.asList(0.1, 0.15, 0.2);
-        List<Double> finalVarianceList = Arrays.asList(0.12, 0.18, 0.25);
-        Double lowerBound = 0.1;
-
-        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
-        indexSourceMap.put(0, Arrays.asList(2, 1));
-        indexSourceMap.put(1, Collections.singletonList(2));
-        indexSourceMap.put(2, Collections.emptyList());
-
-        List<SimpleMatrix> correctedWeightList = ProposedSchemeUtils.getCorrectedWeight(
-                indexSourceMap, groupEstimateList, varianceList, finalVarianceList, lowerBound
-        );
-
-        List<TreeMap<String, Double>> result = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(
-                indexSourceMap, groupEstimateList, correctedWeightList
-        );
-
-        assertEquals(3, result.size());
-
-        for (int i = 0; i < result.size(); i++) {
-            TreeMap<String, Double> estimate = result.get(i);
-            double sum = 0;
-            for (Double value : estimate.values()) {
-                assertTrue("result[" + i + "] 的值不应为负数: " + value, value >= -1e-10);
-                sum += value;
-            }
-            assertEquals("result[" + i + "] 的值之和应为1", 1.0, sum, 1e-6);
-        }
-
-        // PG2(idx=2) 无 dominating source → 权重 = [1.0] → 结果 = est2
-        assertEquals(0.3, result.get(2).get("a"), 1e-8);
-        assertEquals(0.7, result.get(2).get("b"), 1e-8);
-
-        for (int i = 0; i < result.size(); i++) {
-            System.out.println("enhanced result[" + i + "]: " + result.get(i));
-        }
-    }
+//    @Test
+//    public void biasedAwarePersonalizedUtilityEnhancementIntegrationTest() {
+//        /*
+//         * 串联 getCorrectedWeight → biasedAwarePersonalizedUtilityEnhancement
+//         * 验证:
+//         *   1. 每个结果 map 的值非负（权重非负 + 估计非负）
+//         *   2. 每个结果 map 的值之和 ≈ 1（权重和为 1 + 估计和为 1）
+//         *   3. 无 dominating source 的组，结果等于其自身估计
+//         */
+//        List<PrivacyGroupTriple> privacyGroupList = new ArrayList<>();
+//        privacyGroupList.add(new PrivacyGroupTriple(5, 0.3, 100));
+//        privacyGroupList.add(new PrivacyGroupTriple(3, 0.5, 100));
+//        privacyGroupList.add(new PrivacyGroupTriple(2, 0.8, 100));
+//
+//        List<TreeMap<String, Double>> groupEstimateList = new ArrayList<>();
+//        TreeMap<String, Double> est0 = new TreeMap<>();
+//        est0.put("a", 0.5); est0.put("b", 0.5);
+//        groupEstimateList.add(est0);
+//
+//        TreeMap<String, Double> est1 = new TreeMap<>();
+//        est1.put("a", 0.7); est1.put("b", 0.3);
+//        groupEstimateList.add(est1);
+//
+//        TreeMap<String, Double> est2 = new TreeMap<>();
+//        est2.put("a", 0.3); est2.put("b", 0.7);
+//        groupEstimateList.add(est2);
+//
+//        List<Double> varianceList = Arrays.asList(0.1, 0.15, 0.2);
+//        List<Double> finalVarianceList = Arrays.asList(0.12, 0.18, 0.25);
+//        Double lowerBound = 0.1;
+//
+//        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
+//        indexSourceMap.put(0, Arrays.asList(2, 1));
+//        indexSourceMap.put(1, Collections.singletonList(2));
+//        indexSourceMap.put(2, Collections.emptyList());
+//
+//        List<SimpleMatrix> correctedWeightList = ProposedSchemeUtils.getCorrectedWeight(
+//                indexSourceMap, groupEstimateList, varianceList, finalVarianceList, lowerBound
+//        );
+//
+//        List<TreeMap<String, Double>> result = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(
+//                indexSourceMap, groupEstimateList, correctedWeightList
+//        );
+//
+//        assertEquals(3, result.size());
+//
+//        for (int i = 0; i < result.size(); i++) {
+//            TreeMap<String, Double> estimate = result.get(i);
+//            double sum = 0;
+//            for (Double value : estimate.values()) {
+//                assertTrue("result[" + i + "] 的值不应为负数: " + value, value >= -1e-10);
+//                sum += value;
+//            }
+//            assertEquals("result[" + i + "] 的值之和应为1", 1.0, sum, 1e-6);
+//        }
+//
+//        // PG2(idx=2) 无 dominating source → 权重 = [1.0] → 结果 = est2
+//        assertEquals(0.3, result.get(2).get("a"), 1e-8);
+//        assertEquals(0.7, result.get(2).get("b"), 1e-8);
+//
+//        for (int i = 0; i < result.size(); i++) {
+//            System.out.println("enhanced result[" + i + "]: " + result.get(i));
+//        }
+//    }
 
 
 

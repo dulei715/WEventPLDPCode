@@ -144,14 +144,14 @@ public class MechanismBasicTest {
         MyPrint.showMap(samplingSizeCountMap);
     }
 
-    @Test
-    public void optimalSamplingSizeTest() {
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Map<BasicPair<Integer, Double>, Integer> newPairCount = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
-        MyPrint.showMap(newPairCount);
-    }
+//    @Test
+//    public void optimalSamplingSizeTest() {
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Map<BasicPair<Integer, Double>, Integer> newPairCount = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
+//        MyPrint.showMap(newPairCount);
+//    }
 
     @Test
     public void positionTest() {
@@ -181,62 +181,62 @@ public class MechanismBasicTest {
         MyPrint.showMap(positionStatisticMap);
     }
 
-    @Test
-    public void pLBDOriginTest() {
-        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
-        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
-        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
-
-
-
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-        MyPrint.showSplitLine("*", 150);
-
-        // todo: add xxx
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double newError = optimalSelectionStruct.getError();
-
-        Map<Double, Integer> newBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
-        System.out.println("newBudgetCountMap:");
-        MyPrint.showMap(newBudgetCountMap);
-        MyPrint.showSplitLine("*", 150);
-//        PFOTools.rePerturb()
-        // todo: add rePerturb
-        Map<Double, Double> newDistinctQMap = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
-        Map<Double, Double> newDistinctPMap = PFOUtils.getGeneralRandomResponseParameterP(newDistinctQMap);
-        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(newBudgetCountMap, domainSize);
-
-        System.out.println("newAggregationWeightedMap:");
-        MyPrint.showMap(newAggregationWeightMap);
-
-        MyPrint.showSplitLine("*", 150);
-
-        Double originalPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(budgetCountMap, domainSize);
-        Double newPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(newBudgetCountMap, domainSize);
-
-
-//        MyPrint.showMap(distinctPMap);
-//        MyPrint.showMap(distinctQMap);
-        System.out.println(originalPLDPVarianceSum);
-        System.out.println(newPLDPVarianceSum);
-
-
-
-        MyPrint.showSplitLine("*", 120);
-        List<Double> estimationList = new ArrayList<>();
-        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, this.domainSize);
-        estimationList.add(0.22);
-        estimationList.add(0.2);
-        estimationList.add(0.18);
-        estimationList.add(0.22);
-        estimationList.add(0.18);
-        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
-        System.out.println(dissimilarity);
-//        PFOTools.getGPRRError()
-    }
+//    @Test
+//    public void pLBDOriginTest() {
+//        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+//        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+//        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
+//
+//
+//
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//        MyPrint.showSplitLine("*", 150);
+//
+//        // todo: add xxx
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double newError = optimalSelectionStruct.getError();
+//
+//        Map<Double, Integer> newBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+//        System.out.println("newBudgetCountMap:");
+//        MyPrint.showMap(newBudgetCountMap);
+//        MyPrint.showSplitLine("*", 150);
+////        PFOTools.rePerturb()
+//        // todo: add rePerturb
+//        Map<Double, Double> newDistinctQMap = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetCountMap.keySet(), domainSize);
+//        Map<Double, Double> newDistinctPMap = PFOUtils.getGeneralRandomResponseParameterP(newDistinctQMap);
+//        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(newBudgetCountMap, domainSize);
+//
+//        System.out.println("newAggregationWeightedMap:");
+//        MyPrint.showMap(newAggregationWeightMap);
+//
+//        MyPrint.showSplitLine("*", 150);
+//
+//        Double originalPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(budgetCountMap, domainSize);
+//        Double newPLDPVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(newBudgetCountMap, domainSize);
+//
+//
+////        MyPrint.showMap(distinctPMap);
+////        MyPrint.showMap(distinctQMap);
+//        System.out.println(originalPLDPVarianceSum);
+//        System.out.println(newPLDPVarianceSum);
+//
+//
+//
+//        MyPrint.showSplitLine("*", 120);
+//        List<Double> estimationList = new ArrayList<>();
+//        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, this.domainSize);
+//        estimationList.add(0.22);
+//        estimationList.add(0.2);
+//        estimationList.add(0.18);
+//        estimationList.add(0.22);
+//        estimationList.add(0.18);
+//        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, originalPLDPVarianceSum);
+//        System.out.println(dissimilarity);
+////        PFOTools.getGPRRError()
+//    }
 
     private void showPositionBudgetInformation(List<Integer> positionIndexList, List<Double> privacyBudgetList) {
         MyPrint.showSplitLine("*", 150);
@@ -252,386 +252,386 @@ public class MechanismBasicTest {
         MyPrint.showMap(BasicUtils.getStatisticByCount(subBudgetCountMap), "; ");
     }
 
-    @Test
-    public void pLBDTest() {
-        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
-        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
-        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
-//        System.out.println("q map: ");
-//        MyPrint.showMap(distinctQMap);
-//        System.out.println("p map: ");
-//        MyPrint.showMap(distinctPMap);
+//    @Test
+//    public void pLBDTest() {
+//        Map<Double, Double> distinctQMap = this.pfo.getDistinctQMap();
+//        Map<Double, Double> distinctPMap = this.pfo.getDistinctPMap();
+//        Map<Double, Double> aggregationWeightMap = this.pfo.getAggregationWeightMap();
+////        System.out.println("q map: ");
+////        MyPrint.showMap(distinctQMap);
+////        System.out.println("p map: ");
+////        MyPrint.showMap(distinctPMap);
+////        MyPrint.showSplitLine("*", 150);
+//
+////        MyPrint.showMap(new TreeMap<>(this.budgetCountMap));
+////        MyPrint.showMap(BasicUtils.getStatisticByCount(this.budgetCountMap));
+////        MyPrint.showSplitLine("*", 150);
+//
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
 //        MyPrint.showSplitLine("*", 150);
-
-//        MyPrint.showMap(new TreeMap<>(this.budgetCountMap));
-//        MyPrint.showMap(BasicUtils.getStatisticByCount(this.budgetCountMap));
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double optimalError = optimalSelectionStruct.getError();
+//
+//
+//
+//        // time slot 1
+//        Integer samplingSize = 333;
+//        Integer rightIndexExclude = samplingSize;
+//        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, rightIndexExclude);
+//        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, rightIndexExclude);
+////        System.out.println(subPositionList);
+////        System.out.println(subNewPrivacyBudgetList);
+//        TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
+//        TreeMap<Double, Integer> subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
+//        System.out.println("positionIndexCountMap:");
+//        MyPrint.showMap(positionIndexCountMap, "; ");
+//        System.out.println("position index statistic map:");
+//        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
+////        System.out.println("budgetCountMap:");
+////        MyPrint.showMap(budgetCountMap, "; ");
+////        System.out.println("budget statistic map:");
+////        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap), "; ");
+//        Set<Double> newBudgetSet = subBudgetCountMap.keySet();
+//
 //        MyPrint.showSplitLine("*", 150);
+//
+//        Map<Double, List<Integer>> groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
+//        System.out.println("groupDataMap:");
+//        MyPrint.showMap(groupDataMap);
+//        System.out.println("groupDataCount:");
+//        Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
+//        MyPrint.showMap(groupDataCount);
+//        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupDataMap, domainSize, this.random);
+////        System.out.println("perturbedData:");
+////        MyPrint.showMap(perturbedData);
+//        Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
+//        System.out.println("perturbedCountMap:");
+//        MyPrint.showMap(perturbedCountMap, "; ");
+//        Map<Integer, Double> perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
+//        MyPrint.showMap(perturbedStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//        TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
+//        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, domainSize, random);
+//        Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
+//        Integer newTotalUserSize = rePerturbResult.getValue();
+////        System.out.println("rePerturbMap");
+////        MyPrint.showMap(rePerturbMap);
+//        System.out.println("totalUserSize: " + newTotalUserSize);
+//        Map<Integer, Integer> rePerturbCountMap = BasicUtils.getCountMapByGroup(rePerturbMap);
+//        Map<Integer, Double> rePerturbStatisticMap = BasicUtils.getStatisticByCount(rePerturbCountMap);
+//        System.out.println("rePerturbStatisticMap:");
+//        MyPrint.showMap(rePerturbStatisticMap);
+//
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
+//        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
+//        System.out.println("newParameterQ:");
+//        MyPrint.showMap(newParameterQ);
+//        System.out.println("newParameterP:");
+//        MyPrint.showMap(newParameterP);
+//        Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbMap);
+//        System.out.println("rePerturbedEpsilonCount:");
+//        MyPrint.showMap(rePerturbedEpsilonCount);
+//        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
+//        System.out.println("newAggregationWeightedMap:");
+//        MyPrint.showMap(newAggregationWeightMap);
+////        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
+//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbMap, domainSize);
+//        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
+//        System.out.println("estimationMap:");
+//        MyPrint.showMap(estimationMap);
+//        System.out.println("normalizedEstimationList:");
+//        List<Double> normalizedList = Normalization.normalizedBySimplexProjection(new ArrayList<>(estimationMap.values()));
+//        MyPrint.showList(normalizedList, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
+//        System.out.println("pldpVarianceSum: " + pldpVarianceSum);
+//        List<Double> estimationList = new ArrayList<>(estimationMap.values());
+//        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
+//        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
+//        System.out.println("dissimilarity: " + dissimilarity);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//
+//        Integer leftIndex = samplingSize;
+//        samplingSize = (int)Math.floor(userSize/2/2);
+//        rightIndexExclude += samplingSize;
+//        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        System.out.println("n_pp,opt = " + samplingSize);
+//        System.out.println("leftIndex = " + leftIndex);
+//        System.out.println("rightIndexExclude = " + rightIndexExclude);
+//        positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
+//        subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
+////        MyPrint.showMap(positionIndexCountMap);
+////        MyPrint.showMap(subBudgetCountMap);
+//        showPositionBudgetInformation(subPositionIndexList, subNewPrivacyBudgetList);
+////        PFOTools.
+//        groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
+//        System.out.println("group map:");
+//        MyPrint.showMap(groupDataMap);
+//        Double gprrError = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, userSize, samplingSize, domainSize);
+//        System.out.println(gprrError);
+//        MyPrint.showSplitLine("*", 150);
+//
+//        perturbedData = PFOUtils.perturb(groupDataMap, domainSize, random);
+//        perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
+//        System.out.println("perturbedCountMap:");
+//        MyPrint.showMap(perturbedCountMap, "; ");
+//        perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
+//        MyPrint.showMap(perturbedStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//    }
 
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-        MyPrint.showSplitLine("*", 150);
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double optimalError = optimalSelectionStruct.getError();
-
-
-
-        // time slot 1
-        Integer samplingSize = 333;
-        Integer rightIndexExclude = samplingSize;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(0, rightIndexExclude);
-        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(0, rightIndexExclude);
-//        System.out.println(subPositionList);
-//        System.out.println(subNewPrivacyBudgetList);
-        TreeMap<Integer, Integer> positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
-        TreeMap<Double, Integer> subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
-        System.out.println("positionIndexCountMap:");
-        MyPrint.showMap(positionIndexCountMap, "; ");
-        System.out.println("position index statistic map:");
-        MyPrint.showMap(BasicUtils.getStatisticByCount(positionIndexCountMap), "; ");
-//        System.out.println("budgetCountMap:");
+//    @Test
+//    public void pLBDTestEnhancedSlot1() {
+//        System.out.println("OriginalBudgetCount:");
 //        MyPrint.showMap(budgetCountMap, "; ");
-//        System.out.println("budget statistic map:");
-//        MyPrint.showMap(BasicUtils.getStatisticByCount(budgetCountMap), "; ");
-        Set<Double> newBudgetSet = subBudgetCountMap.keySet();
+//        System.out.println("OriginalWindowSizeCount:");
+//        MyPrint.showMap(windowSizeCountMap, "; ");
+//        System.out.println("samplingSizeList:");
+//        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
+//        MyPrint.showMap(samplingSizeCountMap, "; ");
+//
+//        MyPrint.showSplitLine("*", 150);
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double optimalError = optimalSelectionStruct.getError();
+//        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+//        System.out.println("newTotalBudgetCountMap:");
+//        MyPrint.showMap(newTotalBudgetCountMap, "; ");
+//        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
+//        System.out.println("NewTotalBudgetStatisticMap:");
+//        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
+//        System.out.println("original pair map:");
+//        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
+//        System.out.println(newPrivacyBudgetList.contains(0.1));
+//        System.out.println("new pair map:");
+//        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//
+//        // time slot 1
+//        Integer leftIndex = 0;
+//        Integer samplingSize = optimalSamplingSize;
+//        Integer rightIndexExclude = leftIndex + samplingSize;
+//        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//
+//        leftIndex = rightIndexExclude;
+//        samplingSize = (int)Math.floor(userSize/2/2);
+//        rightIndexExclude = leftIndex + samplingSize;
+//        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//    }
 
-        MyPrint.showSplitLine("*", 150);
-
-        Map<Double, List<Integer>> groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
-        System.out.println("groupDataMap:");
-        MyPrint.showMap(groupDataMap);
-        System.out.println("groupDataCount:");
-        Map<Integer, Integer> groupDataCount = BasicUtils.getCountMapByGroup(groupDataMap);
-        MyPrint.showMap(groupDataCount);
-        Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupDataMap, domainSize, this.random);
-//        System.out.println("perturbedData:");
-//        MyPrint.showMap(perturbedData);
-        Map<Integer, Integer> perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
-        System.out.println("perturbedCountMap:");
-        MyPrint.showMap(perturbedCountMap, "; ");
-        Map<Integer, Double> perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
-        MyPrint.showMap(perturbedStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-        TreeMap<Double, List<Integer>> sortedPerturbedData = new TreeMap<>(perturbedData);
-        CombinePair<Map<Double, List<Integer>>, Integer> rePerturbResult = PFOUtils.rePerturb(sortedPerturbedData, domainSize, random);
-        Map<Double, List<Integer>> rePerturbMap = rePerturbResult.getKey();
-        Integer newTotalUserSize = rePerturbResult.getValue();
-//        System.out.println("rePerturbMap");
-//        MyPrint.showMap(rePerturbMap);
-        System.out.println("totalUserSize: " + newTotalUserSize);
-        Map<Integer, Integer> rePerturbCountMap = BasicUtils.getCountMapByGroup(rePerturbMap);
-        Map<Integer, Double> rePerturbStatisticMap = BasicUtils.getStatisticByCount(rePerturbCountMap);
-        System.out.println("rePerturbStatisticMap:");
-        MyPrint.showMap(rePerturbStatisticMap);
-
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(newBudgetSet, domainSize);
-        Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
-        System.out.println("newParameterQ:");
-        MyPrint.showMap(newParameterQ);
-        System.out.println("newParameterP:");
-        MyPrint.showMap(newParameterP);
-        Map<Double, Integer> rePerturbedEpsilonCount = BasicUtils.getGroupDataCount(rePerturbMap);
-        System.out.println("rePerturbedEpsilonCount:");
-        MyPrint.showMap(rePerturbedEpsilonCount);
-        Map<Double, Double> newAggregationWeightMap = PFOUtils.getAggregationWeightMap(rePerturbedEpsilonCount, domainSize);
-        System.out.println("newAggregationWeightedMap:");
-        MyPrint.showMap(newAggregationWeightMap);
-//        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbedEpsilonCount, rePerturbMap, domainSize);
-        Map<Double, Map<Integer, Double>> aggregation = PFOUtils.getAggregation(rePerturbMap, domainSize);
-        Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, newAggregationWeightMap);
-        System.out.println("estimationMap:");
-        MyPrint.showMap(estimationMap);
-        System.out.println("normalizedEstimationList:");
-        List<Double> normalizedList = Normalization.normalizedBySimplexProjection(new ArrayList<>(estimationMap.values()));
-        MyPrint.showList(normalizedList, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-        Double pldpVarianceSum = PFOUtils.getPLDPVarianceSumBySpecificUsers(rePerturbedEpsilonCount, domainSize);
-        System.out.println("pldpVarianceSum: " + pldpVarianceSum);
-        List<Double> estimationList = new ArrayList<>(estimationMap.values());
-        List<Double> lastEstimationList = BasicArrayUtil.getInitializedList(0D, estimationList.size());
-        Double dissimilarity = PFOUtils.getDissimilarity(estimationList, lastEstimationList, pldpVarianceSum);
-        System.out.println("dissimilarity: " + dissimilarity);
-        MyPrint.showSplitLine("*", 150);
-
-
-
-        Integer leftIndex = samplingSize;
-        samplingSize = (int)Math.floor(userSize/2/2);
-        rightIndexExclude += samplingSize;
-        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        System.out.println("n_pp,opt = " + samplingSize);
-        System.out.println("leftIndex = " + leftIndex);
-        System.out.println("rightIndexExclude = " + rightIndexExclude);
-        positionIndexCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subPositionIndexList));
-        subBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(subNewPrivacyBudgetList));
-//        MyPrint.showMap(positionIndexCountMap);
-//        MyPrint.showMap(subBudgetCountMap);
-        showPositionBudgetInformation(subPositionIndexList, subNewPrivacyBudgetList);
-//        PFOTools.
-        groupDataMap = BasicUtils.groupByEpsilon(subNewPrivacyBudgetList, subPositionIndexList);
-        System.out.println("group map:");
-        MyPrint.showMap(groupDataMap);
-        Double gprrError = PFOUtils.getGPRRErrorBySpecificUsers(subBudgetCountMap, userSize, samplingSize, domainSize);
-        System.out.println(gprrError);
-        MyPrint.showSplitLine("*", 150);
-
-        perturbedData = PFOUtils.perturb(groupDataMap, domainSize, random);
-        perturbedCountMap = BasicUtils.getCountMapByGroup(perturbedData);
-        System.out.println("perturbedCountMap:");
-        MyPrint.showMap(perturbedCountMap, "; ");
-        perturbedStatisticMap = BasicUtils.getStatisticByCount(perturbedCountMap);
-        MyPrint.showMap(perturbedStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-    }
-
-    @Test
-    public void pLBDTestEnhancedSlot1() {
-        System.out.println("OriginalBudgetCount:");
-        MyPrint.showMap(budgetCountMap, "; ");
-        System.out.println("OriginalWindowSizeCount:");
-        MyPrint.showMap(windowSizeCountMap, "; ");
-        System.out.println("samplingSizeList:");
-        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
-        MyPrint.showMap(samplingSizeCountMap, "; ");
-
-        MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double optimalError = optimalSelectionStruct.getError();
-        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
-        System.out.println("newTotalBudgetCountMap:");
-        MyPrint.showMap(newTotalBudgetCountMap, "; ");
-        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
-        System.out.println("NewTotalBudgetStatisticMap:");
-        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
-        System.out.println("original pair map:");
-        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
-        System.out.println(newPrivacyBudgetList.contains(0.1));
-        System.out.println("new pair map:");
-        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-
-        // time slot 1
-        Integer leftIndex = 0;
-        Integer samplingSize = optimalSamplingSize;
-        Integer rightIndexExclude = leftIndex + samplingSize;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-
-        leftIndex = rightIndexExclude;
-        samplingSize = (int)Math.floor(userSize/2/2);
-        rightIndexExclude = leftIndex + samplingSize;
-        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-    }
-
-    @Test
-    public void pLBDTestEnhancedSlot2() {
-        System.out.println("OriginalBudgetCount:");
-        MyPrint.showMap(budgetCountMap, "; ");
-        System.out.println("OriginalWindowSizeCount:");
-        MyPrint.showMap(windowSizeCountMap, "; ");
-        System.out.println("samplingSizeList:");
-        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
-        MyPrint.showMap(samplingSizeCountMap, "; ");
-
-        MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double optimalError = optimalSelectionStruct.getError();
-        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
-        System.out.println("newTotalBudgetCountMap:");
-        MyPrint.showMap(newTotalBudgetCountMap, "; ");
-        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
-        System.out.println("NewTotalBudgetStatisticMap:");
-        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
-        System.out.println("original pair map:");
-        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
-        System.out.println(newPrivacyBudgetList.contains(0.1));
-        System.out.println("new pair map:");
-        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-
-        // time slot 2
-        Integer leftIndex = 833;
-        Integer samplingSize = optimalSamplingSize;
-        Integer rightIndexExclude = leftIndex + samplingSize;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-
-        Integer reportingRemainUserSize = 500;
-
-        leftIndex = rightIndexExclude;
-        samplingSize = (int)Math.floor(reportingRemainUserSize*1.0/2);
-        rightIndexExclude = leftIndex + samplingSize;
-        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-    }
-    @Test
-    public void pLBDTestEnhancedSlot3() {
-        System.out.println("OriginalBudgetCount:");
-        MyPrint.showMap(budgetCountMap, "; ");
-        System.out.println("OriginalWindowSizeCount:");
-        MyPrint.showMap(windowSizeCountMap, "; ");
-        System.out.println("samplingSizeList:");
-        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
-        MyPrint.showMap(samplingSizeCountMap, "; ");
-
-        MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double optimalError = optimalSelectionStruct.getError();
-        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
-        System.out.println("newTotalBudgetCountMap:");
-        MyPrint.showMap(newTotalBudgetCountMap, "; ");
-        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
-        System.out.println("NewTotalBudgetStatisticMap:");
-        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
-        System.out.println("original pair map:");
-        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
-        System.out.println(newPrivacyBudgetList.contains(0.1));
-        System.out.println("new pair map:");
-        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-
-        // time slot 3
-        Integer leftIndex = 1166;
-        Integer samplingSize = optimalSamplingSize;
-        Integer rightIndexExclude = leftIndex + samplingSize;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-
-        Integer reportingRemainUserSize = 500;
-
-        leftIndex = rightIndexExclude;
-        samplingSize = (int)Math.floor(reportingRemainUserSize*1.0/2);
-        rightIndexExclude = leftIndex + samplingSize;
-        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-    }
-
-
-    public void pLBATestEnhancedSlot1() {
-        System.out.println("OriginalBudgetCount:");
-        MyPrint.showMap(budgetCountMap, "; ");
-        System.out.println("OriginalWindowSizeCount:");
-        MyPrint.showMap(windowSizeCountMap, "; ");
-        System.out.println("samplingSizeList:");
-        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
-        MyPrint.showMap(samplingSizeCountMap, "; ");
-
-        MyPrint.showSplitLine("*", 150);
-        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
-        System.out.println(optimalSelectionStruct);
-
-        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
-        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
-        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
-        Double optimalError = optimalSelectionStruct.getError();
-        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
-        System.out.println("newTotalBudgetCountMap:");
-        MyPrint.showMap(newTotalBudgetCountMap, "; ");
-        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
-        System.out.println("NewTotalBudgetStatisticMap:");
-        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
-        System.out.println("original pair map:");
-        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
-        System.out.println(newPrivacyBudgetList.contains(0.1));
-        System.out.println("new pair map:");
-        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
-        MyPrint.showSplitLine("*", 150);
-
-
-
-        // time slot 1
-        Integer leftIndex = 0;
-        Integer samplingSize = optimalSamplingSize;
-        Integer rightIndexExclude = leftIndex + samplingSize;
-        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-
-        leftIndex = rightIndexExclude;
-        samplingSize = (int)Math.floor(userSize/2/2);
-        rightIndexExclude = leftIndex + samplingSize;
-        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
-        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
-        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
-        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
-
-    }
+//    @Test
+//    public void pLBDTestEnhancedSlot2() {
+//        System.out.println("OriginalBudgetCount:");
+//        MyPrint.showMap(budgetCountMap, "; ");
+//        System.out.println("OriginalWindowSizeCount:");
+//        MyPrint.showMap(windowSizeCountMap, "; ");
+//        System.out.println("samplingSizeList:");
+//        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
+//        MyPrint.showMap(samplingSizeCountMap, "; ");
+//
+//        MyPrint.showSplitLine("*", 150);
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double optimalError = optimalSelectionStruct.getError();
+//        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+//        System.out.println("newTotalBudgetCountMap:");
+//        MyPrint.showMap(newTotalBudgetCountMap, "; ");
+//        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
+//        System.out.println("NewTotalBudgetStatisticMap:");
+//        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
+//        System.out.println("original pair map:");
+//        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
+//        System.out.println(newPrivacyBudgetList.contains(0.1));
+//        System.out.println("new pair map:");
+//        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//
+//        // time slot 2
+//        Integer leftIndex = 833;
+//        Integer samplingSize = optimalSamplingSize;
+//        Integer rightIndexExclude = leftIndex + samplingSize;
+//        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//
+//        Integer reportingRemainUserSize = 500;
+//
+//        leftIndex = rightIndexExclude;
+//        samplingSize = (int)Math.floor(reportingRemainUserSize*1.0/2);
+//        rightIndexExclude = leftIndex + samplingSize;
+//        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//    }
+//    @Test
+//    public void pLBDTestEnhancedSlot3() {
+//        System.out.println("OriginalBudgetCount:");
+//        MyPrint.showMap(budgetCountMap, "; ");
+//        System.out.println("OriginalWindowSizeCount:");
+//        MyPrint.showMap(windowSizeCountMap, "; ");
+//        System.out.println("samplingSizeList:");
+//        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
+//        MyPrint.showMap(samplingSizeCountMap, "; ");
+//
+//        MyPrint.showSplitLine("*", 150);
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double optimalError = optimalSelectionStruct.getError();
+//        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+//        System.out.println("newTotalBudgetCountMap:");
+//        MyPrint.showMap(newTotalBudgetCountMap, "; ");
+//        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
+//        System.out.println("NewTotalBudgetStatisticMap:");
+//        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
+//        System.out.println("original pair map:");
+//        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
+//        System.out.println(newPrivacyBudgetList.contains(0.1));
+//        System.out.println("new pair map:");
+//        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//
+//        // time slot 3
+//        Integer leftIndex = 1166;
+//        Integer samplingSize = optimalSamplingSize;
+//        Integer rightIndexExclude = leftIndex + samplingSize;
+//        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//
+//        Integer reportingRemainUserSize = 500;
+//
+//        leftIndex = rightIndexExclude;
+//        samplingSize = (int)Math.floor(reportingRemainUserSize*1.0/2);
+//        rightIndexExclude = leftIndex + samplingSize;
+//        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//    }
+//
+//
+//    public void pLBATestEnhancedSlot1() {
+//        System.out.println("OriginalBudgetCount:");
+//        MyPrint.showMap(budgetCountMap, "; ");
+//        System.out.println("OriginalWindowSizeCount:");
+//        MyPrint.showMap(windowSizeCountMap, "; ");
+//        System.out.println("samplingSizeList:");
+//        Map<Integer, Integer> samplingSizeCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(this.samplingSizeList));
+//        MyPrint.showMap(samplingSizeCountMap, "; ");
+//
+//        MyPrint.showSplitLine("*", 150);
+//        OptimalSelectionStruct optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(this.samplingSizeList, this.budgetList, domainSize);
+//        System.out.println(optimalSelectionStruct);
+//
+//        Integer optimalSamplingSize = optimalSelectionStruct.getOptimalSamplingSize();
+//        System.out.println("optimalSamplingSize: " + optimalSamplingSize);
+//        List<Double> newPrivacyBudgetList = optimalSelectionStruct.getNewPrivacyBudgetList();
+//        Double optimalError = optimalSelectionStruct.getError();
+//        TreeMap<Double, Integer> newTotalBudgetCountMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithCountList(newPrivacyBudgetList));
+//        System.out.println("newTotalBudgetCountMap:");
+//        MyPrint.showMap(newTotalBudgetCountMap, "; ");
+//        Map<Double, Double> newTotalBudgetStatisticMap = BasicUtils.getStatisticByCount(newTotalBudgetCountMap);
+//        System.out.println("NewTotalBudgetStatisticMap:");
+//        MyPrint.showMap(newTotalBudgetStatisticMap, "; ");
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> originalPairMap = BasicUtils.countUniquePair(this.windowSizeList, this.budgetList);
+//        System.out.println("original pair map:");
+//        MyPrint.showMap(originalPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//        Map<BasicPair<Integer, Double>, Integer> newPairMap = BasicUtils.countUniquePair(this.windowSizeList, newPrivacyBudgetList);
+//        System.out.println(newPrivacyBudgetList.contains(0.1));
+//        System.out.println("new pair map:");
+//        MyPrint.showMap(newPairMap, "; ", 8, ConstantValues.LINE_SPLIT);
+//        MyPrint.showSplitLine("*", 150);
+//
+//
+//
+//        // time slot 1
+//        Integer leftIndex = 0;
+//        Integer samplingSize = optimalSamplingSize;
+//        Integer rightIndexExclude = leftIndex + samplingSize;
+//        List<Integer> subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        List<String> subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        List<Double> subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        Double dissimilarity = TestUtils.showSMechanismInformation(subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//
+//        leftIndex = rightIndexExclude;
+//        samplingSize = (int)Math.floor(userSize/2/2);
+//        rightIndexExclude = leftIndex + samplingSize;
+//        subPositionIndexList = this.positionIndexList.subList(leftIndex, rightIndexExclude);
+//        subPositionList = BasicUtils.getElementListByIndex(PositionCandidate, subPositionIndexList);
+//        subNewPrivacyBudgetList = newPrivacyBudgetList.subList(leftIndex, rightIndexExclude);
+//        TestUtils.showRMechanismInformation(dissimilarity, subPositionIndexList, subNewPrivacyBudgetList, userSize, domainSize, random);
+//
+//    }
 
 }

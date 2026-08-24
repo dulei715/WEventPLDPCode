@@ -11,7 +11,7 @@ public class MechanismUtils {
 
 
 
-    public static Map<Integer, Double> gRR(Double privacyBudget, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
+    public static Map<Integer, Double> gRRRaw(Double privacyBudget, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
         // 1. PFO.Perturb 扰动
 //        Map<Double, List<Integer>> groupedDataMap = BasicUtils.groupByEpsilon(samplingPrivacyBudgetList, samplingDataIndexList);
         List<Integer> perturbedData = FOUtils.gRRPerturb(samplingDataIndexList, privacyBudget, domainSize, random);
@@ -24,12 +24,15 @@ public class MechanismUtils {
         // 3. PFO.Estimate 估计
         Double parameterQ = FOUtils.getGRRQ(privacyBudget, domainSize);
         Double parameterP = FOUtils.getGRRP(privacyBudget, domainSize);
-        Map<Integer, Double> estimationMap = FOUtils.getEstimation(aggregation, parameterP, parameterQ);
+        return FOUtils.getEstimation(aggregation, parameterP, parameterQ);
+    }
+    public static Map<Integer, Double> gRR(Double privacyBudget, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
+        Map<Integer, Double> estimationMap = gRRRaw(privacyBudget, samplingDataIndexList, domainSize, random);
         return BasicUtils.normalizeValues(estimationMap);
     }
 
 
-    public static CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRR(List<Double> samplingPrivacyBudgetList, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
+    public static CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRRRaw(List<Double> samplingPrivacyBudgetList, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
         // 1. PFO.Perturb 扰动
         Map<Double, List<Integer>> groupedDataMap = BasicUtils.groupByEpsilon(samplingPrivacyBudgetList, samplingDataIndexList);
         Map<Double, List<Integer>> perturbedData = PFOUtils.perturb(groupedDataMap, domainSize, random);
@@ -46,8 +49,14 @@ public class MechanismUtils {
         Map<Double, Double> newParameterQ = PFOUtils.getGeneralRandomResponseParameterQ(groupedDataMap.keySet(), domainSize);
         Map<Double, Double> newParameterP = PFOUtils.getGeneralRandomResponseParameterP(newParameterQ);
         Map<Integer, Double> estimationMap = PFOUtils.getEstimation(aggregation, newParameterP, newParameterQ, samplingAggregationWeightedMap);
-        return new CombinePair<>(BasicUtils.normalizeValues(estimationMap), perturbedCountGroupedByEpsilon);
+        return new CombinePair<>(estimationMap, perturbedCountGroupedByEpsilon);
     }
+    public static CombinePair<Map<Integer, Double>, Map<Double, Integer>> gPRR(List<Double> samplingPrivacyBudgetList, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {
+        CombinePair<Map<Integer, Double>, Map<Double, Integer>> rawResult = gPRRRaw(samplingPrivacyBudgetList, samplingDataIndexList, domainSize, random);
+        return new CombinePair<>(BasicUtils.normalizeValues(rawResult.getKey()), rawResult.getValue());
+    }
+
+
 
     @Deprecated
     public static CombinePair<Map<Integer, Double>, Map<Double, Integer>> enhancedGPRR(List<Double> samplingPrivacyBudgetList, List<Integer> samplingDataIndexList, Integer domainSize, Random random) {

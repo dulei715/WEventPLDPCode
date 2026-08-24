@@ -51,6 +51,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
     // 记录上个有效发布时刻的数据状态，注意不同组的上个时刻可能不同（PLPD+是相同的，但PLPA+是不同的）
 //    protected List<PrivacyGroupStatus<Integer>> lastReleaseGroupStatusList;
     protected Map<Integer, Double> lastCombinedEstimation;
+    protected Map<Integer, Double> lastCombinedRawEstimation;
 
     protected List<HistoryPopulationQueue> samplingSubMechanismHistoryQueueList;
     protected List<HistoryPopulationQueue> publicationSubMechanismHistoryQueueList;
@@ -87,6 +88,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
         this.lastCombinedEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
+        this.lastCombinedRawEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
 //        this.lastReleaseGroupStatusList = PrivacyGroupStatus.getIntializedPrivacyGroupStatusList(this.domainIndexList, this.userSize);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
         this.originalWindowSizeList = windowSizeList;
@@ -155,7 +157,7 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
         this.disGroupAwareOptimalSelectionStruct = ProposedSchemeUtils.groupAwareOptimalPopulationSelection(this.privacyGroupList, 0.5, this.domainSize);
         this.newPrivacyBudgetGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
         this.newSamplingSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
-        this.newWindowSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getWindowSizeList();
+        this.newWindowSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getEffectiveRecycleSizeList();
         // 这里初始化历史窗口大小为其个性化窗口
 //        int maxOptimalWindowSize = Collections.max(this.windowSizeGroupList);
         this.groupSize = this.disGroupAwareOptimalSelectionStruct.getGroupSize();
@@ -215,25 +217,29 @@ public abstract class AdvancedPLPMechanism extends PersonalizedMechanism {
             tempGroupInnerSize = tempPrivacyGroup.getUserSize();
 //            tempPi = tempGroupInnerSize * 1.0 / this.userSize;
             tempPi = this.piList.get(i);
-            tempSamplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempPrivacyGroup.getUserIDSet(), tempSamplingSize, this.random);
-            this.candidateUserIndexSetList.get(i).removeAll(tempSamplingUserIndexSetForCalculation);
+
+            Set<Integer> availableUserIndexSet = this.candidateUserIndexSetList.get(i);
+            int availablePopulationSize = availableUserIndexSet.size();
+            tempSamplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(availableUserIndexSet, tempSamplingSize, this.random);
+            availableUserIndexSet.removeAll(tempSamplingUserIndexSetForCalculation);
+
             this.samplingSubMechanismHistoryQueueList.get(i).offer(tempSamplingUserIndexSetForCalculation);
             // todo: 不用抽取epsilon list, 因为同一组的 epsilon 都一样
             tempPrivacyBudget = this.newPrivacyBudgetGroupList.get(i);
             tempSamplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, tempSamplingUserIndexSetForCalculation);
-            tempGRRInfo = MechanismUtils.gRR(tempPrivacyBudget, tempSamplingDataIndexList, this.domainSize, this.random);
+            tempGRRInfo = MechanismUtils.gRRRaw(tempPrivacyBudget, tempSamplingDataIndexList, this.domainSize, this.random);
             this.currentDisEstimationMapList.add(tempGRRInfo);
             tempNormalizedEstimationList = BasicUtils.toSortedListByKeys(tempGRRInfo, this.domainIndexList, 0D);
             currentDisEstimationListList.add(tempNormalizedEstimationList);
 
             tempEstimationNormSquare = BasicCalculation.get2NormSquare(tempGRRInfo.values());
-            tempUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, tempGroupInnerSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
+            tempUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, availablePopulationSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
             this.currentDisUnbiasedVarianceList.add(tempUnbiasedVariance);
             totalPiWeightedUnbiasedVarianceSum += tempPi * tempPi * tempUnbiasedVariance;
         }
 
         List<Double> populationWeightedEstimationList = StatisticTool.getWeightedStatisticList(this.currentDisEstimationListList, this.piList);
-        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastCombinedEstimation, this.domainIndexList, 0D);
+        List<Double> lastReleaseEstimationList = BasicUtils.toSortedListByKeys(this.lastCombinedRawEstimation, this.domainIndexList, 0D);
 
         return PFOUtils.getDissimilarity(populationWeightedEstimationList, lastReleaseEstimationList, totalPiWeightedUnbiasedVarianceSum);
     }

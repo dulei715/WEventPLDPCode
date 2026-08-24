@@ -38,7 +38,7 @@ public class PLPDPlus extends AdvancedPLPMechanism {
         List<Double> prePublicationVarianceList = new ArrayList<>(super.groupSize);
 //        List<PrivacyGroupTriple> publicationPrivacyGroupTripleList = new ArrayList<>(super.groupSize);
         Map<Integer, Double> tempInfo;
-        Map<Integer, Double> finalEstimateMap;
+        Map<Integer, Double> finalEstimateMap, finalEstimateNormalizedMap;
         Double tempPreVariance;
         for (int i = 0; i < super.groupSize; i++) {
             tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
@@ -64,13 +64,13 @@ public class PLPDPlus extends AdvancedPLPMechanism {
         Double tempPrivacyBudget, tempEstimationNormSquare, tempPubUnbiasedVariance;
         this.currentPubEstimationMapList = new ArrayList<>(super.groupSize);
         this.currentPubEstimationListList = new ArrayList<>(super.groupSize);
-        this.currentDisUnbiasedVarianceList = new ArrayList<>(super.groupSize);
+        this.currentPubUnbiasedVarianceList = new ArrayList<>(super.groupSize);
         List<Double> tempNormalizedEstimationList;
         List<SimpleMatrix> finalWeightList;
         if (dissimilarity > errorPlus && BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound) {
             flag = true;
             for (int i = 0; i < super.groupSize; i++) {
-                tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
+//                tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
                 tempGroupCandidateUserIndexSet = super.candidateUserIndexSetList.get(i);
                 tempSamplingSize = potentialPublicationUserSizeList.get(i);
                 tempSamplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempGroupCandidateUserIndexSet, tempSamplingSize, super.random);
@@ -79,13 +79,14 @@ public class PLPDPlus extends AdvancedPLPMechanism {
 
                 tempPrivacyBudget = super.newPrivacyBudgetGroupList.get(i);
                 tempSamplingDataIndexList = BasicArrayUtil.extractSubListInGivenIndexCollection(nextDataIndexList, tempSamplingUserIndexSetForPublication);
-                tempInfo = MechanismUtils.gRR(tempPrivacyBudget, tempSamplingDataIndexList, super.domainSize, super.random);
+                tempInfo = MechanismUtils.gRRRaw(tempPrivacyBudget, tempSamplingDataIndexList, super.domainSize, super.random);
                 this.currentPubEstimationMapList.add(tempInfo);
                 tempNormalizedEstimationList = BasicUtils.toSortedListByKeys(tempInfo, this.domainIndexList, 0D);
                 this.currentPubEstimationListList.add(tempNormalizedEstimationList);
 
                 tempEstimationNormSquare = BasicCalculation.get2NormSquare(tempInfo.values());
-                tempPubUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, tempGroupInnerSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
+                int availablePopulationSize = tempGroupCandidateUserIndexSet.size();
+                tempPubUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, availablePopulationSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
                 this.currentPubUnbiasedVarianceList.add(tempPubUnbiasedVariance);
             }
 
@@ -97,10 +98,12 @@ public class PLPDPlus extends AdvancedPLPMechanism {
 
             List<Map<Integer, Double>> finalGroupEstimateList = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(super.sourceMap, this.currentPubEstimationMapList, finalWeightList);
             finalEstimateMap = StatisticTool.getWeightedStatisticMap(finalGroupEstimateList, super.piList);
-            super.lastCombinedEstimation = finalEstimateMap;
+            super.lastCombinedRawEstimation = finalEstimateMap;
+            finalEstimateNormalizedMap = BasicUtils.normalizeValues(finalEstimateMap);
+            super.lastCombinedEstimation = finalEstimateNormalizedMap;
         } else {
             flag = false;
-            finalEstimateMap = super.lastCombinedEstimation;
+            finalEstimateNormalizedMap = super.lastCombinedEstimation;
             for (int i = 0; i < super.groupSize; i++) {
                 super.publicationSubMechanismHistoryQueueList.get(i).offer(new HashSet<>());
             }
@@ -118,7 +121,7 @@ public class PLPDPlus extends AdvancedPLPMechanism {
         }
 
 
-        return new CombinePair<>(flag, finalEstimateMap);
+        return new CombinePair<>(flag, finalEstimateNormalizedMap);
 
     }
 

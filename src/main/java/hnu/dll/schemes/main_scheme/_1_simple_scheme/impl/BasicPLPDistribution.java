@@ -7,6 +7,7 @@ import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.BasicPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
+import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
@@ -31,14 +32,16 @@ public class BasicPLPDistribution extends BasicPLPMechanism {
 
         Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
 
-        Map<Integer, Double> normalizedEstimation;
+        Map<Integer, Double> normalizedEstimation, rawEstimation;
 
         Boolean flag;
 
         if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
             flag = true;
             this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-            normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+            rawEstimation = MechanismUtils.gPRRRaw(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+            this.lastRawReleaseEstimation = rawEstimation;
+            normalizedEstimation = BasicUtils.normalizeValues(rawEstimation);
             this.lastReleaseEstimation = normalizedEstimation;
             this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
         } else {

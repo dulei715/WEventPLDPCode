@@ -5,16 +5,15 @@ import java.util.List;
 public class GroupAwareOptimalSelectionStruct {
     private List<Double> optimalErrorList;
     private List<Integer> optimalSamplingSizeList;
+    private List<Integer> effectiveRecycleSizeList;
     private List<Double> optimalEffectivePrivacyBudgetList;
-    // 可由samplingSizeList计算出
-    private List<Integer> windowSizeList;
 
 
-    public GroupAwareOptimalSelectionStruct(List<Double> optimalErrorList, List<Integer> optimalSamplingSizeList, List<Double> optimalEffectivePrivacyBudgetList, List<Integer> windowSizeList) {
+    public GroupAwareOptimalSelectionStruct(List<Double> optimalErrorList, List<Integer> optimalSamplingSizeList, List<Integer> effectiveRecycleSizeList, List<Double> optimalEffectivePrivacyBudgetList) {
         this.optimalErrorList = optimalErrorList;
         this.optimalSamplingSizeList = optimalSamplingSizeList;
         this.optimalEffectivePrivacyBudgetList = optimalEffectivePrivacyBudgetList;
-        this.windowSizeList = windowSizeList;
+        this.effectiveRecycleSizeList = effectiveRecycleSizeList;
     }
 
     public List<Double> getOptimalErrorList() {
@@ -29,8 +28,8 @@ public class GroupAwareOptimalSelectionStruct {
         return optimalEffectivePrivacyBudgetList;
     }
 
-    public List<Integer> getWindowSizeList() {
-        return windowSizeList;
+    public List<Integer> getEffectiveRecycleSizeList() {
+        return effectiveRecycleSizeList;
     }
 
     @Override
@@ -38,8 +37,8 @@ public class GroupAwareOptimalSelectionStruct {
         return "GroupAwareOptimalSelectionStruct{" +
                 "optimalErrorList=" + optimalErrorList +
                 ", optimalSamplingSizeList=" + optimalSamplingSizeList +
+                ", effectiveRecycleSizeList=" + effectiveRecycleSizeList +
                 ", optimalEffectivePrivacyBudgetList=" + optimalEffectivePrivacyBudgetList +
-                ", windowSizeList=" + windowSizeList +
                 '}';
     }
 

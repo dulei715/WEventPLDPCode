@@ -8,6 +8,7 @@ import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.BasicPLPMechanism;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.AbsorptionLastInfo;
+import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
@@ -21,13 +22,14 @@ public class BasicPLPAbsorption extends BasicPLPMechanism {
     @Override
     protected CombinePair<Boolean, Map<Integer, Double>> reportingSubMechanism(List<Integer> nextDataIndexList, Double dissimilarity) {
         Boolean flag;
-        Map<Integer, Double> normalizedEstimation;
+        Map<Integer, Double> normalizedEstimation, rawEstimation;
         Integer optimalSamplingSize = this.getOptimalSamplingSize();
         Integer lastTimeSlot = this.lastInfo.getTimeSlot();
         Integer lastPublicationPopulationConsumption = this.lastInfo.getPopulationSize();
         Integer nullifiedLength = lastPublicationPopulationConsumption / optimalSamplingSize - 1;
         if (this.currentTime - lastTimeSlot <= nullifiedLength) {
             flag = false;
+            rawEstimation = this.lastRawReleaseEstimation;
             normalizedEstimation = this.lastReleaseEstimation;
             this.publicationSubMechanismHistoryQueue.offer(new HashSet());
         } else {
@@ -44,7 +46,9 @@ public class BasicPLPAbsorption extends BasicPLPMechanism {
             if (dissimilarity > error) {
                 flag = true;
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
-                normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+                rawEstimation = MechanismUtils.gPRRRaw(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();
+                this.lastRawReleaseEstimation = rawEstimation;
+                normalizedEstimation = BasicUtils.normalizeValues(rawEstimation);
                 this.lastReleaseEstimation = normalizedEstimation;
                 this.publicationSubMechanismHistoryQueue.offer(samplingUserIndexSetForPublication);
                 this.lastInfo.update(this.currentTime, publicationSamplingSize);
