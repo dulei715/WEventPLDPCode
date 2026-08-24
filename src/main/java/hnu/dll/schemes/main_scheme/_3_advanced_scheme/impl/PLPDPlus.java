@@ -48,6 +48,10 @@ public class PLPDPlus extends AdvancedPLPMechanism {
             tempPotentialPublicationUserSize = remainingPopulationSize / 2;     // 这里用了整数除法截断性质实现向下取整
             potentialPublicationUserSizeList.add(tempPotentialPublicationUserSize);
 //            publicationPrivacyGroupTripleList.add(new PrivacyGroupTriple(super.newWindowSizeGroupList.get(i), super.distinctBudgetList.get(i), potentialPublicationUserSize));
+            if (tempPotentialPublicationUserSize < Constant.PopulationLowerBound) {
+                prePublicationVarianceList.add(Double.POSITIVE_INFINITY);
+                continue;
+            }
             tempPreVariance = FOUtils.getGPRRVarianceBySamplingSize(super.newPrivacyBudgetGroupList.get(i), tempGroupInnerSize / 2, tempPotentialPublicationUserSize, super.domainSize);
             prePublicationVarianceList.add(tempPreVariance);
 
@@ -57,8 +61,16 @@ public class PLPDPlus extends AdvancedPLPMechanism {
 //        List<Integer> optimalPubSamplingSizeList = this.pubGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
 //        List<Double> optimalEffectivePublicationPrivacyBudgetList = this.pubGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
 //        List<Double> prePublicationVarianceList = BasicArrayUtil.getLinearTransformToList(optimalErrorList, super.domainSize, 0);
-        List<SimpleMatrix> preCorrectedWeightList = ProposedSchemeUtils.getCorrectedWeight(super.sourceMap, super.currentDisEstimationMapList, super.currentDisUnbiasedVarianceList, prePublicationVarianceList, Constant.EigenvaluesLowerBound);
-        Double errorPlus = ProposedSchemeUtils.getBAPUEError(super.piList, super.sourceMap, preCorrectedWeightList, prePublicationVarianceList, super.currentDisEstimationListList, super.currentDisUnbiasedVarianceList, this.domainSize);
+        boolean populationEnough = BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound;
+        List<SimpleMatrix> preCorrectedWeightList = null;
+        Double errorPlus = Double.POSITIVE_INFINITY;
+        if (populationEnough) {
+            preCorrectedWeightList = ProposedSchemeUtils.getCorrectedWeight(super.sourceMap, super.currentDisEstimationMapList,
+                    super.currentDisUnbiasedVarianceList, prePublicationVarianceList, Constant.EigenvaluesLowerBound);
+            errorPlus = ProposedSchemeUtils.getBAPUEError(super.piList, super.sourceMap, preCorrectedWeightList,
+                    prePublicationVarianceList, super.currentDisEstimationListList, super.currentDisUnbiasedVarianceList, this.domainSize);
+        }
+
         Boolean flag;
         Set<Integer> tempGroupCandidateUserIndexSet, tempSamplingUserIndexSetForPublication;
         Double tempPrivacyBudget, tempEstimationNormSquare, tempPubUnbiasedVariance;
@@ -67,11 +79,12 @@ public class PLPDPlus extends AdvancedPLPMechanism {
         this.currentPubUnbiasedVarianceList = new ArrayList<>(super.groupSize);
         List<Double> tempNormalizedEstimationList;
         List<SimpleMatrix> finalWeightList;
-        if (dissimilarity > errorPlus && BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound) {
+        if (populationEnough && dissimilarity > errorPlus) {
             flag = true;
             for (int i = 0; i < super.groupSize; i++) {
 //                tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
                 tempGroupCandidateUserIndexSet = super.candidateUserIndexSetList.get(i);
+                int availablePopulationSize = tempGroupCandidateUserIndexSet.size();
                 tempSamplingSize = potentialPublicationUserSizeList.get(i);
                 tempSamplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempGroupCandidateUserIndexSet, tempSamplingSize, super.random);
                 tempGroupCandidateUserIndexSet.removeAll(tempSamplingUserIndexSetForPublication);
@@ -85,7 +98,6 @@ public class PLPDPlus extends AdvancedPLPMechanism {
                 this.currentPubEstimationListList.add(tempNormalizedEstimationList);
 
                 tempEstimationNormSquare = BasicCalculation.get2NormSquare(tempInfo.values());
-                int availablePopulationSize = tempGroupCandidateUserIndexSet.size();
                 tempPubUnbiasedVariance = FOUtils.getUnbiasedVariance(tempPrivacyBudget, availablePopulationSize, tempSamplingSize, this.domainSize, tempEstimationNormSquare);
                 this.currentPubUnbiasedVarianceList.add(tempPubUnbiasedVariance);
             }

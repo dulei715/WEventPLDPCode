@@ -253,6 +253,59 @@ public class ProposedSchemeUtilsTest {
         System.out.println("PG2 weights (1×1): " + w2);
     }
 
+    @Test
+    public void partialAbsorptionCorrectedWeightTest() {
+        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
+        indexSourceMap.put(0, Collections.singletonList(1));
+        indexSourceMap.put(1, Collections.emptyList());
+
+        TreeMap<String, Double> estimate0 = new TreeMap<>();
+        estimate0.put("a", 0.8);
+        estimate0.put("b", 0.2);
+        TreeMap<String, Double> estimate1 = new TreeMap<>();
+        estimate1.put("a", 0.4);
+        estimate1.put("b", 0.6);
+        List<TreeMap<String, Double>> mixedPublicationEstimateList = Arrays.asList(estimate0, estimate1);
+
+        TreeMap<String, Double> disEstimate0 = new TreeMap<>();
+        disEstimate0.put("a", 0.5);
+        disEstimate0.put("b", 0.5);
+        TreeMap<String, Double> disEstimate1 = new TreeMap<>();
+        disEstimate1.put("a", 0.4);
+        disEstimate1.put("b", 0.6);
+        List<TreeMap<String, Double>> disEstimateList = Arrays.asList(disEstimate0, disEstimate1);
+
+        List<SimpleMatrix> weightList = ProposedSchemeUtils.getPartialAbsorptionCorrectedWeight(
+                indexSourceMap, mixedPublicationEstimateList, disEstimateList,
+                Arrays.asList(0.2, 0.1), Arrays.asList(0.2, 0.15),
+                Arrays.asList(0.1, 0.1), Collections.singleton(0), 0.01);
+
+        assertEquals(2, weightList.size());
+        assertEquals(2, weightList.get(0).numRows());
+        assertEquals(1, weightList.get(1).numRows());
+        assertEquals(1.0, weightList.get(0).elementSum(), 1e-6);
+        assertEquals(1.0, weightList.get(1).elementSum(), 1e-6);
+    }
+
+    @Test
+    public void partialAbsorptionBAPUEErrorTest() {
+        Map<Integer, List<Integer>> indexSourceMap = new HashMap<>();
+        indexSourceMap.put(0, Collections.emptyList());
+        indexSourceMap.put(1, Collections.emptyList());
+        List<SimpleMatrix> lambdaList = Arrays.asList(
+                new SimpleMatrix(1, 1, true, new double[]{1.0}),
+                new SimpleMatrix(1, 1, true, new double[]{1.0}));
+
+        Double error = ProposedSchemeUtils.getPartialAbsorptionBAPUEError(
+                Arrays.asList(0.5, 0.5), indexSourceMap, lambdaList,
+                Arrays.asList(Arrays.asList(0.6, 0.4), Arrays.asList(1.0, 0.0)),
+                Arrays.asList(0.2, 0.3),
+                Arrays.asList(Arrays.asList(0.6, 0.4), Arrays.asList(0.0, 1.0)),
+                Arrays.asList(0.1, 0.2), Collections.singleton(1), 2);
+
+        assertEquals(0.25, error, 1e-8);
+    }
+
     // new test
 //    @Test
 //    public void biasedAwarePersonalizedUtilityEnhancementManualTest() {

@@ -343,6 +343,136 @@ public class ProposedSchemeUtils {
 
     }
 
+    /**
+     * Corresponds to Algorithm 8 (PA-GCW) in the paper.
+     *
+     * @param indexSourceMap source groups of each target group
+     * @param mixedPublicationEstimateList publication candidates; an active group uses its current
+     *                                     dissimilarity estimate in PRE and its actual publication
+     *                                     estimate in POST, while a reused group uses its historical
+     *                                     publication estimate
+     * @param currentDissimilarityEstimateList current group-level dissimilarity estimates
+     * @param estimationVarianceList variances of the estimates used for distribution-shift estimation
+     * @param publicationVarianceList variances of the publication candidates that will be fused
+     * @param dissimilarityVarianceList variances of current dissimilarity estimates
+     * @param reusedGroupIndexSet reused privacy-group indexes
+     * @param lowerBound eigenvalue clipping lower bound
+     */
+    public static <T extends Comparable<T>> List<SimpleMatrix> getPartialAbsorptionCorrectedWeight(
+            final Map<Integer, List<Integer>> indexSourceMap,
+            final List<? extends Map<T, Double>> mixedPublicationEstimateList,
+            final List<? extends Map<T, Double>> currentDissimilarityEstimateList,
+            final List<Double> estimationVarianceList,
+            final List<Double> publicationVarianceList,
+            final List<Double> dissimilarityVarianceList,
+            final Set<Integer> reusedGroupIndexSet,
+            final Double lowerBound) {
+        int groupSize = mixedPublicationEstimateList.size();
+        List<SimpleMatrix> mixedPublicationEstimateVectorList = new ArrayList<>(groupSize);
+        List<SimpleMatrix> currentDissimilarityEstimateVectorList = new ArrayList<>(groupSize);
+        for (int i = 0; i < groupSize; i++) {
+            mixedPublicationEstimateVectorList.add(VectorUtil.toColumnVector(new TreeMap<>(mixedPublicationEstimateList.get(i)).values()));
+            currentDissimilarityEstimateVectorList.add(VectorUtil.toColumnVector(new TreeMap<>(currentDissimilarityEstimateList.get(i)).values()));
+        }
+
+        List<SimpleMatrix> resultList = new ArrayList<>(groupSize);
+        for (int targetIndex = 0; targetIndex < groupSize; targetIndex++) {
+            List<Integer> sourceIndexList = indexSourceMap.get(targetIndex);
+            SimpleMatrix targetDissimilarityEstimateVector = currentDissimilarityEstimateVectorList.get(targetIndex);
+            RiskMatrixStructure riskMatrixStructure;
+
+            if (reusedGroupIndexSet.contains(targetIndex)) {
+                List<Integer> candidateIndexList = new ArrayList<>(sourceIndexList.size() + 1);
+                candidateIndexList.add(targetIndex);
+                candidateIndexList.addAll(sourceIndexList);
+                SimpleMatrix empiricalRiskMatrix = new SimpleMatrix(candidateIndexList.size(), candidateIndexList.size());
+                for (int row = 0; row < candidateIndexList.size(); row++) {
+                    int rowGroupIndex = candidateIndexList.get(row);
+                    SimpleMatrix rowDifference = mixedPublicationEstimateVectorList.get(rowGroupIndex).minus(targetDissimilarityEstimateVector);
+                    for (int column = row; column < candidateIndexList.size(); column++) {
+                        int columnGroupIndex = candidateIndexList.get(column);
+                        SimpleMatrix columnDifference = mixedPublicationEstimateVectorList.get(columnGroupIndex).minus(targetDissimilarityEstimateVector);
+                        double value = rowDifference.dot(columnDifference) - dissimilarityVarianceList.get(targetIndex)
+                                + (publicationVarianceList.get(rowGroupIndex) - estimationVarianceList.get(rowGroupIndex))
+                                * (row == column ? 1 : 0);
+                        empiricalRiskMatrix.set(row, column, value);
+                        empiricalRiskMatrix.set(column, row, value);
+                    }
+                }
+                riskMatrixStructure = new SimpleRiskMatrixStructure(empiricalRiskMatrix);
+                riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, GeneralStatus);
+            } else {
+                SimpleMatrix empiricalSourceRiskMatrix = new SimpleMatrix(sourceIndexList.size(), sourceIndexList.size());
+                for (int row = 0; row < sourceIndexList.size(); row++) {
+                    int rowGroupIndex = sourceIndexList.get(row);
+                    SimpleMatrix rowDifference = mixedPublicationEstimateVectorList.get(rowGroupIndex).minus(targetDissimilarityEstimateVector);
+                    for (int column = row; column < sourceIndexList.size(); column++) {
+                        int columnGroupIndex = sourceIndexList.get(column);
+                        SimpleMatrix columnDifference = mixedPublicationEstimateVectorList.get(columnGroupIndex).minus(targetDissimilarityEstimateVector);
+                        double value = rowDifference.dot(columnDifference) - dissimilarityVarianceList.get(targetIndex)
+                                + (publicationVarianceList.get(rowGroupIndex) - estimationVarianceList.get(rowGroupIndex))
+                                * (row == column ? 1 : 0);
+                        empiricalSourceRiskMatrix.set(row, column, value);
+                        empiricalSourceRiskMatrix.set(column, row, value);
+                    }
+                }
+                riskMatrixStructure = new BlockedRiskMatrixStructure(publicationVarianceList.get(targetIndex), empiricalSourceRiskMatrix);
+                riskMatrixStructure = getPositiveDefiniteEigenvalueClipping(riskMatrixStructure, lowerBound, CurrentStatus);
+            }
+            resultList.add(LinearAlgorithmUtils.solveSimplexConstrain(riskMatrixStructure.getRiskMatrix()));
+        }
+        return resultList;
+    }
+
+    /**
+     * Calculates the staleness-aware potential reporting error in Equation (12).
+     */
+    public static Double getPartialAbsorptionBAPUEError(
+            final List<Double> piList,
+            final Map<Integer, List<Integer>> indexSourceMap,
+            final List<SimpleMatrix> lambdaList,
+            final List<List<Double>> mixedPublicationEstimateList,
+            final List<Double> publicationVarianceList,
+            final List<List<Double>> currentDissimilarityEstimateList,
+            final List<Double> dissimilarityVarianceList,
+            final Set<Integer> reusedGroupIndexSet,
+            final int dimension) {
+        List<Double> gammaParameterList = BasicMethodUtils.getGammaParameterList(piList, indexSourceMap, lambdaList);
+        double[] estimatedBias = new double[dimension];
+        double publicationVarianceSum = 0.0;
+        double biasVarianceCorrection = 0.0;
+
+        for (int groupIndex = 0; groupIndex < piList.size(); groupIndex++) {
+            double gamma = gammaParameterList.get(groupIndex);
+            double pi = piList.get(groupIndex);
+            boolean reused = reusedGroupIndexSet.contains(groupIndex);
+            double currentDissimilarityWeight = reused ? -pi : gamma - pi;
+
+            List<Double> currentDissimilarityEstimate = currentDissimilarityEstimateList.get(groupIndex);
+            for (int domainIndex = 0; domainIndex < dimension; domainIndex++) {
+                estimatedBias[domainIndex] += currentDissimilarityWeight * currentDissimilarityEstimate.get(domainIndex);
+            }
+            biasVarianceCorrection += currentDissimilarityWeight * currentDissimilarityWeight
+                    * dissimilarityVarianceList.get(groupIndex);
+
+            if (reused) {
+                List<Double> historicalPublicationEstimate = mixedPublicationEstimateList.get(groupIndex);
+                for (int domainIndex = 0; domainIndex < dimension; domainIndex++) {
+                    estimatedBias[domainIndex] += gamma * historicalPublicationEstimate.get(domainIndex);
+                }
+                biasVarianceCorrection += gamma * gamma * publicationVarianceList.get(groupIndex);
+            }
+            publicationVarianceSum += gamma * gamma * publicationVarianceList.get(groupIndex);
+        }
+
+        double estimatedBiasNormSquare = 0.0;
+        for (double value : estimatedBias) {
+            estimatedBiasNormSquare += value * value;
+        }
+        double correctedBiasSquare = Math.max(0.0, estimatedBiasNormSquare - biasVarianceCorrection);
+        return (publicationVarianceSum + correctedBiasSquare) / dimension;
+    }
+
 
 
 
