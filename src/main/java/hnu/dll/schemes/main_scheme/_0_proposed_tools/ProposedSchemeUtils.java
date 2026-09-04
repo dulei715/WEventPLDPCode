@@ -35,6 +35,7 @@ public class ProposedSchemeUtils {
 
     public static OptimalSelectionStruct optimalPopulationSelection(List<Integer> samplingSizeRequirementList, List<Double> privacyBudgetList, List<Integer> windowSizeList, Double samplingRatio, Integer domainSize) {
         Map<Integer, Integer> uniqueSamplingSizeMap = new TreeMap<>(BasicArrayUtil.getUniqueListWithFirstAppearanceIndex(samplingSizeRequirementList));
+        Map<Double, Double> originalNewBudgetMap = new HashMap<>();
         Set<Integer> uniqueSamplingSizeSet = uniqueSamplingSizeMap.keySet();
         int userSize = samplingSizeRequirementList.size();
         List<Double> tempBudgetList, finalBudgetList = null;
@@ -47,22 +48,13 @@ public class ProposedSchemeUtils {
             tempTau = Math.max(1, (int)Math.floor(samplingRatio * userSize / uniqueSamplingSize));
             tempBudgetList = new ArrayList<>();
             for (int i = 0; i < userSize; ++i) {
-//                originalSamplingSize = samplingSizeRequirementList.get(i);
                 originalBudget = privacyBudgetList.get(i);
-//                if (originalSamplingSize < uniqueSamplingSize) {
-//                    tempBudgetList.add(originalBudget / Math.ceil(uniqueSamplingSize * 1.0 / originalSamplingSize));
-//                } else {
-//                    tempBudgetList.add(originalBudget);
-//                }
                 tempWindowSize = windowSizeList.get(i);
                 tempBudgetList.add(originalBudget / Math.ceil(tempWindowSize * 1.0 / tempTau));
             }
 
             newUniqueBudgetStatisticMap = BasicArrayUtil.getUniqueListWithStatisticList(tempBudgetList);
             tempError = PFOUtils.getGPRRErrorByGroupUserRatio(newUniqueBudgetStatisticMap, userSize, uniqueSamplingSize, domainSize);
-            //todo: for test
-//            System.out.println("sampling size: " + uniqueSamplingSize + " error: " + tempError);
-//            MyPrint.showList(tempBudgetList, "; ");
             if (tempError < finalError) {
                 finalError = tempError;
                 finalSamplingSize = uniqueSamplingSize;
@@ -72,6 +64,18 @@ public class ProposedSchemeUtils {
             }
         }
         return new OptimalSelectionStruct(finalSamplingSize, finalTau, finalError, finalBudgetList, finalSamplingSizeIndex);
+    }
+
+    public static Map<Double,Double> getOriginalNewPrivacyBudgetMap(List<Double> originalEspilonList, List<Double> newEpsilonList) {
+        int size = originalEspilonList.size();
+        if (size != newEpsilonList.size()) {
+            throw new RuntimeException("originalEspilonList and newEpsilonList size not match!");
+        }
+        Map<Double, Double> resultMap = new HashMap<>();
+        for (int i = 0; i < size; i++) {
+            resultMap.putIfAbsent(originalEspilonList.get(i), newEpsilonList.get(i));
+        }
+        return resultMap;
     }
 
     protected static Set<Integer> getCandidateSamplingSizeSet(Integer windowSize, Integer samplingSize, Integer samplingSizeLowerBound) {
