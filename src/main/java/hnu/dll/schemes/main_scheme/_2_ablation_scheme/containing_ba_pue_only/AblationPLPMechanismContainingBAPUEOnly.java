@@ -35,11 +35,11 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
     protected List<Double> originalPrivacyBudgetList;
     protected List<Integer> originalWindowSizeList;
 
-    protected List<Double> newPrivacyBudgetList;
     protected Integer recycleWindowSize;
     protected Integer optimalTotalSamplingSize;
-//    protected List<Integer> newWindowSizeGroupList;
-//    protected List<Double> newPrivacyBudgetGroupList;
+    //    protected List<Integer> newWindowSizeGroupList;
+    protected List<Double> newPrivacyBudgetList;
+    protected List<Double> newPrivacyBudgetGroupList;
     protected List<Integer> newSamplingSizeGroupList;
 
     protected List<Integer> domainIndexList;
@@ -166,6 +166,9 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
 
         this.groupSize = this.distinctBudgetList.size();
 
+
+
+
 //        this.newPrivacyBudgetGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
 //        this.newSamplingSizeGroupList = this.disGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
 
@@ -187,6 +190,10 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
             this.piList.add(tempGroup.getUserSize() * 1.0 / this.userSize);
         }
         this.newSamplingSizeGroupList = ProposedSchemeUtils.getSamplingSizeGroupListByLargestRemainder(this.optimalTotalSamplingSize, this.piList);
+
+
+        Map<Double, Double> originalNewPrivacyBudgetMap = ProposedSchemeUtils.getOriginalNewPrivacyBudgetMap(this.originalPrivacyBudgetList, this.newPrivacyBudgetList);
+        this.newPrivacyBudgetGroupList = ProposedSchemeUtils.getNewGroupPrivacyBudgetList(this.privacyGroupList, originalNewPrivacyBudgetMap);
     }
 
 //    protected abstract Map<Integer, Double> getLastCombinedEstimation();

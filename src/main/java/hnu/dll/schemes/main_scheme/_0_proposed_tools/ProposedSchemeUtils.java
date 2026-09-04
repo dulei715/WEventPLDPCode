@@ -11,6 +11,7 @@ import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.matrix_data.RiskMatrixStructure;
 import hnu.dll.structure.matrix_data.SimpleRiskMatrixStructure;
 import hnu.dll.structure.personalized_data.AbstractPrivacyGroup;
+import hnu.dll.structure.personalized_data.SimplePrivacyGroup;
 import hnu.dll.structure.selection_struct.GroupAwareOptimalSelectionStruct;
 import hnu.dll.structure.selection_struct.OptimalSelectionStruct;
 import hnu.dll.structure.matrix_data.BlockedRiskMatrixStructure;
@@ -66,31 +67,28 @@ public class ProposedSchemeUtils {
         return new OptimalSelectionStruct(finalSamplingSize, finalTau, finalError, finalBudgetList, finalSamplingSizeIndex);
     }
 
-    public static Map<Double,Double> getOriginalNewPrivacyBudgetMap(List<Double> originalEspilonList, List<Double> newEpsilonList) {
-        int size = originalEspilonList.size();
+    public static Map<Double,Double> getOriginalNewPrivacyBudgetMap(List<Double> originalEpsilonList, List<Double> newEpsilonList) {
+        int size = originalEpsilonList.size();
         if (size != newEpsilonList.size()) {
-            throw new RuntimeException("originalEspilonList and newEpsilonList size not match!");
+            throw new RuntimeException("originalEpsilonList and newEpsilonList size not match!");
         }
         Map<Double, Double> resultMap = new HashMap<>();
         for (int i = 0; i < size; i++) {
-            resultMap.putIfAbsent(originalEspilonList.get(i), newEpsilonList.get(i));
+            resultMap.putIfAbsent(originalEpsilonList.get(i), newEpsilonList.get(i));
         }
         return resultMap;
     }
 
+    public static List<Double> getNewGroupPrivacyBudgetList(List<? extends AbstractPrivacyGroup> privacyGroupList, Map<Double, Double> originalNewPrivacyBudgetMap) {
+        List<Double> resultList = new ArrayList<>(privacyGroupList.size());
+        for (AbstractPrivacyGroup group : privacyGroupList) {
+            resultList.add(originalNewPrivacyBudgetMap.get(group.getEpsilon()));
+        }
+        return resultList;
+    }
+
     protected static Set<Integer> getCandidateSamplingSizeSet(Integer windowSize, Integer samplingSize, Integer samplingSizeLowerBound) {
         Set<Integer> result = new TreeSet<>();
-//        int i = 1;
-//        Integer tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
-//        for(; i < windowSize && tempCandidateSamplingSize < samplingSizeLowerBound; i++) {
-//            tempCandidateSamplingSize = (int)Math.floor(i*samplingSize*1.0/windowSize);
-//        }
-//        for (; i <= windowSize && tempCandidateSamplingSize <= samplingSize; i++) {
-//            if (tempCandidateSamplingSize >= samplingSizeLowerBound) {
-//                result.add(tempCandidateSamplingSize);
-//            }
-//            tempCandidateSamplingSize = (int)Math.floor((i+1)*samplingSize*1.0/windowSize);
-//        }
         for (int omega = 1; omega <= windowSize; omega++) {
             int tempCandidateSamplingSize = (int) Math.floor(omega * samplingSize * 1.0 / windowSize);
             if (tempCandidateSamplingSize >= samplingSizeLowerBound) {
@@ -611,14 +609,3 @@ public class ProposedSchemeUtils {
 
 
 
-
-
-
-
-
-
-
-
-
-
-}
