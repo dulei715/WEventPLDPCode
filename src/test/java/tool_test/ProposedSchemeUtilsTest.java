@@ -1,5 +1,6 @@
 package tool_test;
 
+import hnu.dll.schemes.main_scheme._0_proposed_tools.BasicMethodUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.structure.matrix_data.BlockedRiskMatrixStructure;
 import hnu.dll.structure.matrix_data.RiskMatrixStructure;
@@ -296,8 +297,11 @@ public class ProposedSchemeUtilsTest {
                 new SimpleMatrix(1, 1, true, new double[]{1.0}),
                 new SimpleMatrix(1, 1, true, new double[]{1.0}));
 
+        List<Double> pList =  Arrays.asList(0.5, 0.5);
+        List<Double> gammaList = BasicMethodUtils.getGammaParameterList(pList, indexSourceMap, lambdaList);
+
         Double error = ProposedSchemeUtils.getPartialAbsorptionBAPUEError(
-                Arrays.asList(0.5, 0.5), indexSourceMap, lambdaList,
+                pList, gammaList,
                 Arrays.asList(Arrays.asList(0.6, 0.4), Arrays.asList(1.0, 0.0)),
                 Arrays.asList(0.2, 0.3),
                 Arrays.asList(Arrays.asList(0.6, 0.4), Arrays.asList(0.0, 1.0)),

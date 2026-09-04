@@ -21,7 +21,7 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
     protected int currentTime;
     protected List<Double> originalPrivacyBudgetList;
     protected List<Double> newPrivacyBudgetList;
-    protected List<Integer> windowSizeList;
+    protected List<Integer> originalWindowSizeList;
     protected List<Integer> domainIndexList;
     protected Integer domainSize;
     protected Integer userSize;
@@ -55,23 +55,23 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         return domainIndexList;
     }
 
-    public BasicPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public BasicPLPMechanism(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> originalWindowSizeList, Random random) {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
         this.lastRawReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
         this.lastReleaseEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
-        this.windowSizeList = windowSizeList;
-        if (this.originalPrivacyBudgetList.size() != this.windowSizeList.size()) {
+        this.originalWindowSizeList = originalWindowSizeList;
+        if (this.originalPrivacyBudgetList.size() != this.originalWindowSizeList.size()) {
             throw new RuntimeException("The user size in privacy budget list and window size list are not equal!");
         }
-        this.userSize = this.windowSizeList.size();
+        this.userSize = this.originalWindowSizeList.size();
         this.candidateUserIndexSet = new HashSet<>();
         this.candidateUserIndexSet.addAll(BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.userSize - 1));
         this.random = random;
         this.distinctBudgetList = BasicArrayUtil.getUniqueList(this.originalPrivacyBudgetList);
-        this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.windowSizeList);
+        this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.originalWindowSizeList);
         initializeOptimalParameters();
     }
 
@@ -109,8 +109,8 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
         return this.optimalSelectionStruct.getNewPrivacyBudgetList();
     }
 
-    public List<Integer> getWindowSizeList() {
-        return windowSizeList;
+    public List<Integer> getOriginalWindowSizeList() {
+        return originalWindowSizeList;
     }
 
     public Map<Integer, Double> getReleaseNoiseCountMap() {
@@ -122,8 +122,8 @@ public abstract class BasicPLPMechanism extends PersonalizedMechanism {
      */
     public void initializeOptimalParameters() {
         // 1. 初始化基本的 M_{t,s}信息
-        List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.windowSizeList);
-        this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.windowSizeList, 0.5, this.domainSize);
+        List<Integer> samplingSizeList = BasicSchemeUtils.getSamplingSizeList(this.originalWindowSizeList);
+        this.optimalSelectionStruct = ProposedSchemeUtils.optimalPopulationSelection(samplingSizeList, this.originalPrivacyBudgetList, this.originalWindowSizeList, 0.5, this.domainSize);
         this.newPrivacyBudgetList = this.optimalSelectionStruct.getNewPrivacyBudgetList();
 //        this.optimalWindowSize = this.windowSizeList.get(this.optimalSelectionStruct.getOptimalSamplingSizeIndex());
         this.recycleWindowSize = this.optimalSelectionStruct.getPopulationRecycleWindowSize();

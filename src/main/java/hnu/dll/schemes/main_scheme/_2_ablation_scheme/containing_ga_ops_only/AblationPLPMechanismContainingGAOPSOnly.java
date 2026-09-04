@@ -105,9 +105,6 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
         initializeOptimalParameters();
     }
 
-//    protected abstract void setCalculationPrivacyBudgetList();
-//
-//    protected abstract void setPublicationPrivacyBudgetList();
 
 
     public List<Double> getOriginalPrivacyBudgetList() {
@@ -197,8 +194,7 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
      * @return
      */
     protected Double samplingSubMechanism(List<Integer> nextDataIndexList) {
-        int tempSamplingSize, tempGroupInnerSize;
-        SimplePrivacyGroup tempPrivacyGroup;
+        int tempSamplingSize;
         Set<Integer> tempSamplingUserIndexSetForCalculation;
         double tempPrivacyBudget, tempEstimationNormSquare, tempUnbiasedVariance, tempPi, totalPiWeightedUnbiasedVarianceSum = 0.0;
         List<Integer> tempSamplingDataIndexList;
@@ -213,9 +209,6 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
 
         for (int i = 0; i < this.groupSize; i++) {
             tempSamplingSize = this.newSamplingSizeGroupList.get(i);
-            tempPrivacyGroup = this.privacyGroupList.get(i);
-            tempGroupInnerSize = tempPrivacyGroup.getUserSize();
-//            tempPi = tempGroupInnerSize * 1.0 / this.userSize;
             tempPi = this.piList.get(i);
 
             Set<Integer> availableUserIndexSet = this.candidateUserIndexSetList.get(i);

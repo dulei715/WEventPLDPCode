@@ -427,17 +427,61 @@ public class ProposedSchemeUtils {
     /**
      * Calculates the staleness-aware potential reporting error in Equation (12).
      */
+//    public static Double getPartialAbsorptionBAPUEError(
+//            final List<Double> piList,
+//            final Map<Integer, List<Integer>> indexSourceMap,
+//            final List<SimpleMatrix> lambdaList,
+//            final List<List<Double>> mixedPublicationEstimateList,
+//            final List<Double> publicationVarianceList,
+//            final List<List<Double>> currentDissimilarityEstimateList,
+//            final List<Double> dissimilarityVarianceList,
+//            final Set<Integer> reusedGroupIndexSet,
+//            final int dimension) {
+//        List<Double> gammaParameterList = BasicMethodUtils.getGammaParameterList(piList, indexSourceMap, lambdaList);
+//        double[] estimatedBias = new double[dimension];
+//        double publicationVarianceSum = 0.0;
+//        double biasVarianceCorrection = 0.0;
+//
+//        for (int groupIndex = 0; groupIndex < piList.size(); groupIndex++) {
+//            double gamma = gammaParameterList.get(groupIndex);
+//            double pi = piList.get(groupIndex);
+//            boolean reused = reusedGroupIndexSet.contains(groupIndex);
+//            double currentDissimilarityWeight = reused ? -pi : gamma - pi;
+//
+//            List<Double> currentDissimilarityEstimate = currentDissimilarityEstimateList.get(groupIndex);
+//            for (int domainIndex = 0; domainIndex < dimension; domainIndex++) {
+//                estimatedBias[domainIndex] += currentDissimilarityWeight * currentDissimilarityEstimate.get(domainIndex);
+//            }
+//            biasVarianceCorrection += currentDissimilarityWeight * currentDissimilarityWeight
+//                    * dissimilarityVarianceList.get(groupIndex);
+//
+//            if (reused) {
+//                List<Double> historicalPublicationEstimate = mixedPublicationEstimateList.get(groupIndex);
+//                for (int domainIndex = 0; domainIndex < dimension; domainIndex++) {
+//                    estimatedBias[domainIndex] += gamma * historicalPublicationEstimate.get(domainIndex);
+//                }
+//                biasVarianceCorrection += gamma * gamma * publicationVarianceList.get(groupIndex);
+//            }
+//            publicationVarianceSum += gamma * gamma * publicationVarianceList.get(groupIndex);
+//        }
+//
+//        double estimatedBiasNormSquare = 0.0;
+//        for (double value : estimatedBias) {
+//            estimatedBiasNormSquare += value * value;
+//        }
+//        double correctedBiasSquare = Math.max(0.0, estimatedBiasNormSquare - biasVarianceCorrection);
+//        return (publicationVarianceSum + correctedBiasSquare) / dimension;
+//    }
+
     public static Double getPartialAbsorptionBAPUEError(
             final List<Double> piList,
-            final Map<Integer, List<Integer>> indexSourceMap,
-            final List<SimpleMatrix> lambdaList,
+            final List<Double> gammaParameterList,
             final List<List<Double>> mixedPublicationEstimateList,
             final List<Double> publicationVarianceList,
             final List<List<Double>> currentDissimilarityEstimateList,
             final List<Double> dissimilarityVarianceList,
             final Set<Integer> reusedGroupIndexSet,
             final int dimension) {
-        List<Double> gammaParameterList = BasicMethodUtils.getGammaParameterList(piList, indexSourceMap, lambdaList);
         double[] estimatedBias = new double[dimension];
         double publicationVarianceSum = 0.0;
         double biasVarianceCorrection = 0.0;
@@ -473,6 +517,84 @@ public class ProposedSchemeUtils {
         return (publicationVarianceSum + correctedBiasSquare) / dimension;
     }
 
+
+    public static List<Integer> getSamplingSizeGroupListByLargestRemainder(Integer totalSamplingSize, List<Double> weightList) {
+        if (totalSamplingSize == null || totalSamplingSize < 0) {
+            throw new IllegalArgumentException("totalSamplingSize must be non-negative.");
+        }
+        if (weightList == null || weightList.isEmpty()) {
+            throw new IllegalArgumentException("weightList cannot be null or empty.");
+        }
+
+        int groupSize = weightList.size();
+
+        // 1. Calculate the sum of weights.
+        double weightSum = 0.0;
+        for (Double weight : weightList) {
+            if (weight == null || weight < 0) {
+                throw new IllegalArgumentException("Weights must be non-negative.");
+            }
+            weightSum += weight;
+        }
+
+        if (weightSum <= 0.0) {
+            throw new IllegalArgumentException("The sum of weights must be positive.");
+        }
+
+        // 2. Allocate the floor part first.
+        List<Integer> resultList = new ArrayList<>(groupSize);
+        List<Double> remainderList = new ArrayList<>(groupSize);
+
+        int allocatedSize = 0;
+
+        for (int i = 0; i < groupSize; i++) {
+            // Normalize the weight to avoid requiring sum(weightList) == 1 exactly.
+            double normalizedWeight = weightList.get(i) / weightSum;
+
+            double exactSamplingSize = totalSamplingSize * normalizedWeight;
+            int floorSamplingSize = (int) Math.floor(exactSamplingSize);
+
+            resultList.add(floorSamplingSize);
+            remainderList.add(exactSamplingSize - floorSamplingSize);
+
+            allocatedSize += floorSamplingSize;
+        }
+
+        // 3. Number of users that have not yet been allocated.
+        int remainingSize = totalSamplingSize - allocatedSize;
+
+        // 4. Sort group indices by remainder in descending order.
+        //    If the remainders are equal, the smaller group index has priority.
+        List<Integer> indexList = new ArrayList<>(groupSize);
+        for (int i = 0; i < groupSize; i++) {
+            indexList.add(i);
+        }
+
+        indexList.sort((index1, index2) -> {
+            int compareResult = Double.compare(
+                    remainderList.get(index2),
+                    remainderList.get(index1)
+            );
+
+            if (compareResult != 0) {
+                return compareResult;
+            }
+
+            return Integer.compare(index1, index2);
+        });
+
+        // 5. Allocate the remaining users to groups with the largest remainders.
+        for (int i = 0; i < remainingSize; i++) {
+            int groupIndex = indexList.get(i);
+            resultList.set(
+                    groupIndex,
+                    resultList.get(groupIndex) + 1
+            );
+        }
+
+        return resultList;
+    }
+}
 
 
 

@@ -8,6 +8,7 @@ import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
+import hnu.dll.schemes.main_scheme._0_proposed_tools.BasicMethodUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
 import hnu.dll.special_tools.FOUtils;
@@ -101,13 +102,15 @@ public class PLPAPlus extends AdvancedPLPMechanism {
 
         List<SimpleMatrix> preCorrectedWeightList = null;
         Double errorPlus = Double.POSITIVE_INFINITY;
+        List<Double> gammaParameterList;
         if (!activeGroupIndexSet.isEmpty() && populationEnough) {
             preCorrectedWeightList = ProposedSchemeUtils.getPartialAbsorptionCorrectedWeight(
                     super.sourceMap, mixedPublicationEstimateMapList, super.currentDisEstimationMapList,
                     preEstimationVarianceList, mixedPublicationVarianceList,
                     super.currentDisUnbiasedVarianceList, reusedGroupIndexSet, Constant.EigenvaluesLowerBound);
+            gammaParameterList = BasicMethodUtils.getGammaParameterList(super.piList, super.sourceMap, preCorrectedWeightList);
             errorPlus = ProposedSchemeUtils.getPartialAbsorptionBAPUEError(
-                    super.piList, super.sourceMap, preCorrectedWeightList,
+                    super.piList, gammaParameterList,
                     mixedPublicationEstimateListList, mixedPublicationVarianceList,
                     super.currentDisEstimationListList, super.currentDisUnbiasedVarianceList,
                     reusedGroupIndexSet, super.domainSize);
