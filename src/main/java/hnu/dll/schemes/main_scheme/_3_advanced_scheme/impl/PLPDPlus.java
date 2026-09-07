@@ -19,13 +19,16 @@ import java.util.*;
 
 public class PLPDPlus extends AdvancedPLPMechanism {
 
+    protected Integer populationSizeLowerBound;
+
     protected GroupAwareOptimalSelectionStruct pubGroupAwareOptimalSelectionStruct;
     protected List<Map<Integer, Double>> currentPubEstimationMapList;
     protected List<List<Double>> currentPubEstimationListList;
     protected List<Double> currentPubUnbiasedVarianceList;
 
-    public PLPDPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, boolean model, Random random) {
+    public PLPDPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, boolean model, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, model, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
 
@@ -48,7 +51,7 @@ public class PLPDPlus extends AdvancedPLPMechanism {
             tempPotentialPublicationUserSize = remainingPopulationSize / 2;     // 这里用了整数除法截断性质实现向下取整
             potentialPublicationUserSizeList.add(tempPotentialPublicationUserSize);
 //            publicationPrivacyGroupTripleList.add(new PrivacyGroupTriple(super.newWindowSizeGroupList.get(i), super.distinctBudgetList.get(i), potentialPublicationUserSize));
-            if (tempPotentialPublicationUserSize < Constant.PopulationLowerBound) {
+            if (tempPotentialPublicationUserSize < this.populationSizeLowerBound) {
                 prePublicationVarianceList.add(Double.POSITIVE_INFINITY);
                 continue;
             }
@@ -61,7 +64,7 @@ public class PLPDPlus extends AdvancedPLPMechanism {
 //        List<Integer> optimalPubSamplingSizeList = this.pubGroupAwareOptimalSelectionStruct.getOptimalSamplingSizeList();
 //        List<Double> optimalEffectivePublicationPrivacyBudgetList = this.pubGroupAwareOptimalSelectionStruct.getOptimalEffectivePrivacyBudgetList();
 //        List<Double> prePublicationVarianceList = BasicArrayUtil.getLinearTransformToList(optimalErrorList, super.domainSize, 0);
-        boolean populationEnough = BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound;
+        boolean populationEnough = BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= this.populationSizeLowerBound;
         List<SimpleMatrix> preCorrectedWeightList = null;
         Double errorPlus = Double.POSITIVE_INFINITY;
         if (populationEnough) {
@@ -139,6 +142,9 @@ public class PLPDPlus extends AdvancedPLPMechanism {
 
     @Override
     public String getSimpleName() {
-        return "PLPD+";
+        if (this.model == AdvancedPLPMechanism.ModelPre) {
+            return Constant.AdvancedPLPDSchemeNamePre;
+        }
+        return Constant.AdvancedPLPDSchemeNamePost;
     }
 }

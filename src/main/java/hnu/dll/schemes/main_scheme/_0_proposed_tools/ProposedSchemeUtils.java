@@ -67,22 +67,22 @@ public class ProposedSchemeUtils {
         return new OptimalSelectionStruct(finalSamplingSize, finalTau, finalError, finalBudgetList, finalSamplingSizeIndex);
     }
 
-    public static Map<Double,Double> getOriginalNewPrivacyBudgetMap(List<Double> originalEpsilonList, List<Double> newEpsilonList) {
-        int size = originalEpsilonList.size();
-        if (size != newEpsilonList.size()) {
-            throw new RuntimeException("originalEpsilonList and newEpsilonList size not match!");
-        }
-        Map<Double, Double> resultMap = new HashMap<>();
-        for (int i = 0; i < size; i++) {
-            resultMap.putIfAbsent(originalEpsilonList.get(i), newEpsilonList.get(i));
-        }
-        return resultMap;
-    }
+//    public static Map<Double,Double> getOriginalNewPrivacyBudgetMap(List<Double> originalEpsilonList, List<Double> newEpsilonList) {
+//        int size = originalEpsilonList.size();
+//        if (size != newEpsilonList.size()) {
+//            throw new RuntimeException("originalEpsilonList and newEpsilonList size not match!");
+//        }
+//        Map<Double, Double> resultMap = new HashMap<>();
+//        for (int i = 0; i < size; i++) {
+//            resultMap.putIfAbsent(originalEpsilonList.get(i), newEpsilonList.get(i));
+//        }
+//        return resultMap;
+//    }
 
-    public static List<Double> getNewGroupPrivacyBudgetList(List<? extends AbstractPrivacyGroup> privacyGroupList, Map<Double, Double> originalNewPrivacyBudgetMap) {
+    public static List<Double> getNewGroupPrivacyBudgetList(List<? extends AbstractPrivacyGroup> privacyGroupList, Integer recycleWindowSize) {
         List<Double> resultList = new ArrayList<>(privacyGroupList.size());
         for (AbstractPrivacyGroup group : privacyGroupList) {
-            resultList.add(originalNewPrivacyBudgetMap.get(group.getEpsilon()));
+            resultList.add(group.getEpsilon() / Math.ceil(group.getWindowSize() * 1.0 / recycleWindowSize));
         }
         return resultList;
     }

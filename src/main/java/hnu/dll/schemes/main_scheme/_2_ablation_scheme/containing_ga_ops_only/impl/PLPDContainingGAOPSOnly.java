@@ -8,9 +8,7 @@ import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll._config.Constant;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
-import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
 import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ga_ops_only.AblationPLPMechanismContainingGAOPSOnly;
-import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
 import hnu.dll.special_tools.FOUtils;
 import hnu.dll.structure.selection_struct.GroupAwareOptimalSelectionStruct;
 import hnu.dll.utils.BasicUtils;
@@ -20,13 +18,16 @@ import java.util.*;
 
 public class PLPDContainingGAOPSOnly extends AblationPLPMechanismContainingGAOPSOnly {
 
+    protected Integer populationSizeLowerBound;
+
     protected GroupAwareOptimalSelectionStruct pubGroupAwareOptimalSelectionStruct;
     protected List<Map<Integer, Double>> currentPubEstimationMapList;
     protected List<List<Double>> currentPubEstimationListList;
     protected List<Double> currentPubUnbiasedVarianceList;
 
-    public PLPDContainingGAOPSOnly(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, boolean model, Random random) {
-        super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, model, random);
+    public PLPDContainingGAOPSOnly(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
+        super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
+        this.populationSizeLowerBound  =  populationSizeLowerBound;
     }
 
 
@@ -44,7 +45,7 @@ public class PLPDContainingGAOPSOnly extends AblationPLPMechanismContainingGAOPS
             remainingPopulationSize = tempGroupInnerSize / 2 - super.publicationSubMechanismHistoryQueueList.get(i).getReverseSizeSum(super.newWindowSizeGroupList.get(i) - 1);
             tempPotentialPublicationUserSize = remainingPopulationSize / 2;     // 这里用了整数除法截断性质实现向下取整
             potentialPublicationUserSizeList.add(tempPotentialPublicationUserSize);
-            if (tempPotentialPublicationUserSize < Constant.PopulationLowerBound) {
+            if (tempPotentialPublicationUserSize < this.populationSizeLowerBound) {
                 prePublicationVarianceList.add(Double.POSITIVE_INFINITY);
                 continue;
             }
@@ -52,14 +53,10 @@ public class PLPDContainingGAOPSOnly extends AblationPLPMechanismContainingGAOPS
             prePublicationVarianceList.add(tempPreVariance);
 
         }
-        boolean populationEnough = BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= Constant.PopulationLowerBound;
+        boolean populationEnough = BasicArrayUtil.getIntegerMinValue(potentialPublicationUserSizeList) >= this.populationSizeLowerBound;
 //        List<SimpleMatrix> preCorrectedWeightList = null;
         Double errorPlus = Double.POSITIVE_INFINITY;
         if (populationEnough) {
-//            preCorrectedWeightList = ProposedSchemeUtils.getCorrectedWeight(super.sourceMap, super.currentDisEstimationMapList,
-//                    super.currentDisUnbiasedVarianceList, prePublicationVarianceList, Constant.EigenvaluesLowerBound);
-//            errorPlus = ProposedSchemeUtils.getBAPUEError(super.piList, super.sourceMap, preCorrectedWeightList,
-//                    prePublicationVarianceList, super.currentDisEstimationListList, super.currentDisUnbiasedVarianceList, this.domainSize);
             errorPlus = SimpleVectorUtil.getInnerProduct(prePublicationVarianceList, super.piList, 2D) / super.domainSize;
         }
 
@@ -123,6 +120,6 @@ public class PLPDContainingGAOPSOnly extends AblationPLPMechanismContainingGAOPS
 
     @Override
     public String getSimpleName() {
-        return "PLPD-Containing-GA-OPS-Only";
+        return Constant.PLPDAblateContainingGAOPSchemeName;
     }
 }

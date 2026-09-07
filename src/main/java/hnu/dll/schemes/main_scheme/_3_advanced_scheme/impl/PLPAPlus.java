@@ -19,6 +19,8 @@ import java.util.*;
 
 public class PLPAPlus extends AdvancedPLPMechanism {
 
+    protected Integer populationSizeLowerBound;
+
     protected List<Integer> lastPublicationTimeList;
     protected List<Integer> lastPublicationPopulationSizeList;
     protected List<Map<Integer, Double>> lastPubEstimationMapList;
@@ -29,8 +31,9 @@ public class PLPAPlus extends AdvancedPLPMechanism {
     protected List<List<Double>> currentPubEstimationListList;
     protected List<Double> currentPubUnbiasedVarianceList;
 
-    public PLPAPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, boolean model, Random random) {
+    public PLPAPlus(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, boolean model, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, model, random);
+        this.populationSizeLowerBound = populationSizeLowerBound;
         this.lastPublicationTimeList = new ArrayList<>(super.groupSize);
         this.lastPublicationPopulationSizeList = new ArrayList<>(super.groupSize);
         this.lastPubEstimationMapList = new ArrayList<>(super.groupSize);
@@ -78,7 +81,7 @@ public class PLPAPlus extends AdvancedPLPMechanism {
                 potentialPublicationUserSizeList.set(i, tempPotentialPublicationUserSize);
 
                 tempGroupInnerSize = super.privacyGroupList.get(i).getUserSize();
-                if (tempPotentialPublicationUserSize < Constant.PopulationLowerBound) {
+                if (tempPotentialPublicationUserSize < this.populationSizeLowerBound) {
                     tempPrePublicationVariance = Double.POSITIVE_INFINITY;
                 } else {
                     tempPrePublicationVariance = FOUtils.getGPRRVarianceBySamplingSize(
@@ -94,7 +97,7 @@ public class PLPAPlus extends AdvancedPLPMechanism {
 
         boolean populationEnough = true;
         for (Integer activeGroupIndex : activeGroupIndexSet) {
-            if (potentialPublicationUserSizeList.get(activeGroupIndex) < Constant.PopulationLowerBound) {
+            if (potentialPublicationUserSizeList.get(activeGroupIndex) < this.populationSizeLowerBound) {
                 populationEnough = false;
                 break;
             }
@@ -199,6 +202,9 @@ public class PLPAPlus extends AdvancedPLPMechanism {
 
     @Override
     public String getSimpleName() {
-        return Constant.AdvancedPLPASchemeName;
+        if (super.model == AdvancedPLPMechanism.ModelPre) {
+            return Constant.AdvancedPLPASchemeNamePre;
+        }
+        return Constant.AdvancedPLPASchemeNamePost;
     }
 }

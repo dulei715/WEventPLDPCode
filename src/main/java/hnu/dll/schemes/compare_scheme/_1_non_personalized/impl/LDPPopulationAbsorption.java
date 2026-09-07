@@ -12,10 +12,12 @@ import hnu.dll.structure.AbsorptionLastInfo;
 import java.util.*;
 
 public class LDPPopulationAbsorption extends LPMechanism {
+    protected Integer populationSizeLowerBound;
     protected AbsorptionLastInfo lastInfo;
-    public LDPPopulationAbsorption(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Random random) {
+    public LDPPopulationAbsorption(Set<String> dataTypeSet, Double privacyBudget, Integer windowSize, Integer userSize, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, privacyBudget, windowSize, userSize, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class LDPPopulationAbsorption extends LPMechanism {
             Integer publicationSamplingSize = this.samplingSize * Math.min(absorbedLength, this.windowSize);
 
             Double error = FOUtils.getGRRError(this.privacyBudget, publicationSamplingSize, this.domainSize);
-            if (dissimilarity > error) {
+            if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
                 flag = true;
                 Set<Integer> samplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(this.candidateUserIndexSet, publicationSamplingSize, random);
                 // 获取当前 data 列表

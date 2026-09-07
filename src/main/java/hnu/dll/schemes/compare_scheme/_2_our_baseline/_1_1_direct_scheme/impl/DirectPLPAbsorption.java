@@ -12,10 +12,12 @@ import hnu.dll.structure.AbsorptionLastInfo;
 import java.util.*;
 
 public class DirectPLPAbsorption extends DirectPLPMechanism {
+    protected Integer populationSizeLowerBound;
     protected AbsorptionLastInfo lastInfo;
-    public DirectPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public DirectPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class DirectPLPAbsorption extends DirectPLPMechanism {
             Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
 
             Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
-            if (dissimilarity > error) {
+            if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
                 flag = true;
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
                 normalizedEstimation = MechanismUtils.gPRR(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();

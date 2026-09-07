@@ -14,8 +14,6 @@ import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbso
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
@@ -158,9 +156,9 @@ public class FixedSegmentBasicParameterSerialRun {
                 /**
                  * 2. Baseline mechanisms
                  */
-                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((DirectPLPDistribution)mechanismMap.get(Constant.DirectPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPDirectMechanismRun.runBatch((DirectPLPDistribution)mechanismMap.get(Constant.DirectPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
-                tempResult = _2_PersonalizedWEventLDPBaselineMechanismRun.runBatch((DirectPLPAbsorption)mechanismMap.get(Constant.DirectPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _2_PersonalizedWEventLDPDirectMechanismRun.runBatch((DirectPLPAbsorption)mechanismMap.get(Constant.DirectPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 
@@ -170,17 +168,17 @@ public class FixedSegmentBasicParameterSerialRun {
 //                tempResult = _3_1_PersonalizedWEventLDPAblateOPSMechanismRun.runBatch((AblateOPSAbsorptionPlus)mechanismMap.get(Constant.AblateOPSPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
 //                experimentResultList.add(tempResult);
 
-                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((BasicPLPDistribution)mechanismMap.get(Constant.BasicPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _4_2_PersonalizedWEventLDPAblateContainingBAPUEMechanismRun.runBatch((BasicPLPDistribution)mechanismMap.get(Constant.BasicPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
-                tempResult = _3_2_PersonalizedWEventLDPAblateRePerturbMechanismRun.runBatch((BasicPLPAbsorption)mechanismMap.get(Constant.BasicPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _4_2_PersonalizedWEventLDPAblateContainingBAPUEMechanismRun.runBatch((BasicPLPAbsorption)mechanismMap.get(Constant.BasicPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
 
 
 
-                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((UnionPLDPPopulationDistribution)mechanismMap.get(Constant.UnionPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _5_PersonalizedWEventLDPAdvancedMechanismRun.runBatch((UnionPLDPPopulationDistribution)mechanismMap.get(Constant.UnionPLPDSchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
-                tempResult = _4_PersonalizedWEventLDPEnhancedMechanismRun.runBatch((UnionPLDPPopulationAbsorption)mechanismMap.get(Constant.UnionPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
+                tempResult = _5_PersonalizedWEventLDPAdvancedMechanismRun.runBatch((UnionPLDPPopulationAbsorption)mechanismMap.get(Constant.UnionPLPASchemeName), batchID, batchDataList, rawPublicationBatchList);
                 experimentResultList.add(tempResult);
                 // write result
                 outputFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicOutputPathDir, "batch_"+batchID+".txt");

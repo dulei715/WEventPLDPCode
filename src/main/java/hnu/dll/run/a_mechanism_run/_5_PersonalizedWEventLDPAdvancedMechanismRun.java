@@ -5,19 +5,19 @@ import cn.edu.dll.result.ExperimentResult;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll._config.Constant;
 import hnu.dll.metric.Measurement;
-import hnu.dll.schemes.compare_scheme._3_ablation.AblateOPSMechanism;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class _3_1_PersonalizedWEventLDPAblateOPSMechanismRun {
+public class _5_PersonalizedWEventLDPAdvancedMechanismRun {
     /**
      * dataList 的外层List代表timestamp，内层list代表user
      */
 
-    public static ExperimentResult runBatch(AblateOPSMechanism scheme, Integer batchID, List<List<Integer>> batchDataList, List<Map<Integer, Double>> rawPublicationBatchList) {
+    public static ExperimentResult runBatch(AdvancedPLPMechanism scheme, Integer batchID, List<List<Integer>> batchDataList, List<Map<Integer, Double>> rawPublicationBatchList) {
         List<Double> privacyBudgetList = scheme.getDistinctBudgetList();
         List<Integer> windowSizeList = scheme.getDistinctWindowSizeList();
         List<Integer> domainIndexList = scheme.getDomainIndexList();

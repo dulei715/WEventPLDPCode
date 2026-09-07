@@ -22,12 +22,9 @@ import java.util.*;
 
 public abstract class AblationPLPMechanismContainingGAOPSOnly extends PersonalizedMechanism {
 
-    public static final boolean ModelPre = false;
-    public static final boolean ModelPost = true;
-
 
     protected Random random;
-    protected boolean model;
+//    protected boolean model;
 
     protected int currentTime;
     protected List<Double> originalPrivacyBudgetList;
@@ -83,13 +80,12 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
         return domainIndexList;
     }
 
-    public AblationPLPMechanismContainingGAOPSOnly(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, boolean model, Random random) {
+    public AblationPLPMechanismContainingGAOPSOnly(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
         this.currentTime = 0;
         this.domainSize = dataTypeSet.size();
         this.domainIndexList = BasicArrayUtil.getIncreaseIntegerNumberList(0, 1, this.domainSize - 1);
         this.lastCombinedEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
         this.lastCombinedRawEstimation = MapUtils.getInitializedMap(this.domainIndexList, 0D);
-//        this.lastReleaseGroupStatusList = PrivacyGroupStatus.getIntializedPrivacyGroupStatusList(this.domainIndexList, this.userSize);
         this.originalPrivacyBudgetList = originalPrivacyBudgetList;
         this.originalWindowSizeList = windowSizeList;
         if (this.originalPrivacyBudgetList.size() != this.originalWindowSizeList.size()) {
@@ -97,7 +93,7 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
         }
         this.userSize = this.originalWindowSizeList.size();
         this.random = random;
-        this.model = model;
+//        this.model = model;
         this.distinctBudgetList = BasicArrayUtil.getUniqueList(this.originalPrivacyBudgetList);
         this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.originalWindowSizeList);
         this.privacyGroupList = AdvancedSchemeUtils.getGroupSamplingSizeList(this.originalWindowSizeList, this.originalPrivacyBudgetList);

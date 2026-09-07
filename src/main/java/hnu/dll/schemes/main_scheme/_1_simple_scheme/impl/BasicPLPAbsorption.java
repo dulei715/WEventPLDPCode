@@ -13,10 +13,12 @@ import hnu.dll.utils.BasicUtils;
 import java.util.*;
 
 public class BasicPLPAbsorption extends BasicPLPMechanism {
+    protected Integer populationSizeLowerBound;
     protected AbsorptionLastInfo lastInfo;
-    public BasicPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Random random) {
+    public BasicPLPAbsorption(Set<String> dataTypeSet, List<Double> originalPrivacyBudgetList, List<Integer> windowSizeList, Integer populationSizeLowerBound, Random random) {
         super(dataTypeSet, originalPrivacyBudgetList, windowSizeList, random);
         this.lastInfo = new AbsorptionLastInfo(-1, 0);
+        this.populationSizeLowerBound = populationSizeLowerBound;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class BasicPLPAbsorption extends BasicPLPMechanism {
             Map<Double, Integer> groupCountMap = BasicArrayUtil.getUniqueListWithCountList(samplingPrivacyBudgetList);
 
             Double error = PFOUtils.getGPRRErrorBySpecificUsers(groupCountMap, this.userSize, publicationSamplingSize, this.domainSize);
-            if (dissimilarity > error) {
+            if (dissimilarity > error && publicationSamplingSize >= this.populationSizeLowerBound) {
                 flag = true;
                 this.candidateUserIndexSet.removeAll(samplingUserIndexSetForPublication);
                 rawEstimation = MechanismUtils.gPRRRaw(samplingPrivacyBudgetList, samplingDataIndexList, this.domainSize, this.random).getKey();

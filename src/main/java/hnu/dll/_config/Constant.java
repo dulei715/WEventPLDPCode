@@ -131,25 +131,29 @@ public class Constant {
      *
      */
     public static final String NonPrivacySchemeName = "NonPrivacy-Scheme";
-    public static final String LPDSchemeName = "LBD-Scheme"; // 应该是LPD-Scheme
-    public static final String LPASchemeName = "LBA-Scheme"; // 应该是LPA-Scheme
+    public static final String LPDSchemeName = "LPD-Scheme"; // 应该是LPD-Scheme
+    public static final String LPASchemeName = "LPA-Scheme"; // 应该是LPA-Scheme
     public static final String DirectPLPDSchemeName = "PLPD-Direct-Scheme";
     public static final String DirectPLPASchemeName = "PLPA-Direct-Scheme";
 //    public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
 //    public static final String AblateOPSPLPASchemeName = "PLPA-Ablate-OPS-Scheme";
-    public static final String BasicPLPDSchemeName = "PLPD-basic-Scheme";
-    public static final String BasicPLPASchemeName = "PLPA-basic-Scheme";
+    public static final String BasicPLPDSchemeName = "PLPD-Basic-Scheme";
+    public static final String BasicPLPASchemeName = "PLPA-Basic-Scheme";
 
-    public static final String UnionPLPDSchemeName = "PLPD-Union-Scheme";
-    public static final String UnionPLPASchemeName = "PLPA-Union-Scheme";
+//    public static final String UnionPLPDSchemeName = "PLPD-Union-Scheme";
+//    public static final String UnionPLPASchemeName = "PLPA-Union-Scheme";
 
-    public static final String AblateBAPUEPLPDSchemeName = "PLPD-Ablate-BAPUE-Scheme";
-    public static final String AblateBAPUEPLPASchemeName = "PLPA-Ablate-BAPUE-Scheme";
-    public static final String AblateGAOPSPLPDSchemeName = "PLPD-Ablate-GAOPS-Scheme";
-    public static final String AblateGAOPSPLPASchemeName = "PLPA-Ablate-GAOPS-Scheme";
+    public static final String PLPDAblateContainingGAOPSchemeName = "PLPD-Containing-GAOPS-Scheme";
+    public static final String PLPAAblateContainingGAOPSchemeName = "PLPA-Containing-GAOPS-Scheme";
+    public static final String PLPDAblateContainingBAPUESchemeNamePre = "PLPD-Containing-BAPUE-Pre-Scheme";
+    public static final String PLPDAblateContainingBAPUESchemeNamePost = "PLPD-Containing-BAPUE-Post-Scheme";
+    public static final String PLPAAblateContainingBAPUESchemeNamePre = "PLPA-Containing-BAPUE-Pre-Scheme";
+    public static final String PLPAAblateContainingBAPUESchemeNamePost = "PLPA-Containing-BAPUE-Post-Scheme";
 
-    public static final String AdvancedPLPDSchemeName = "PLPD-Plus-Scheme";
-    public static final String AdvancedPLPASchemeName = "PLPA-Plus-Scheme";
+    public static final String AdvancedPLPDSchemeNamePre = "PLPD-Plus-Pre-Scheme";
+    public static final String AdvancedPLPDSchemeNamePost = "PLPD-Plus-Post-Scheme";
+    public static final String AdvancedPLPASchemeNamePre = "PLPA-Plus-Pre-Scheme";
+    public static final String AdvancedPLPASchemeNamePost = "PLPA-Plus-Post-Scheme";
 
 
 

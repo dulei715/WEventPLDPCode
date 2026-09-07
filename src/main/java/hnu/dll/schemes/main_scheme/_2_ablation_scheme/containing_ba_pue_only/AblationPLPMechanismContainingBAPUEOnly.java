@@ -24,9 +24,6 @@ import java.util.*;
 
 public abstract class AblationPLPMechanismContainingBAPUEOnly extends PersonalizedMechanism {
 
-    public static final boolean ModelPre = false;
-    public static final boolean ModelPost = true;
-
 
     protected Random random;
     protected boolean model;
@@ -164,7 +161,7 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
         this.recycleWindowSize = this.optimalSelectionStruct.getPopulationRecycleWindowSize();
         this.optimalTotalSamplingSize = this.optimalSelectionStruct.getOptimalSamplingSize();
 
-        this.groupSize = this.distinctBudgetList.size();
+        this.groupSize = this.privacyGroupList.size();
 
 
 
@@ -190,10 +187,15 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
             this.piList.add(tempGroup.getUserSize() * 1.0 / this.userSize);
         }
         this.newSamplingSizeGroupList = ProposedSchemeUtils.getSamplingSizeGroupListByLargestRemainder(this.optimalTotalSamplingSize, this.piList);
+        // 每组配额按回收窗口取可持续上界 z_r <= floor(n_r / tau_opt)，避免小人数组被余数补偿+1后被抽空
+        for (int i = 0; i < this.groupSize; i++) {
+            int tempSustainableSamplingSize = this.privacyGroupList.get(i).getUserSize() / this.recycleWindowSize;
+            if (this.newSamplingSizeGroupList.get(i) > tempSustainableSamplingSize) {
+                this.newSamplingSizeGroupList.set(i, tempSustainableSamplingSize);
+            }
+        }
 
-
-        Map<Double, Double> originalNewPrivacyBudgetMap = ProposedSchemeUtils.getOriginalNewPrivacyBudgetMap(this.originalPrivacyBudgetList, this.newPrivacyBudgetList);
-        this.newPrivacyBudgetGroupList = ProposedSchemeUtils.getNewGroupPrivacyBudgetList(this.privacyGroupList, originalNewPrivacyBudgetMap);
+        this.newPrivacyBudgetGroupList = ProposedSchemeUtils.getNewGroupPrivacyBudgetList(this.privacyGroupList, this.recycleWindowSize);
     }
 
 //    protected abstract Map<Integer, Double> getLastCombinedEstimation();
