@@ -28,7 +28,12 @@ public class CheckInMainRun {
 
         // 上面步骤执行完才能执行这步
         // 2. 执行
-        DataSetRun.runDataSet(datasetPath, random);
+        // args[1] 传入 "serial" 时串行执行（串行无 CPU 竞争，TimeCost 才可用）
+        if (args.length > 1 && "serial".equalsIgnoreCase(args[1])) {
+            DataSetRun.runDataSetSerially(datasetPath, locationFileName, userSize, random);
+        } else {
+            DataSetRun.runDataSet(datasetPath, random);
+        }
 
     }
 }

@@ -9,8 +9,9 @@ import hnu.dll.metric.Measurement;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
-import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationDistribution;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPAPlus;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPDPlus;
 import hnu.dll.utils.BasicUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -62,7 +63,7 @@ public class MechanismTotalTest {
 
     @Test
     public void pLPDTest() {
-        UnionPLDPPopulationDistribution pLPDPlus = new UnionPLDPPopulationDistribution(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, this.random);
+        PLPDPlus pLPDPlus = new PLPDPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, this.random);
         pLPDPlus.initializeOptimalParameters();
 //        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
 //        System.out.println(optimalSamplingSize);
@@ -82,7 +83,7 @@ public class MechanismTotalTest {
 
     @Test
     public void pLPATest() {
-        UnionPLDPPopulationAbsorption pLPAPlus = new UnionPLDPPopulationAbsorption(this.dataType, this.privacyBudgetList, this.windowSizeList, this.random);
+        PLPAPlus pLPAPlus = new PLPAPlus(this.dataType, this.privacyBudgetList, this.windowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, this.random);
         pLPAPlus.initializeOptimalParameters();
 //        Integer optimalSamplingSize = pLPDPlus.getOptimalSamplingSize();
 //        System.out.println(optimalSamplingSize);

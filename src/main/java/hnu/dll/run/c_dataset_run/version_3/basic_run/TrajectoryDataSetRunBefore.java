@@ -32,15 +32,15 @@ public class TrajectoryDataSetRunBefore {
         Integer singleBatchSize = independentData.getValue();
         DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
     }
-    public static void runTrajectoryContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-
-        String basicPath = Constant.TrajectoriesFilePath;
-        String dataTypeFileName = "cell.txt";
+//    public static void runTrajectoryContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+//
+//        String basicPath = Constant.TrajectoriesFilePath;
+//        String dataTypeFileName = "cell.txt";
 //        Integer singleBatchSize = 2;
-        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
-        Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
-    }
+//        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+//        Integer singleBatchSize = independentData.getValue();
+//        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
+//    }
 
 //    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 //        CatchSignal catchSignal = new CatchSignal();

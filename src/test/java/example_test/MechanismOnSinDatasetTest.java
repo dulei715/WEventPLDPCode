@@ -22,7 +22,8 @@ import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
 import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPAPlus;
 import hnu.dll.utils.BasicUtils;
 import hnu.dll.utils.file.FileUtils;
 import hnu.dll.utils.filters.NumberTxtFilter;
@@ -195,7 +196,7 @@ public class MechanismOnSinDatasetTest {
 
         System.out.println(dataType.size());
 
-        BasicPLPAbsorption ablateRPAPlus = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        BasicPLPAbsorption ablateRPAPlus = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             System.out.println(i);
@@ -288,8 +289,8 @@ public class MechanismOnSinDatasetTest {
         NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
 
         AblateOPSAbsorptionPlus ablateOPSAPlus = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        UnionPLDPPopulationAbsorption pLPAPlus = new UnionPLDPPopulationAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        PLPAPlus pLPAPlus = new PLPAPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, random);
 
         Double baseError = 0D, tempBaseError;
         Double ablateOPSError = 0D, tempAblateOPSError;

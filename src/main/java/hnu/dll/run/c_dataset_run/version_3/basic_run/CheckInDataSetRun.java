@@ -28,14 +28,14 @@ public class CheckInDataSetRun {
 //        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
 //    }
 
-    public static void runCheckInContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String basicPath = Constant.CheckInFilePath;
-        String dataTypeFileName = "country.txt";
+//    public static void runCheckInContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+//        String basicPath = Constant.CheckInFilePath;
+//        String dataTypeFileName = "country.txt";
 //        Integer singleBatchSize = 2;
-        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
-        Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
-    }
+//        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+//        Integer singleBatchSize = independentData.getValue();
+//        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
+//    }
 
 //    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 //        CatchSignal catchSignal = new CatchSignal();

@@ -20,11 +20,10 @@ import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
-import hnu.dll.schemes.compare_scheme._2_our_baseline._1_2_union_enhanced_scheme.impl.UnionPLDPPopulationAbsorption;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPAPlus;
 import hnu.dll.utils.BasicUtils;
 import hnu.dll.utils.file.FileUtils;
 import hnu.dll.utils.filters.NumberTxtFilter;
@@ -197,7 +196,7 @@ public class MechanismOnTLNSDatasetTest {
 
         System.out.println(dataType.size());
 
-        BasicPLPAbsorption ablateRPAPlus = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
+        BasicPLPAbsorption ablateRPAPlus = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
         Map<Integer, Integer> realData = null;
         for (int i = 0; i < timeSlotSize; i++) {
             System.out.println(i);
@@ -215,147 +214,6 @@ public class MechanismOnTLNSDatasetTest {
         }
     }
 
-    @Test
-    public void mechanismTest3() throws InterruptedException {
-        Integer timeSlotSize = timeStampDataFiles.length;
-        File file;
-        List<Integer> dataList;
-
-        System.out.println(dataType.size());
-
-        NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
-
-        AblateOPSDistributionPlus ablateOPSDPlus = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
-        DirectPLPDistribution basePLPD = new DirectPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
-        Double baseError = 0D, tempBaseError;
-        Double ablateOPSDPlusError = 0D, tempAblateOPSDPlusError;
-        Map<Integer, Integer> realData = null;
-        for (int i = 0; i < timeSlotSize; i++) {
-            System.out.println(i);
-            file = timeStampDataFiles[i];
-            dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap, locationToStrMap);
-
-            CombinePair<Boolean, Map<Integer, Double>> nonPrivacyPair = nonPrivacyMechanism.updateNextPublicationResult(dataList);
-            CombinePair<Boolean, Map<Integer, Double>> basePLDPPair = basePLPD.updateNextPublicationResult(dataList);
-            CombinePair<Boolean, Map<Integer, Double>> ablateOPSDPlusPair = ablateOPSDPlus.updateNextPublicationResult(dataList);
-
-            Map<Integer, Double> nonPrivacyMap = nonPrivacyPair.getValue();
-            Map<Integer, Double> basePLDPMap = basePLDPPair.getValue();
-            Map<Integer, Double> ablateOPSDPlusMap = ablateOPSDPlusPair.getValue();
-
-            List<Double> nonPrivacyResultList = BasicUtils.toSortedListByKeys(nonPrivacyMap, this.domainIndexList, 0D);
-            List<Double> basePLDPResultList = BasicUtils.toSortedListByKeys(basePLDPMap, this.domainIndexList, 0D);
-            List<Double> ablateOPSDPlusList = BasicUtils.toSortedListByKeys(ablateOPSDPlusMap, this.domainIndexList, 0D);
-
-
-            System.out.println("NonPrivacy:");
-            MyPrint.showMap(nonPrivacyMap, "; ");
-            MyPrint.showList(nonPrivacyResultList, "; ");
-            System.out.println("basePLDP:");
-            MyPrint.showMap(basePLDPMap, "; ");
-            MyPrint.showList(basePLDPResultList, "; ");
-            System.out.println("ablateOPSDPlus:");
-            MyPrint.showMap(ablateOPSDPlusMap, "; ");
-            MyPrint.showList(ablateOPSDPlusList, "; ");
-
-            MyPrint.showSplitLine("-", 100);
-
-            tempBaseError = BasicCalculation.get2Norm(basePLDPResultList, nonPrivacyResultList);
-            tempAblateOPSDPlusError = BasicCalculation.get2Norm(ablateOPSDPlusList, nonPrivacyResultList);
-
-            baseError += tempBaseError;
-            ablateOPSDPlusError += tempAblateOPSDPlusError;
-
-            System.out.println("base error: " + tempBaseError + "; opsdPlusError: " + tempAblateOPSDPlusError);
-            System.out.println("total base error: " + baseError + "; totalOpsdPlusError: " + ablateOPSDPlusError);
-
-
-
-
-
-            MyPrint.showSplitLine("*", 150);
-
-//            Thread.sleep(4000);
-        }
-    }
-
-    @Test
-    public void mechanismTest4() throws InterruptedException {
-        Integer timeSlotSize = timeStampDataFiles.length;
-        File file;
-        List<Integer> dataList;
-
-        System.out.println(dataType.size());
-
-        NonPrivacyMechanism nonPrivacyMechanism = new NonPrivacyMechanism(dataType);
-
-        AblateOPSAbsorptionPlus ablateOPSAPlus = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-        UnionPLDPPopulationAbsorption pLPAPlus = new UnionPLDPPopulationAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, random);
-
-        Double baseError = 0D, tempBaseError;
-        Double ablateOPSError = 0D, tempAblateOPSError;
-        Double enhancedError = 0D, tempEnhancedError;
-        Map<Integer, Integer> realData = null;
-        for (int i = 0; i < timeSlotSize; i++) {
-            System.out.println(i);
-            file = timeStampDataFiles[i];
-            dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap, locationToStrMap);
-
-            CombinePair<Boolean, Map<Integer, Double>> nonPrivacyPair = nonPrivacyMechanism.updateNextPublicationResult(dataList);
-            CombinePair<Boolean, Map<Integer, Double>> basePair = basePLPA.updateNextPublicationResult(dataList);
-            CombinePair<Boolean, Map<Integer, Double>> ablateOPSPair = ablateOPSAPlus.updateNextPublicationResult(dataList);
-            CombinePair<Boolean, Map<Integer, Double>> enhancedPair = pLPAPlus.updateNextPublicationResult(dataList);
-
-
-            Map<Integer, Double> nonPrivacyMap = nonPrivacyPair.getValue();
-            Map<Integer, Double> baseMap = basePair.getValue();
-            Map<Integer, Double> ablateOPSMap = ablateOPSPair.getValue();
-            Map<Integer, Double> enhancedMap = enhancedPair.getValue();
-
-            List<Double> nonPrivacyResultList = BasicUtils.toSortedListByKeys(nonPrivacyMap, this.domainIndexList, 0D);
-            List<Double> baseResultList = BasicUtils.toSortedListByKeys(baseMap, this.domainIndexList, 0D);
-            List<Double> ablateOPSResultList = BasicUtils.toSortedListByKeys(ablateOPSMap, this.domainIndexList, 0D);
-            List<Double> enhancedResultList = BasicUtils.toSortedListByKeys(enhancedMap, this.domainIndexList, 0D);
-
-
-
-            System.out.println("NonPrivacy:");
-            MyPrint.showMap(nonPrivacyMap, "; ");
-            MyPrint.showList(nonPrivacyResultList, "; ");
-            System.out.println("basePLDA:");
-            MyPrint.showMap(baseMap, "; ");
-            MyPrint.showList(baseResultList, "; ");
-            System.out.println("ablateOPSAPlus:");
-            MyPrint.showMap(ablateOPSMap, "; ");
-            MyPrint.showList(ablateOPSResultList, "; ");
-            System.out.println("enhancedPLDA:");
-            MyPrint.showMap(enhancedMap, "; ");
-            MyPrint.showList(enhancedResultList, "; ");
-
-            MyPrint.showSplitLine("-", 100);
-
-            tempBaseError = BasicCalculation.get2Norm(baseResultList, nonPrivacyResultList);
-            tempAblateOPSError = BasicCalculation.get2Norm(ablateOPSResultList, nonPrivacyResultList);
-            tempEnhancedError = BasicCalculation.get2Norm(enhancedResultList, nonPrivacyResultList);
-
-
-            baseError += tempBaseError;
-            ablateOPSError += tempAblateOPSError;
-            enhancedError += tempEnhancedError;
-
-            System.out.println("base error: " + tempBaseError + "; opsaPlusError: " + tempAblateOPSError + "; enhancedPLDAError: " + tempEnhancedError);
-            System.out.println("total base error: " + baseError + "; totalOpsaPlusError: " + ablateOPSError + "; totalEnhancedPLDAError: " + enhancedError);
-
-
-
-
-
-            MyPrint.showSplitLine("*", 150);
-
-//            Thread.sleep(6000);
-        }
-    }
 
     @Test
     public void mechanismTest0() throws InterruptedException {

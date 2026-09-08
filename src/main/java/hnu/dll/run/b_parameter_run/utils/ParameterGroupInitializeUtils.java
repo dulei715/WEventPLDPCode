@@ -8,17 +8,24 @@ import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbso
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationDistribution;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPAbsorption;
 import hnu.dll.schemes.compare_scheme._2_our_baseline._1_1_direct_scheme.impl.DirectPLPDistribution;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSAbsorptionPlus;
-import hnu.dll.schemes.compare_scheme._3_ablation.impl.AblateOPSDistributionPlus;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPAbsorption;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.impl.BasicPLPDistribution;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ba_pue_only.AblationPLPMechanismContainingBAPUEOnly;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ba_pue_only.impl.PLPAContainingBAPUEOnly;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ba_pue_only.impl.PLPDContainingBAPUEOnly;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ga_ops_only.AblationPLPMechanismContainingGAOPSOnly;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ga_ops_only.impl.PLPAContainingGAOPSOnly;
+import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ga_ops_only.impl.PLPDContainingGAOPSOnly;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.AdvancedPLPMechanism;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPAPlus;
+import hnu.dll.schemes.main_scheme._3_advanced_scheme.impl.PLPDPlus;
 
 import java.util.*;
 
 public class ParameterGroupInitializeUtils {
     public static Map<String, Mechanism> getInitializedSchemeMap(Set<String> dataType, Integer userSize,
                                                                  Double staticPrivacyBudget, Integer staticWindowSize,
-                                                                 List<Double> personalizedPrivacyBudgetList, List<Integer> personalziedWindowSizeList,
+                                                                 List<Double> personalizedPrivacyBudgetList, List<Integer> personalizedWindowSizeList,
                                                                  Random random) {
         Map<String, Mechanism> resultMap = new HashMap<>();
 
@@ -28,22 +35,46 @@ public class ParameterGroupInitializeUtils {
 
         // 1. non personalized schemes
         LDPPopulationDistribution lPD = new LDPPopulationDistribution(dataType, staticPrivacyBudget, staticWindowSize, userSize, Constant.PopulationLowerBound, random);
-        LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, staticPrivacyBudget, staticWindowSize, userSize, random);
+        LDPPopulationAbsorption lPA = new LDPPopulationAbsorption(dataType, staticPrivacyBudget, staticWindowSize, userSize, Constant.PopulationLowerBound, random);
         resultMap.put(Constant.LPDSchemeName, lPD);
         resultMap.put(Constant.LPASchemeName, lPA);
 
+        // 2. direct personalized schemes
+        DirectPLPDistribution directPLPD = new DirectPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        DirectPLPAbsorption directPLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        resultMap.put(Constant.DirectPLPDSchemeName, directPLPD);
+        resultMap.put(Constant.DirectPLPASchemeName, directPLPA);
 
-        DirectPLPDistribution basePLPD = new DirectPLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
-        DirectPLPAbsorption basePLPA = new DirectPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        resultMap.put(Constant.DirectPLPDSchemeName, basePLPD);
-        resultMap.put(Constant.DirectPLPASchemeName, basePLPA);
+        // 3. basic personalized schemes
+        BasicPLPDistribution basicPLPD = new BasicPLPDistribution(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        BasicPLPAbsorption basicPLPA = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        resultMap.put(Constant.BasicPLPDSchemeName, basicPLPD);
+        resultMap.put(Constant.BasicPLPASchemeName, basicPLPA);
 
-        AblateOPSDistributionPlus AblateOPSPLPD = new AblateOPSDistributionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
-        AblateOPSAbsorptionPlus AblateOPSPLPA = new AblateOPSAbsorptionPlus(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        BasicPLPDistribution AblateRPPLPD = new BasicPLPDistribution(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, Constant.PopulationLowerBound, random);
-        BasicPLPAbsorption AblateRPPLPA = new BasicPLPAbsorption(dataType, personalizedPrivacyBudgetList, personalziedWindowSizeList, random);
-        resultMap.put(Constant.BasicPLPDSchemeName, AblateRPPLPD);
-        resultMap.put(Constant.BasicPLPASchemeName, AblateRPPLPA);
+        // 4. ablation schemes
+        AblationPLPMechanismContainingGAOPSOnly ablationPLPDContainingGAOPSOnly = new PLPDContainingGAOPSOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        resultMap.put(Constant.PLPDAblateContainingGAOPSchemeName, ablationPLPDContainingGAOPSOnly);
+        AblationPLPMechanismContainingGAOPSOnly ablationPLPAContainingGAOPSOnly = new PLPAContainingGAOPSOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, random);
+        resultMap.put(Constant.PLPAAblateContainingGAOPSchemeName, ablationPLPAContainingGAOPSOnly);
+
+        AblationPLPMechanismContainingBAPUEOnly ablationPLPDContainingBAPUEOnlyModelPre = new PLPDContainingBAPUEOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPre, random);
+        resultMap.put(Constant.PLPDAblateContainingBAPUESchemeNamePre, ablationPLPDContainingBAPUEOnlyModelPre);
+        AblationPLPMechanismContainingBAPUEOnly ablationPLPDContainingBAPUEOnlyModelPost = new PLPDContainingBAPUEOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, random);
+        resultMap.put(Constant.PLPDAblateContainingBAPUESchemeNamePost, ablationPLPDContainingBAPUEOnlyModelPost);
+        AblationPLPMechanismContainingBAPUEOnly ablationPLPAContainingBAPUEOnlyModelPre = new PLPAContainingBAPUEOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPre, random);
+        resultMap.put(Constant.PLPAAblateContainingBAPUESchemeNamePre, ablationPLPAContainingBAPUEOnlyModelPre);
+        AblationPLPMechanismContainingBAPUEOnly ablationPLPAContainingBAPUEOnlyModelPost = new PLPAContainingBAPUEOnly(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, random);
+        resultMap.put(Constant.PLPAAblateContainingBAPUESchemeNamePost, ablationPLPAContainingBAPUEOnlyModelPost);
+
+        // 5. EnhancedSchemes
+        AdvancedPLPMechanism advancedPLPDPre = new PLPDPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPre, random);
+        resultMap.put(Constant.AdvancedPLPDSchemeNamePre, advancedPLPDPre);
+        AdvancedPLPMechanism advancedPLPDPost = new PLPDPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, random);
+        resultMap.put(Constant.AdvancedPLPDSchemeNamePost, advancedPLPDPost);
+        AdvancedPLPMechanism advancedPLPAPre = new PLPAPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPre, random);
+        resultMap.put(Constant.AdvancedPLPASchemeNamePre, advancedPLPAPre);
+        AdvancedPLPMechanism advancedPLPAPost = new PLPAPlus(dataType, personalizedPrivacyBudgetList, personalizedWindowSizeList, Constant.PopulationLowerBound, AdvancedPLPMechanism.ModelPost, random);
+        resultMap.put(Constant.AdvancedPLPASchemeNamePost, advancedPLPAPost);
 
         return resultMap;
     }

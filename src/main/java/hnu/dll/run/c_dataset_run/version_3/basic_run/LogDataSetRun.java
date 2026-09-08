@@ -24,12 +24,12 @@ public class LogDataSetRun {
 //        Integer singleBatchSize = independentData.getValue();
 //        DatasetSegmentRunUtils.seriallyDatasetRun(basicPath, dataTypeFileName, singleBatchSize);
 //    }
-    public static void runLogContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        String basicPath = Constant.LogFilePath;
-        String dataTypeFileName = "status.txt";
-        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
-        Integer singleBatchSize = independentData.getValue();
-        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
-    }
+//    public static void runLogContainingSimpleLDP(Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+//        String basicPath = Constant.LogFilePath;
+//        String dataTypeFileName = "status.txt";
+//        CombineTriple<String, Integer, List<Integer>> independentData = ConfigureUtils.getIndependentData("BatchUnitSize", "default", "default");
+//        Integer singleBatchSize = independentData.getValue();
+//        DatasetSegmentRunUtils.enhancedDatasetRun(basicPath, dataTypeFileName, singleBatchSize, userSize, random);
+//    }
 
 }

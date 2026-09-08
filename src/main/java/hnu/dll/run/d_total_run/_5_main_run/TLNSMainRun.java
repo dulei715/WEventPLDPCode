@@ -31,7 +31,12 @@ public class TLNSMainRun {
         GenerateParameters.generate(datasetPath, fileName, userSize, random);
 
         // 3. 执行
-        DataSetRun.runDataSet(datasetPath, random);
+        // args[1] 传入 "serial" 时串行执行（串行无 CPU 竞争，TimeCost 才可用）
+        if (args.length > 1 && "serial".equalsIgnoreCase(args[1])) {
+            DataSetRun.runDataSetSerially(datasetPath, fileName, userSize, random);
+        } else {
+            DataSetRun.runDataSet(datasetPath, random);
+        }
 
 //        // 4. 后处理
 //        String rawDataDir = StringUtil.join(ConstantValues.FILE_SPLIT, datasetPath, "group_output");
