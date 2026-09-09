@@ -187,9 +187,11 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
             this.piList.add(tempGroup.getUserSize() * 1.0 / this.userSize);
         }
         this.newSamplingSizeGroupList = ProposedSchemeUtils.getSamplingSizeGroupListByLargestRemainder(this.optimalTotalSamplingSize, this.piList);
-        // 每组配额按回收窗口取可持续上界 z_r <= floor(n_r / tau_opt)，避免小人数组被余数补偿+1后被抽空
+        // 每组配额按回收窗口取可持续上界 z_r <= floor(n_r / (2*tau_opt))：
+        // n_r 需对半分给 sampling 与 publication 两个子机制（各自在回收窗口内的在途占用不超过 n_r/2），
+        // 若只除以 tau_opt，sampling 在途占用即逼近 n_r/2，再加 publication 必然抽空候选池
         for (int i = 0; i < this.groupSize; i++) {
-            int tempSustainableSamplingSize = this.privacyGroupList.get(i).getUserSize() / this.recycleWindowSize;
+            int tempSustainableSamplingSize = this.privacyGroupList.get(i).getUserSize() / (2 * this.recycleWindowSize);
             if (this.newSamplingSizeGroupList.get(i) > tempSustainableSamplingSize) {
                 this.newSamplingSizeGroupList.set(i, tempSustainableSamplingSize);
             }
@@ -236,6 +238,11 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
 
             Set<Integer> availableUserIndexSet = this.candidateUserIndexSetList.get(i);
             int availablePopulationSize = availableUserIndexSet.size();
+            if (tempSamplingSize > availablePopulationSize) {
+                System.err.printf("Warning: group %d sampling size %d exceeds available population %d, clamped.\n",
+                        i, tempSamplingSize, availablePopulationSize);
+                tempSamplingSize = availablePopulationSize;
+            }
             tempSamplingUserIndexSetForCalculation = RandomUtil.extractRandomElementWithoutRepeatFromSet(availableUserIndexSet, tempSamplingSize, this.random);
             availableUserIndexSet.removeAll(tempSamplingUserIndexSetForCalculation);
 

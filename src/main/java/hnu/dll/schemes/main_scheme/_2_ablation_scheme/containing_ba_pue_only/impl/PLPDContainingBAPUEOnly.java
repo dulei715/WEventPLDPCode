@@ -80,6 +80,11 @@ public class PLPDContainingBAPUEOnly extends AblationPLPMechanismContainingBAPUE
                 tempGroupCandidateUserIndexSet = super.candidateUserIndexSetList.get(i);
                 int availablePopulationSize = tempGroupCandidateUserIndexSet.size();
                 tempSamplingSize = potentialPublicationUserSizeList.get(i);
+                if (tempSamplingSize > tempGroupCandidateUserIndexSet.size()) {
+                    System.err.printf("Warning: group %d publication size %d exceeds available population %d, clamped.\n",
+                            i, tempSamplingSize, tempGroupCandidateUserIndexSet.size());
+                    tempSamplingSize = tempGroupCandidateUserIndexSet.size();
+                }
                 tempSamplingUserIndexSetForPublication = RandomUtil.extractRandomElementWithoutRepeatFromSet(tempGroupCandidateUserIndexSet, tempSamplingSize, super.random);
                 tempGroupCandidateUserIndexSet.removeAll(tempSamplingUserIndexSetForPublication);
                 super.publicationSubMechanismHistoryQueueList.get(i).offer(tempSamplingUserIndexSetForPublication);

@@ -21,21 +21,25 @@ import java.util.Set;
 
 public class RepeatUtils {
 
+    // 注意：此数组的长度和顺序必须与 FixedSegmentBasicParameterParallelRun.runSegmentBatch
+    // 中 experimentResultList 的写入顺序严格一致（update按下标对齐合并）
     private static final String[] nameStringArray = new String[]{
             "NP",
             "LPD", "LPA",
-            "PLPD", "PLPA",
+            "Direct-PLPD", "Direct-PLPA",
+            "Basic-PLPD", "Basic-PLPA",
             "AOPS-PLPD+", "AOPS-PLPA+",
-            "ARP-PLPD+", "ARP-PLPA+",
-            "PLPD+", "PLPA+"
+            "ARP-PLPD+-Pre", "ARP-PLPD+-Post", "ARP-PLPA+-Pre", "ARP-PLPA+-Post",
+            "PLPD+-Pre", "PLPD+-Post", "PLPA+-Pre", "PLPA+-Post"
     };
     private static final String[] nameStringArrayOnlyForTimeCost = new String[]{
             "NP",
             "LPD", "LPA",
-            "PLPD", "PLPA",
+            "Direct-PLPD", "Direct-PLPA",
+            "Basic-PLPD", "Basic-PLPA",
             "AOPS-PLPD+", "AOPS-PLPA+",
-            "ARP-PLPD+", "ARP-PLPA+",
-            "PLPD+", "PLPA+"
+            "ARP-PLPD+-Pre", "ARP-PLPD+-Post", "ARP-PLPA+-Pre", "ARP-PLPA+-Post",
+            "PLPD+-Pre", "PLPD+-Post", "PLPA+-Pre", "PLPA+-Post"
     };
 
     /**

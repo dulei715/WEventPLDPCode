@@ -138,9 +138,18 @@ public class ProposedSchemeUtils {
                 }
             }
             if (tempOptimalSamplingSize == null) {
-                throw new IllegalArgumentException(
-                        "No feasible GA-OPS sampling size for group: " + privacyGroup
-                );
+//                throw new IllegalArgumentException(
+//                        "No feasible GA-OPS sampling size for group: " + privacyGroup
+//                );
+                // 该组人数太少（n_r <= 3），在 [2, M] 内无可行采样量：退化为整组采样、每轮都采
+                System.out.println("GA-OPS fallback: eps=" + tempPrivacyBudget
+                        + ", w=" + tempWindowSize + ", n_r=" + privacyGroup.getUserSize());
+                int tempFallbackSize = Math.max(1, tempMaximumSamplingSize);
+                tempOptimalSamplingSize = tempFallbackSize;
+                optimalTau = 1;
+                optimalEffectiveBudget = tempPrivacyBudget / Math.ceil(tempWindowSize * 1.0 / optimalTau);
+//                tempCurrentError = FOUtils.getGPRRErrorBySamplingSize(optimalEffectiveBudget, tempFallbackSize, tempOptimalSamplingSize, domainSize);
+                tempCurrentError = FOUtils.getLDPVarianceSum(optimalEffectiveBudget, tempOptimalSamplingSize, domainSize) / domainSize;   // 避免 userSize == sampleSize == 1 时 SamplingUtils 出现 0/0 得到 NaN
             }
             errorList.add(tempCurrentError);
             optimalSamplingSizeList.add(tempOptimalSamplingSize);
