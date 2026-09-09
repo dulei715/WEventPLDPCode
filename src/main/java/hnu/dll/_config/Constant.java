@@ -135,13 +135,8 @@ public class Constant {
     public static final String LPASchemeName = "LPA-Scheme"; // 应该是LPA-Scheme
     public static final String DirectPLPDSchemeName = "PLPD-Direct-Scheme";
     public static final String DirectPLPASchemeName = "PLPA-Direct-Scheme";
-//    public static final String AblateOPSPLPDSchemeName = "PLPD-Ablate-OPS-Scheme";
-//    public static final String AblateOPSPLPASchemeName = "PLPA-Ablate-OPS-Scheme";
     public static final String BasicPLPDSchemeName = "PLPD-Basic-Scheme";
     public static final String BasicPLPASchemeName = "PLPA-Basic-Scheme";
-
-//    public static final String UnionPLPDSchemeName = "PLPD-Union-Scheme";
-//    public static final String UnionPLPASchemeName = "PLPA-Union-Scheme";
 
     public static final String PLPDAblateContainingGAOPSchemeName = "PLPD-Containing-GAOPS-Scheme";
     public static final String PLPAAblateContainingGAOPSchemeName = "PLPA-Containing-GAOPS-Scheme";

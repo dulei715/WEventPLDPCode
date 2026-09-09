@@ -1,0 +1,2 @@
+# 绘图仅依赖 matplotlib（数据读取全部使用 Python 标准库，不强制 numpy/pandas）
+matplotlib>=3.5.0

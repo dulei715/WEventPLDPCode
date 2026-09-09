@@ -23,23 +23,48 @@ public class RepeatUtils {
 
     // 注意：此数组的长度和顺序必须与 FixedSegmentBasicParameterParallelRun.runSegmentBatch
     // 中 experimentResultList 的写入顺序严格一致（update按下标对齐合并）
+    //
+    // 之前这里写的是另一套"短名"（NP / LPD / Direct-PLPD / AOPS-PLPD+ / ARP-PLPD+-Pre ...），
+    // 与各机制 getSimpleName() 返回的 Constant 名称不是同一套：
+    //   1) 合并结果 result.txt 的 Name 列会被这套短名覆盖（update() 只累加数值、不改名）；
+    //   2) 短名是早期命名（AblateRP / AblateOPS 之类）的残留，与现在的
+    //      "Containing-GAOPS / Containing-BAPUE / Plus" 体系对不上，甚至语义相反。
+    // 现在改为直接引用 Constant，保证"结果文件里的名字"与"实现里的名字"同源唯一，
+    // 以后增删机制只需改 Constant 与 runSegmentBatch，不会出现名实不符。
     private static final String[] nameStringArray = new String[]{
-            "NP",
-            "LPD", "LPA",
-            "Direct-PLPD", "Direct-PLPA",
-            "Basic-PLPD", "Basic-PLPA",
-            "AOPS-PLPD+", "AOPS-PLPA+",
-            "ARP-PLPD+-Pre", "ARP-PLPD+-Post", "ARP-PLPA+-Pre", "ARP-PLPA+-Post",
-            "PLPD+-Pre", "PLPD+-Post", "PLPA+-Pre", "PLPA+-Post"
+            Constant.NonPrivacySchemeName,
+
+            Constant.LPDSchemeName, Constant.LPASchemeName,
+
+            Constant.DirectPLPDSchemeName, Constant.DirectPLPASchemeName,
+
+            Constant.BasicPLPDSchemeName, Constant.BasicPLPASchemeName,
+
+            Constant.PLPDAblateContainingGAOPSchemeName, Constant.PLPAAblateContainingGAOPSchemeName,
+
+            Constant.PLPDAblateContainingBAPUESchemeNamePre, Constant.PLPDAblateContainingBAPUESchemeNamePost,
+            Constant.PLPAAblateContainingBAPUESchemeNamePre, Constant.PLPAAblateContainingBAPUESchemeNamePost,
+
+            Constant.AdvancedPLPDSchemeNamePre, Constant.AdvancedPLPDSchemeNamePost,
+            Constant.AdvancedPLPASchemeNamePre, Constant.AdvancedPLPASchemeNamePost
     };
+    // todo: 还未修改成关于串行的运行结果的合并(目前和 nameStringArray 完全相同)
     private static final String[] nameStringArrayOnlyForTimeCost = new String[]{
-            "NP",
-            "LPD", "LPA",
-            "Direct-PLPD", "Direct-PLPA",
-            "Basic-PLPD", "Basic-PLPA",
-            "AOPS-PLPD+", "AOPS-PLPA+",
-            "ARP-PLPD+-Pre", "ARP-PLPD+-Post", "ARP-PLPA+-Pre", "ARP-PLPA+-Post",
-            "PLPD+-Pre", "PLPD+-Post", "PLPA+-Pre", "PLPA+-Post"
+            Constant.NonPrivacySchemeName,
+
+            Constant.LPDSchemeName, Constant.LPASchemeName,
+
+            Constant.DirectPLPDSchemeName, Constant.DirectPLPASchemeName,
+
+            Constant.BasicPLPDSchemeName, Constant.BasicPLPASchemeName,
+
+            Constant.PLPDAblateContainingGAOPSchemeName, Constant.PLPAAblateContainingGAOPSchemeName,
+
+            Constant.PLPDAblateContainingBAPUESchemeNamePre, Constant.PLPDAblateContainingBAPUESchemeNamePost,
+            Constant.PLPAAblateContainingBAPUESchemeNamePre, Constant.PLPAAblateContainingBAPUESchemeNamePost,
+
+            Constant.AdvancedPLPDSchemeNamePre, Constant.AdvancedPLPDSchemeNamePost,
+            Constant.AdvancedPLPASchemeNamePre, Constant.AdvancedPLPASchemeNamePost
     };
 
     /**
@@ -163,9 +188,22 @@ public class RepeatUtils {
 
     private static void update(List<ResultBean> combineBeanList, List<ResultBean> updateBeanList) {
         ResultBean combineBean, updateBean;
+        // 防御：合并是"按下标对齐"的，一旦 nameStringArray 与 experimentResultList 的写入顺序
+        // 不再一致，或者某个结果文件的方案数量变了，就会把 A 方案的值累加到 B 方案上且不报错。
+        // 这里主动校验行数与方案名，出问题立刻暴露。
+        if (combineBeanList.size() != updateBeanList.size()) {
+            throw new IllegalStateException("合并结果时方案数量不匹配：期望 "
+                    + combineBeanList.size() + " 个，实际 " + updateBeanList.size()
+                    + " 个。请检查 nameStringArray 与各机制的运行结果是否一致。");
+        }
         for (int i = 0; i < combineBeanList.size(); i++) {
             combineBean = combineBeanList.get(i);
             updateBean = updateBeanList.get(i);
+            if (!combineBean.getName().equals(updateBean.getName())) {
+                throw new IllegalStateException("合并结果时方案名不匹配（第 " + (i + 1) + " 行）：期望["
+                        + combineBean.getName() + "]，实际[" + updateBean.getName()
+                        + "]。请检查 nameStringArray 与 experimentResultList 的写入顺序是否一致。");
+            }
             combineBean.setBatchSize(combineBean.getBatchSize() + updateBean.getBatchSize());
             combineBean.setTimeCost(combineBean.getTimeCost() + updateBean.getTimeCost());
             combineBean.setBre(combineBean.getBre() + updateBean.getBre());
