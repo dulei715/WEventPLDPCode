@@ -149,6 +149,8 @@ def parse_args(argv=None):
                         help="输出图片扩展名，如 .pdf / .png / .eps")
     parser.add_argument("--show-legend", action="store_true",
                         help="是否在每张图内部显示图例（默认不显示，与 MATLAB 的 legend('off') 一致）")
+    parser.add_argument("--no-log", action="store_true",
+                        help="不对指标取自然对数：y 轴为 AMSE / AJSD 原值（默认取 ln）")
     parser.add_argument("--check-names", action="store_true",
                         help="只做方案名自检：打印行号/方案名/图例名对照表，不画图")
     parser.add_argument("--list-tasks", action="store_true", help="列出所有任务后退出")
@@ -179,6 +181,10 @@ def main(argv=None):
     config.OUTPUT_EXT = args.ext
     if args.show_legend:
         config.SHOW_LEGEND_IN_FIGURE = True
+    if args.no_log:
+        # 关掉 AMSE / AJSD 的 ln 变换（时间开销本来就不取对数）
+        config.METRIC_AMSE["whether_log"] = False
+        config.METRIC_AJSD["whether_log"] = False
 
     task_names = [item.strip() for item in args.tasks.split(",") if item.strip()]
     if "all" in [name.lower() for name in task_names]:

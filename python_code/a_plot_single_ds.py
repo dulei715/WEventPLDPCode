@@ -110,7 +110,7 @@ def a_1_plot_basic_budget_time_cost(basic_path, default_window_size, metric, out
         x_type="budget",
         fixed_value=default_window_size,
         metric=metric,
-        method_keys=config.MAIN_METHOD_KEYS,
+        method_keys=config.TIME_COST_METHOD_KEYS,
         output_file=output_file,
         show_legend=show_legend,
     )
@@ -127,7 +127,7 @@ def a_2_plot_basic_window_size_time_cost(basic_path, default_budget, metric, out
         x_type="window_size",
         fixed_value=default_budget,
         metric=metric,
-        method_keys=config.MAIN_METHOD_KEYS,
+        method_keys=config.TIME_COST_METHOD_KEYS,
         output_file=output_file,
         show_legend=show_legend,
     )

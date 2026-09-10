@@ -6,6 +6,7 @@
     2) export_fig(fig, outputFileName, '-pdf', '-r256', '-transparent')  ->  save_figure
 """
 
+import math
 import os
 import sys
 
@@ -30,13 +31,21 @@ def setup_matplotlib():
     """
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.serif"] = [config.FONT_FAMILY, config.FONT_FAMILY_FALLBACK]
-    plt.rcParams["mathtext.fontset"] = "stix"
+    # mathtext 字体集用 "cm"（Computer Modern，即 LaTeX 默认数学字体）：
+    # stix 字体里 \epsilon 的字形偏"变体"（ε 形状），和 LaTeX 编译出来的 \epsilon（弯月形 ϵ）不一样；
+    # 换成 cm 后 $\\epsilon$、$w$ 等公式的字形与 LaTeX 编译结果一致。
+    plt.rcParams["mathtext.fontset"] = "cm"
     plt.rcParams["axes.unicode_minus"] = False
 
 
 def new_figure():
-    """创建画布（对应 MATLAB 的 fig = figure; hold on;）"""
+    """创建画布（对应 MATLAB 的 fig = figure; hold on;）
+
+    画布尺寸固定为 config.FIG_SIZE，四周留白由 config.AXES_ADJUST 控制
+    （不再依赖放大画布来给大字号腾地方，保证输出 PDF 尺寸稳定）。
+    """
     fig, ax = plt.subplots(figsize=config.FIG_SIZE)
+    fig.subplots_adjust(**config.AXES_ADJUST)
     return fig, ax
 
 
@@ -59,6 +68,8 @@ def set_axis_labels(ax, x_label, y_label):
 def style_axes(ax):
     """设置刻度字号与字体（对应 set(gca,'FontName',...,'FontSize',figure_FontSize)）"""
     ax.tick_params(labelsize=config.FIGURE_FONT_SIZE)
+    # 限制 y 轴刻度数量，避免字号很大时刻度标签互相重叠
+    ax.locator_params(axis="y", nbins=config.Y_TICK_BINS)
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_fontname(config.FONT_FAMILY)
         label.set_fontfamily("serif")
@@ -82,6 +93,8 @@ def plot_one_line(ax, x_list, y_list, method_key):
         linestyle=style["linestyle"],
         linewidth=config.LINE_WIDTH,
         markersize=config.FIGURE_MARKER_SIZE,
+        markerfacecolor=config.MARKER_FACE_COLOR,
+        markeredgewidth=config.MARKER_EDGE_WIDTH,
         label=method_display_name(method_key),
     )
     return line
@@ -119,16 +132,19 @@ def add_legend(ax, handles=None, show=None):
     return legend
 
 
-def save_figure(fig, output_file, dpi=None, transparent=None, tight=True):
+def save_figure(fig, output_file, dpi=None, transparent=None, tight=None):
     """保存图片（对应 export_fig(fig, outputFileName, '-pdf', '-r256', '-transparent')）
 
     :param fig: 画布
     :param output_file: 输出路径（无扩展名时自动补 config.OUTPUT_EXT）
     :param dpi: 分辨率，默认 config.OUTPUT_DPI
     :param transparent: 是否透明背景，默认 config.OUTPUT_TRANSPARENT
-    :param tight: 是否去除白边（对应 export_fig 的默认裁剪行为）
+    :param tight: 是否按内容裁剪白边；None 时取 config.SAVE_TIGHT
+                  （数据图默认 False，输出尺寸严格等于 FIG_SIZE；图例图传 True）
     """
     dpi = config.OUTPUT_DPI if dpi is None else dpi
+    if tight is None:
+        tight = config.SAVE_TIGHT
     transparent = config.OUTPUT_TRANSPARENT if transparent is None else transparent
 
     output_file = str(output_file)
@@ -146,6 +162,7 @@ def save_figure(fig, output_file, dpi=None, transparent=None, tight=True):
         dpi=dpi,
         transparent=transparent,
         bbox_inches="tight" if tight else None,
+        pad_inches=config.OUTPUT_PAD_INCHES if tight else 0.1,
         format=ext.lstrip("."),
     )
     plt.close(fig)
@@ -179,23 +196,37 @@ def create_legend_only(method_keys, output_file, ncol=None, font_size=None, mark
                 color=style["color"],
                 marker=style["marker"],
                 linestyle=style["linestyle"],
-                linewidth=config.LINE_WIDTH,
+                linewidth=config.LEGEND_ONLY_LINE_WIDTH,
                 markersize=marker_size,
+                markerfacecolor=config.MARKER_FACE_COLOR,
+                markeredgewidth=config.LEGEND_ONLY_MARKER_EDGE_WIDTH,
                 label=method_display_name(method_key),
             )
         )
 
-    fig = plt.figure(figsize=(max(3, ncol * 2.6), 1.2))
+    # 画布尺寸：宽 = 列数 × 每项宽度，高 = 行数 × 每行高度（两行时自动加高）
+    nrow = max(1, int(math.ceil(len(method_keys) / float(ncol)))) if ncol else 1
+    fig = plt.figure(
+        figsize=(
+            max(3.0, ncol * config.LEGEND_ONLY_WIDTH_PER_COL),
+            max(1.0, nrow * config.LEGEND_ONLY_ROW_HEIGHT),
+        )
+    )
     legend = fig.legend(
         handles=handles,
         loc="upper center",
         ncol=ncol,
         frameon=False,
         fontsize=font_size,
+        columnspacing=config.LEGEND_COLUMN_SPACING,
+        handletextpad=config.LEGEND_HANDLE_TEXT_PAD,
+        borderpad=config.LEGEND_BORDER_PAD,
+        handlelength=config.LEGEND_HANDLE_LENGTH,
     )
     for text in legend.get_texts():
         text.set_fontname(config.FONT_FAMILY)
         text.set_fontfamily("serif")
         text.set_color("black")
 
-    return save_figure(fig, output_file)
+    # 图例图按内容裁剪（宽度由字号与列数决定），与数据图的固定尺寸策略不同
+    return save_figure(fig, output_file, tight=True)

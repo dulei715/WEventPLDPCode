@@ -10,7 +10,8 @@ public class SinDatasetPreprocessRun {
     public static void generateProbabilityParameters() {
         Double parameterA = 0.05;
         Double parameterOmega = 0.01;
-        Double parameterH = 0.075;
+//        Double parameterH = 0.075;
+        Double parameterH = 0.5;
         String datasetName = "sin";
         SinFunction sinFunction = new SinFunction(parameterA, parameterOmega, parameterH);
         int timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));

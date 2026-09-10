@@ -26,7 +26,7 @@ def draw_main_legend(output_basic_path, file_name="legend_main"):
     :param file_name: 输出文件名（不含扩展名）
     :return: 输出文件路径
     """
-    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_MAIN, file_name)
+    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_FIGURES, file_name)
     plot_utils.setup_matplotlib()
     return plot_utils.create_legend_only(
         config.MAIN_METHOD_KEYS,
@@ -42,7 +42,7 @@ def draw_ablation_legend(output_basic_path, file_name="legend_ablation"):
     :param file_name: 输出文件名（不含扩展名）
     :return: 输出文件路径
     """
-    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_ADD, file_name)
+    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_FIGURES, file_name)
     plot_utils.setup_matplotlib()
     return plot_utils.create_legend_only(
         config.ABLATION_METHOD_KEYS,

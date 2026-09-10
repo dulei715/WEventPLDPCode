@@ -49,6 +49,7 @@ OUTPUT_DATASET_NAMES = [
 ]
 
 # 输出子目录（对应 MATLAB 中 fullfile(output_basicPath, 'figures', ...)）
+OUTPUT_SUB_DIR_FIGURES = "figures"                                            # 图例等公共图片
 OUTPUT_SUB_DIR_MAIN = os.path.join("figures", "experiment_result")            # 主实验结果
 OUTPUT_SUB_DIR_ADD = os.path.join("figures", "experiment_result_add")         # 消融 / 时间开销等补充结果
 OUTPUT_SUB_DIR_TIME = os.path.join("figures", "experiment_result_add", "time_cost_fig")  # 时间开销图
@@ -254,17 +255,31 @@ NAME_TO_METHOD_KEY = {
 # ---------------------------------------------------------------------------------
 # 4.4 每类图绘制哪些方案（顺序即图例顺序）
 # ---------------------------------------------------------------------------------
-# 主实验（对应 a_1 ~ a_4、bar_main）
-# 共 8 条线：LPD / LPA / Direct-PLPD / Direct-PLPA + 完整方案的 Pre/Post × PLPD/PLPA。
+# 主实验（对应 a_3、a_4、bar_main）
+# 共 10 条线：LPD / LPA / Direct-PLPD / Direct-PLPA / Basic-PLPD / Basic-PLPA
+#             + 完整方案的 Pre/Post × PLPD/PLPA。
 # 与 MATLAB 的差异：MATLAB 只画了 2 条（且取的是第 10、11 行的 BAPUE 消融方案），
 # 这里改为真正的完整方案（第 14~17 行的 PLPD-Plus-* / PLPA-Plus-*），并区分 Pre/Post。
 # 若只想保留其中一种 model，删掉 *_post（或 *_pre）对应的两项即可。
 MAIN_METHOD_KEYS = [
     "lpd", "lpa",
     "direct_plpd", "direct_plpa",
+    "basic_plpd", "basic_plpa",
     "plus_plpd_pre", "plus_plpd_post",
     "plus_plpa_pre", "plus_plpa_post",
 ]
+# 时间开销图（对应 a_1、a_2，输出在 experiment_result_add/time_cost_fig）
+# 原先直接复用 MAIN_METHOD_KEYS，因此画不出 Basic；这里单独列一份，加入两个 Basic 方案。
+# 如果想让时间开销图和消融图完全一致（12 条），把下面这行改成：
+#   TIME_COST_METHOD_KEYS = ABLATION_METHOD_KEYS
+TIME_COST_METHOD_KEYS = [
+    "lpd", "lpa",
+    "direct_plpd", "direct_plpa",
+    "basic_plpd", "basic_plpa",
+    "plus_plpd_pre", "plus_plpd_post",
+    "plus_plpa_pre", "plus_plpa_post",
+]
+
 # 消融实验（对应 a_5、a_6、bar_ablation）
 # 共 12 条线：Basic 2 条（两个组件都没有）
 #            + GAOPS-only 2 条（只有 GAOPS）
@@ -321,34 +336,79 @@ METRIC_AJSD = {
 FONT_FAMILY = "Times New Roman"      # 对应 MATLAB 的 'FontName','Times New Roman'
 FONT_FAMILY_FALLBACK = "DejaVu Serif"  # Linux 服务器上没有 Times New Roman 时的兜底字体
 
-FIGURE_MARKER_SIZE = 20              # 对应 figure_MarkerSize = 20
-LINE_WIDTH = 2                       # 对应 'LineWidth', 2
-FIGURE_FONT_SIZE = 28                # 对应 figure_FontSize（刻度、坐标轴整体字号）
-FIGURE_FONT_SIZE_X = 28              # 对应 figure_FontSize_X（x 轴标签字号）
-FIGURE_FONT_SIZE_Y = 28              # 对应 figure_FontSize_Y（y 轴标签字号）
-LEGEND_FONT_SIZE_IN_FIG = 14         # 图中图例字号（a_* 脚本中 set(h,'FontSize',14)）
-LEGEND_FONT_SIZE_ONLY = 20           # 单独导出图例时的字号（bar_main/bar_ablation 中 legend_FontSize）
+# 以下数值与 matlab_code/experiment_result/a_1 ~ a_6 完全一致
+FIGURE_MARKER_SIZE = 20              # MATLAB: figure_MarkerSize = 20
+LINE_WIDTH = 2                       # MATLAB: 'LineWidth', 2
 
-FIG_SIZE = (8.0, 6.0)                # 图片尺寸（英寸）。MATLAB 版用默认尺寸，这里显式指定便于复现
+# marker 是否空心："none" 表示空心（只画边框，点堆叠时不会糊成一片）；
+# 想恢复实心把它改成 None 或 "auto"。
+MARKER_FACE_COLOR = "none"
+# 空心 marker 的边框粗细（marker 越大、颜色越密，这个值可以再调大一点）
+# MATLAB 用的是实心点，没有边框参数；这里为了空心点看得清才需要，取适中的 2.0
+MARKER_EDGE_WIDTH = 2.0
+# 字号：刻度与 x 轴标签 28；y 轴标签（如 running time (s)）单独调小为 24
+FIGURE_FONT_SIZE = 28                # 刻度数字字号（set(gca,'FontSize',...)）
+FIGURE_FONT_SIZE_X = 28              # x 轴标签字号
+FIGURE_FONT_SIZE_Y = 24              # y 轴标签字号
+LEGEND_FONT_SIZE_IN_FIG = 14         # 图中图例字号（MATLAB: set(h,'FontSize',14)）
+# 单独导出图例时的字号（MATLAB: legend_FontSize = 20）
+# 说明：图例图宽度 = 列数 × 每项宽度，随字号增大而变宽；
+#       超出 \textwidth 时请在 LaTeX 里用 \includegraphics[width=\textwidth]{...} 缩放。
+LEGEND_FONT_SIZE_ONLY = 20
 
-# x 轴标签（对应 MATLAB 中 xlabel(xLabelName,'Interpreter','latex')）
-X_LABEL_BUDGET = r"$\epsilon$"       # 隐私预算 ε
-X_LABEL_WINDOW_SIZE = r"$w$"         # 窗口大小 w
+# 图片尺寸（英寸）——固定基准，不要随字号一起放大！
+# 原因：LaTeX 里按固定宽度（如 0.19\textwidth）插入时，视觉字号 ∝ 字号 ÷ 图宽。
+#      若把画布和字号同时放大，两者相抵，字看起来没变大，PDF 反而变大导致一行放不下。
+#      所以要放大"看起来"的字，只改 FIGURE_FONT_SIZE_* / LINE_WIDTH，这里保持不变。
+FIG_SIZE = (5.5, 4.1)
+
+# 绘图区（axes）在画布中的占比，用于控制四周留白。
+# 注意：SAVE_TIGHT=False 时输出严格等于 FIG_SIZE，边距必须容纳刻度+轴标签，否则会被裁掉
+# （left 要装下 y 轴刻度数字 + 旋转的 y 标签；bottom 要装下 x 轴刻度数字 + x 标签）。
+AXES_ADJUST = {"left": 0.24, "right": 0.94, "top": 0.94, "bottom": 0.27}
+# 说明：x 轴两端刻度标签（"40"/"200"）以刻度线为中心、各伸出一半宽度（28pt 字号约 21pt），
+#      所以 right/top 不能太贴近 1.0，否则两端的 "200"、最上排刻度会被裁掉。
+# y 轴最多显示几条刻度（字号很大时防止刻度标签互相重叠）
+Y_TICK_BINS = 5
+# 数据图是否按内容裁剪白边：False 表示严格按 FIG_SIZE 输出，保证 LaTeX 中排版尺寸稳定
+SAVE_TIGHT = False
+
+# x 轴标签：用 LaTeX 数学字体（斜体，mathtext 字体为 stix，接近 Times）
+#   r"$\varepsilon$" -> ε（正常 ε 形状，斜体）  <== 当前使用
+#   r"$\epsilon$"    -> ϵ（弯月形的"变体"，不要）
+X_LABEL_BUDGET = r"$\epsilon$"    # 隐私预算
+X_LABEL_WINDOW_SIZE = r"$w$"         # 窗口大小
 
 # 是否显示图例：MATLAB 各脚本最后都调用了 legend('off')，
 # 即"只生成图例句柄但不显示"，图例单独由 bar_main/bar_ablation 导出，因此这里默认 False。
 SHOW_LEGEND_IN_FIGURE = False
 LEGEND_LOCATION = "best"
 
-# 单独导出图例（bar_main / bar_ablation）时的列数，控制图例换行
-# 主实验 8 条线 -> 4 列；消融实验 12 条线 -> 6 列
-LEGEND_ONLY_NCOL_MAIN = 4
+# 单独导出图例（bar_main / bar_ablation）时的列数：都排成两行
+# 主实验 10 条 -> 5 列 × 2 行；消融实验 12 条 -> 6 列 × 2 行
+# 列数越多图越宽；想让图例更窄就把列数调小（行数会自动增加）
+LEGEND_ONLY_NCOL_MAIN = 5
 LEGEND_ONLY_NCOL_ABLATION = 6
-LEGEND_ONLY_MARKER_SIZE = 15         # 对应 bar_main.m 中 figure_MarkerSize = 15
+# 以下与 MATLAB bar_main.m / bar_ablation.m 一致
+LEGEND_ONLY_MARKER_SIZE = 15         # MATLAB: figure_MarkerSize = 15
+LEGEND_ONLY_LINE_WIDTH = 2           # MATLAB: 'LineWidth', 2
+LEGEND_ONLY_MARKER_EDGE_WIDTH = 1.2  # 空心点边框（MATLAB 为实心点，无对应参数）
+# 图例画布尺寸：宽 = 列数 × 每项宽度，高 = 行数 × 每行高度
+LEGEND_ONLY_WIDTH_PER_COL = 2.3
+LEGEND_ONLY_ROW_HEIGHT = 1.5
+# 图例内部间距（单位：字号倍数）与标记线段长度，调小可让图例更紧凑、在同样宽度下用更大字号
+LEGEND_COLUMN_SPACING = 0.8
+LEGEND_HANDLE_TEXT_PAD = 0.35
+LEGEND_BORDER_PAD = 0.25
+LEGEND_HANDLE_LENGTH = 1.2
 
 # =====================================================================================
 # 7. 输出配置（对应 export_fig(fig, outputFileName, '-pdf', '-r256', '-transparent')）
 # =====================================================================================
 OUTPUT_DPI = 256                     # 对应 '-r256'
 OUTPUT_TRANSPARENT = True            # 对应 '-transparent'
+# 导出图片时四周保留的空白（英寸）。
+# 注意不能设成 0：bbox_inches='tight' 按 marker 顶点计算边界，不含线宽
+#（菱形/三角形的尖角处线宽会向外溢出约 1~2pt），pad 太小时尖角会被裁掉（缺角）。
+OUTPUT_PAD_INCHES = 0.05
 OUTPUT_EXT = ".pdf"                  # 对应 '-pdf'；可改成 ".png" / ".eps" / ".svg"
