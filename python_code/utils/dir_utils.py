@@ -37,11 +37,15 @@ def list_dir_name(basic_path):
 
 
 def _to_number(text):
-    """把形如 '2-0'、'0-5' 的字符串转成浮点数 2.0 / 0.5；失败返回 None"""
+    """把形如 '2-0'、'0-5' 的字符串转成浮点数 2.0 / 0.5；失败返回 None
+
+    说明：Java 端为避免路径中出现 '.'，把小数点写成了 '-'（见 ParameterGroupInitializeUtils.toPathName）。
+    这里额外兼容 '_' 写法（如 p_0_5_w_120），否则 float('0_5') 会被解析成 5.0 而不是 0.5。
+    """
     if text is None:
         return None
     try:
-        return float(str(text).replace("-", "."))
+        return float(str(text).replace("-", ".").replace("_", "."))
     except ValueError:
         return None
 

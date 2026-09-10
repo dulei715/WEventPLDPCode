@@ -113,23 +113,22 @@ METHOD_STYLES = {
     "lpa": {"color": "m", "marker": "o", "linestyle": "-"},
     "direct_plpd": {"color": "b", "marker": "s", "linestyle": "--"},
     "direct_plpa": {"color": "g", "marker": "o", "linestyle": "--"},
-    # 消融：只含基础扰动（MATLAB 的 k^-. / m^-.）
-    "basic_plpd": {"color": "k", "marker": "^", "linestyle": "-."},
-    "basic_plpa": {"color": "m", "marker": "^", "linestyle": "-."},
-    # 消融：只保留 GAOPS（MATLAB 的 bd-. / gd-.）
-    "gaops_plpd": {"color": "b", "marker": "d", "linestyle": "-."},
-    "gaops_plpa": {"color": "g", "marker": "d", "linestyle": "-."},
-    # 消融：只保留 BAPUE（MATLAB 的 cs: / ro:，当时被当作 PLPD+ / PLPA+ 使用）
-    # 现在默认不画这一组；万一要和 Plus 系列同时画，用三角 marker 区分，不会撞样式
-    "bapue_plpd_pre": {"color": "c", "marker": "^", "linestyle": ":"},
-    "bapue_plpd_post": {"color": "r", "marker": "v", "linestyle": ":"},
-    "bapue_plpa_pre": {"color": "c", "marker": "^", "linestyle": "-."},
-    "bapue_plpa_post": {"color": "r", "marker": "v", "linestyle": "-."},
-    # 完整的增强方案（Plus）：与 BAPUE 系列同色系，用点线/点划线区分
-    "plus_plpd_pre": {"color": "c", "marker": "s", "linestyle": ":"},
-    "plus_plpd_post": {"color": "c", "marker": "s", "linestyle": "-."},
-    "plus_plpa_pre": {"color": "r", "marker": "o", "linestyle": ":"},
-    "plus_plpa_post": {"color": "r", "marker": "o", "linestyle": "-."},
+    # 消融：只含基础扰动（灰色系，方块/圆点）
+    "basic_plpd": {"color": "dimgray", "marker": "s", "linestyle": "-"},
+    "basic_plpa": {"color": "dimgray", "marker": "o", "linestyle": "--"},
+    # 消融：只保留 GAOPS（蓝色系，菱形）
+    "gaops_plpd": {"color": "tab:blue", "marker": "d", "linestyle": "-"},
+    "gaops_plpa": {"color": "tab:blue", "marker": "d", "linestyle": "--"},
+    # 消融：只保留 BAPUE（绿色系，上/下三角区分 Pre/Post，实线/虚线区分 PLPD/PLPA）
+    "bapue_plpd_pre": {"color": "tab:green", "marker": "^", "linestyle": "-"},
+    "bapue_plpd_post": {"color": "tab:green", "marker": "v", "linestyle": "-"},
+    "bapue_plpa_pre": {"color": "tab:green", "marker": "^", "linestyle": "--"},
+    "bapue_plpa_post": {"color": "tab:green", "marker": "v", "linestyle": "--"},
+    # 完整的增强方案 Plus（红色系，上/下三角区分 Pre/Post，点划线/点线区分 PLPD/PLPA）
+    "plus_plpd_pre": {"color": "tab:red", "marker": "^", "linestyle": "-."},
+    "plus_plpd_post": {"color": "tab:red", "marker": "v", "linestyle": "-."},
+    "plus_plpa_pre": {"color": "tab:red", "marker": "^", "linestyle": ":"},
+    "plus_plpa_post": {"color": "tab:red", "marker": "v", "linestyle": ":"},
 }
 
 # ---------------------------------------------------------------------------------
@@ -267,11 +266,16 @@ MAIN_METHOD_KEYS = [
     "plus_plpa_pre", "plus_plpa_post",
 ]
 # 消融实验（对应 a_5、a_6、bar_ablation）
-# 共 10 条线：Direct / Basic / GAOPS 各 2 条 + 完整方案的 Pre/Post × PLPD/PLPA 共 4 条。
+# 共 12 条线：Basic 2 条（两个组件都没有）
+#            + GAOPS-only 2 条（只有 GAOPS）
+#            + BAPUE-only 4 条（只有 BAPUE，Pre/Post × PLPD/PLPA）
+#            + Plus 4 条（两个组件都有，即完整方案）
+# 说明：Direct-PLPD/PLPA 属于"对比基线"，不参与组件消融，已移至主实验图（MAIN_METHOD_KEYS）。
 ABLATION_METHOD_KEYS = [
-    "direct_plpd", "direct_plpa",
     "basic_plpd", "basic_plpa",
     "gaops_plpd", "gaops_plpa",
+    "bapue_plpd_pre", "bapue_plpd_post",
+    "bapue_plpa_pre", "bapue_plpa_post",
     "plus_plpd_pre", "plus_plpd_post",
     "plus_plpa_pre", "plus_plpa_post",
 ]
@@ -337,9 +341,9 @@ SHOW_LEGEND_IN_FIGURE = False
 LEGEND_LOCATION = "best"
 
 # 单独导出图例（bar_main / bar_ablation）时的列数，控制图例换行
-# 主实验 8 条线 -> 4 列；消融实验 10 条线 -> 5 列
+# 主实验 8 条线 -> 4 列；消融实验 12 条线 -> 6 列
 LEGEND_ONLY_NCOL_MAIN = 4
-LEGEND_ONLY_NCOL_ABLATION = 5
+LEGEND_ONLY_NCOL_ABLATION = 6
 LEGEND_ONLY_MARKER_SIZE = 15         # 对应 bar_main.m 中 figure_MarkerSize = 15
 
 # =====================================================================================
