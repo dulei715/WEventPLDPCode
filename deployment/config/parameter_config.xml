@@ -29,19 +29,19 @@
         </fileHandle>
         <fileHandle name="tlns">
             <userSize>10000</userSize>
-            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <locationTypeSize>5</locationTypeSize> <!-- 取值域大小 d，状态取值为 0 ~ d-1 -->
             <timeStampSize>10000</timeStampSize>
             <combineRound>10</combineRound>
         </fileHandle>
         <fileHandle name="sin">
             <userSize>10000</userSize>
-            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <locationTypeSize>5</locationTypeSize> <!-- 取值域大小 d，状态取值为 0 ~ d-1 -->
             <timeStampSize>10000</timeStampSize>
             <combineRound>10</combineRound>
         </fileHandle>
         <fileHandle name="log">
             <userSize>10000</userSize>
-            <locationTypeSize>2</locationTypeSize> <!-- 这里2代表2个状态，0或者1 -->
+            <locationTypeSize>5</locationTypeSize> <!-- 取值域大小 d，状态取值为 0 ~ d-1 -->
             <timeStampSize>10000</timeStampSize>
             <combineRound>10</combineRound>
         </fileHandle>

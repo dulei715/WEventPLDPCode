@@ -3,6 +3,7 @@ package hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synth
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.ProbabilityDistributionUtils;
 import hnu.dll.utils.FormatFileName;
 import hnu.dll.utils.io.ListWriteUtils;
 
@@ -34,7 +35,10 @@ public class runInputGeneratorThread implements Runnable {
         String tempTimeStampStr, tempData;
         Integer chosenIndex;
         String outputFilePath;
-        Double[] cumulativeArray = new Double[]{0D, 1D}, tempProbability;
+        // 取值域大小由 status.txt 的元素个数决定，不再固定为 2
+        Integer domainSize = this.positionStringList.size();
+        Double[] cumulativeArray;
+        List<Double> tempProbabilityDistribution;
         List<String> tempWritingDataList;
         Integer totalTimeStampSize = this.probabilityStrList.size();
         String[] tempProbabilityDataStringArray;
@@ -42,9 +46,11 @@ public class runInputGeneratorThread implements Runnable {
             tempProbabilityDataStringArray = probabilityStrList.get(ind).split(",");
             tempTimeStampStr = tempProbabilityDataStringArray[0];
             outputFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicOutputDir, "timestamp_"+ FormatFileName.getFormatNumberString(Integer.valueOf(tempTimeStampStr), 0, totalTimeStampSize) +".txt");
-            cumulativeArray[0] = 1D - Double.valueOf(tempProbabilityDataStringArray[1]);
+            tempProbabilityDistribution = ProbabilityDistributionUtils.getDistribution(Double.valueOf(tempProbabilityDataStringArray[1]), domainSize);
+            cumulativeArray = ProbabilityDistributionUtils.getCumulativeDistribution(tempProbabilityDistribution);
             tempWritingDataList = new ArrayList<>();
             for (String userID : userIDList) {
+                // RandomUtil 内部按 array.length 处理并做归一化，取值域大小任意
                 chosenIndex = RandomUtil.getRandomIndexGivenCumulativeCountPoint(cumulativeArray);
                 tempData = StringUtil.join(",", userID, positionStringList.get(chosenIndex), tempTimeStampStr);
                 tempWritingDataList.add(tempData);
