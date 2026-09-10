@@ -8,8 +8,10 @@ import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthe
 
 public class LogDatasetPreprocessRun {
     public static void generateProbabilityParameters() {
-        Double parameterA = 0.25;
-        Double parameterB = 0.01;
+//        Double parameterA = 0.25;
+        Double parameterA = 0.7;
+//        Double parameterB = 0.01;
+        Double parameterB = 0.02;
         String datasetName = "log";
         LogFunction logFunction = new LogFunction(parameterA, parameterB);
         int timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));
