@@ -217,6 +217,77 @@ public class ConfigureUtils {
         return Integer.valueOf(textTrim);
     }
 
+    /**
+     * 当前实验使用的配置标签，对应 parameter_config.xml 中 independentVariables 下各 attribute 的 name。
+     * 通过 JVM 参数 -Dexp.tag=xxx 指定，未指定时为 "default"。
+     */
+    public static String getExperimentTag() {
+        String tag = System.getProperty("exp.tag");
+        if (tag == null || tag.trim().isEmpty()) {
+            return "default";
+        }
+        return tag.trim();
+    }
+
+    /**
+     * 读取指定标签下的取值域大小列表 d（逗号分隔，如 "2,5,10,25,50"）。
+     * 未配置该标签时返回 null。
+     */
+    public static List<Integer> getIndependentDomainSizeList(String tagName) {
+        try {
+            Document document = Constant.xmlConfigure.getDocument();
+            Element element = (Element) document.selectNodes(
+                    "//independentVariables/attribute[@name='DomainSize']/single[@name='" + tagName + "']").get(0);
+            List<Integer> result = new ArrayList<>();
+            for (String item : element.getTextTrim().split(",")) {
+                String temp = item.trim();
+                if (!temp.isEmpty()) {
+                    result.add(Integer.valueOf(temp));
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 当前实验实际使用的取值域大小 d，优先级：
+     * 1) JVM 参数 -Dexp.domain（维度实验循环时指定"当前跑哪一个 d"）；
+     * 2) 标签对应列表的第一个值；
+     * 3) 都没有则返回 null，由调用方回退到 fileHandle 中的 locationTypeSize。
+     */
+    public static Integer getIndependentSingleDomainSize(String tagName) {
+        String override = System.getProperty("exp.domain");
+        if (override != null && !override.trim().isEmpty()) {
+            try {
+                return Integer.valueOf(override.trim());
+            } catch (NumberFormatException ignored) {
+                // 解析失败时继续走配置
+            }
+        }
+        List<Integer> domainSizeList = getIndependentDomainSizeList(tagName);
+        if (domainSizeList == null || domainSizeList.isEmpty()) {
+            return null;
+        }
+        return domainSizeList.get(0);
+    }
+
+    /**
+     * 读取指定标签下的 Zipf 指数 alpha（对应 independentVariables 中的 ZipfAlpha）。
+     * 未配置时返回 0，表示"除主状态外其余状态均分"（均匀分布）。
+     */
+    public static Double getIndependentSingleZipfAlpha(String tagName) {
+        try {
+            Document document = Constant.xmlConfigure.getDocument();
+            Element element = (Element) document.selectNodes(
+                    "//independentVariables/attribute[@name='ZipfAlpha']/single[@name='" + tagName + "']").get(0);
+            return Double.valueOf(element.getTextTrim());
+        } catch (Exception e) {
+            return 0D;
+        }
+    }
+
     public static List<Double> getIndependentUserRatioList(String varianceName) {
         Document document = Constant.xmlConfigure.getDocument();;
         Element element = (Element) document.selectNodes("//independentVariables/attribute[@name='TwoFixedUserRatio']/variance[@name='" + varianceName + "']").get(0);

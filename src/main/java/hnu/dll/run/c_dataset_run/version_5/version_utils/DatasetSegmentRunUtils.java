@@ -23,6 +23,20 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class DatasetSegmentRunUtils {
+
+    /**
+     * 当前实验使用的配置标签，对应 parameter_config.xml 中
+     * independentVariables 下各 attribute 的 name（如 "default" / "case1" / "fixed"）。
+     *
+     * 通过 JVM 参数 -Dexp.tag=xxx 指定，未指定时为 "default"。
+     * 这样不同的实验可以读取配置文件的不同参数组，而不需要每次改配置：
+     *   主实验              java ... SinMainRun 0                 -> 用 default（完整 variance）
+     *   维度可扩展性实验     java -Dexp.tag=fixed ... SinMainRun 0 -> 用 fixed（只跑默认 epsilon / w）
+     */
+    public static String getExperimentTag() {
+        return ConfigureUtils.getExperimentTag();
+    }
+
     public static void basicDatasetRun(
             String basicPath,
             String groupParameterDirectoryName, String personalizedParameterFileName,
@@ -31,10 +45,11 @@ public class DatasetSegmentRunUtils {
         /**
          * groupParameterFileName + / + {p_{budget}_w_{windowsize}} + / + personalizedParameterFileName 构成用户参数文件目录
          */
-        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList("default");
-        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList("default");
-        Double budgetDefault = ConfigureUtils.getIndependentSinglePrivacyBudget("default");
-        Integer windowSizeDefault = ConfigureUtils.getIndependentSingleWindowSize("default");
+        String experimentTag = getExperimentTag();
+        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
+        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
+        Double budgetDefault = ConfigureUtils.getIndependentSinglePrivacyBudget(experimentTag);
+        Integer windowSizeDefault = ConfigureUtils.getIndependentSingleWindowSize(experimentTag);
 
         String inputDataFileName, parameterFileName;
         List<UserParameter> userParameterList;
@@ -123,11 +138,12 @@ public class DatasetSegmentRunUtils {
     }
 
     public static void seriallyDatasetRun(String basicPath, String dataTypeFileName, Integer singleBatchSize, Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList("default");
-        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList("default");
-
-        Double budgetDefault = budgetChangeList.get(2);
-        Integer windowSizeDefault = windowSizeChangeList.get(2);
+        String experimentTag = getExperimentTag();
+        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
+        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
+        // 用 single 配置取默认值，而不是取 variance 的第 3 个元素（单值 variance 时会越界）
+        Double budgetDefault = ConfigureUtils.getIndependentSinglePrivacyBudget(experimentTag);
+        Integer windowSizeDefault = ConfigureUtils.getIndependentSingleWindowSize(experimentTag);
 
         File dirFile = new File(basicPath, "runInput");
         File[] timeStampDataFiles = FileUtils.listFilesByFileName(dirFile, new NumberTxtFilter());
@@ -156,8 +172,8 @@ public class DatasetSegmentRunUtils {
         }
 
         for (int i = 0; i < windowSizeChangeList.size(); i++) {
-            // 对除默认值以外的每个windowSize执行所有的segment
-            if (i == 2) {
+            // 跳过与默认值相同的windowSize（与并行版一致，不再依赖下标 2）
+            if (windowSizeChangeList.get(i).equals(windowSizeDefault)) {
                 continue;
             }
             for (int segmentIndex = 0; segmentIndex < totalFileSize; segmentIndex+=segmentUnitSize, ++segmentID) {

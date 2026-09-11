@@ -4,6 +4,7 @@ import cn.edu.dll.signal.CatchSignal;
 import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.Constant;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.function.TLNSFunction;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.ProbabilityDistributionUtils;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.SyntheticGenerationUtils;
 
 public class TLNSDatasetPreprocessRun {
@@ -37,10 +38,17 @@ public class TLNSDatasetPreprocessRun {
         SyntheticGenerationUtils.generateUserID(datasetPath, userSize);
 
         // 4. 生成位置 status.txt
-        Integer statusSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "locationTypeSize"));
+        // 取值域大小 d 优先取 -Dexp.tag 对应标签下的 DomainSize；未配置时回退到 fileHandle 的 locationTypeSize
+        Integer statusSize = ConfigureUtils.getIndependentSingleDomainSize(ConfigureUtils.getExperimentTag());
+        if (statusSize == null) {
+            statusSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "locationTypeSize"));
+        }
         SyntheticGenerationUtils.generatePositionType(datasetPath, positionFileName, statusSize);
 
-        // 5. 生成输入数据到 runInput 文件夹下
+        // 5. 配置 Zipf 指数（读 parameter_config.xml 的 zipfAlpha；未配置或为 0 时其余状态均分）
+        ProbabilityDistributionUtils.configureZipfAlpha();
+
+        // 6. 生成输入数据到 runInput 文件夹下
         SyntheticGenerationUtils.generateRunInputData(datasetPath, positionFileName);
 
 

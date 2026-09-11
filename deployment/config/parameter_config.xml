@@ -94,19 +94,27 @@
             <single name="default">1.5</single>
             <single name="case1">1.5</single>
             <single name="1">2.5</single>
+            <!-- fixed：维度(domain size)可扩展性实验专用，只跑默认隐私预算，不扫 variance -->
+            <single name="fixed">1.5</single>
 <!--            <variance name="default">0.2,0.4,0.6,0.8,1.0</variance>-->
             <variance name="default">0.5,1.0,1.5,2,2.5</variance>
             <variance name="case1">0.5,1,1.5,2,2.5</variance>
             <variance name="1">0.1,0.325,0.55,0.775,1.0</variance>
+            <!-- fixed：单值，配合 single 使用，使每个 d 只产生一个参数目录 p_1-5_w_120 -->
+            <variance name="fixed">1.5</variance>
         </attribute>
         <attribute name="WindowSize">
             <dataType>java.lang.Integer</dataType>
             <single name="default">120</single>
             <single name="case1">30</single>
             <single name="1">120</single>
+            <!-- fixed：维度可扩展性实验专用，只跑默认窗口大小 -->
+            <single name="fixed">120</single>
             <variance name="default">40,80,120,160,200</variance>
             <variance name="case1">10,20,30,40,50</variance>
             <variance name="1">40,80,120,160,200</variance>
+            <!-- fixed：单值，与 PrivacyBudget 的 fixed 搭配，只产生 p_1-5_w_120 -->
+            <variance name="fixed">120</variance>
         </attribute>
         <attribute name="SegmentUnitSize">
             <dataType>java.lang.Integer</dataType>
@@ -129,6 +137,20 @@
             <single name="default">5</single>
             <!--  这里只用到了single的，严格设置数据区域大小为5 -->
             <variance name="default">3,4,5,6,7</variance>
+            <!-- 维度可扩展性实验：一个标签里用逗号列出所有要跑的 d。
+                 运行时用 -Dexp.domain=d 指定当前跑哪一个；未指定时用列表第一个。
+                 未配置该标签（或 -Dexp.tag 指向的标签不存在）时回退到
+                 fileHandle 中的 locationTypeSize。 -->
+            <single name="fixed">2,5,10,25,50</single>
+        </attribute>
+        <attribute name="ZipfAlpha">
+            <dataType>java.lang.Double</dataType>
+            <!-- 合成分布的 Zipf 指数：
+                 <= 0 表示除主状态外其余状态均分（均匀分布，与改造前一致）；
+                 >  0 表示按 rank^-alpha 递减分配（长尾分布）。
+                 主实验用 default(0)，维度可扩展性实验用 fixed(1.2)。 -->
+            <single name="default">0</single>
+            <single name="fixed">1.2</single>
         </attribute>
     </independentVariables>
 
