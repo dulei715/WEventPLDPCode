@@ -17,7 +17,7 @@ public class CheckInMainLDPPosterRun {
         String finalResultDirName = "2.checkIn_result";
         String configDatasetFileHandleName = "checkIn";
 
-        String basicOutputFileString = "../1.main_ldp_result";
+        String basicOutputFileString = ConfigureUtils.getResultOutputDirName();
         String roundPattern = "round_%d_main_ldp";
         String outputDir = Constant.GroupOutputDirName; // "group_output"
         String extractDir = "extract_result";

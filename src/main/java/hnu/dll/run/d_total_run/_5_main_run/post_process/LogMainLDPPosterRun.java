@@ -17,7 +17,7 @@ public class LogMainLDPPosterRun {
         String finalResultDirName = "5.log_result";
         String configDatasetFileHandleName = "log";
 
-        String basicOutputFileString = "../1.main_ldp_result";
+        String basicOutputFileString = ConfigureUtils.getResultOutputDirName();
         String roundPattern = "round_%d_main_ldp";
         String outputDir = Constant.GroupOutputDirName; // "group_output"
         String extractDir = "extract_result";

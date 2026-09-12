@@ -4,7 +4,7 @@ import cn.edu.dll.signal.CatchSignal;
 import hnu.dll._config.Constant;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_run.TLNSDatasetPreprocessRun;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
-import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.utils.GenerateParameters;
+import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run.GenerateParameters;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.version_5.DataSetRun;
 

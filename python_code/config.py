@@ -53,6 +53,36 @@ OUTPUT_SUB_DIR_FIGURES = "figures"                                            # 
 OUTPUT_SUB_DIR_MAIN = os.path.join("figures", "experiment_result")            # 主实验结果
 OUTPUT_SUB_DIR_ADD = os.path.join("figures", "experiment_result_add")         # 消融 / 时间开销等补充结果
 OUTPUT_SUB_DIR_TIME = os.path.join("figures", "experiment_result_add", "time_cost_fig")  # 时间开销图
+OUTPUT_SUB_DIR_DOMAIN = os.path.join("figures", "experiment_result_add", "domain_size_fig")  # 维度可扩展性图
+
+# =====================================================================================
+# 2.1 维度可扩展性实验（取值域大小 d 变化）配置
+#
+# 由 deployment/_4_domain_size_scripts/*.sh 产出：
+#   1) 每个 d 跑完 10 轮并合并后，脚本把结果目录改名为 "{数据集目录}_d{d}"，
+#      例如 3.tlns_result -> 3.tlns_result_d5；
+#   2) 因为 parameter_config.xml 里 fixed 标签的 PrivacyBudget / WindowSize 的
+#      single 与 variance 都是单值，所以每个 d 目录下只会有一个参数目录 p_1-5_w_120。
+#
+# 因此"随 d 变化"的图与"随 ε / w 变化"的图取数方向正好相反：
+#   后者是在【一个】结果目录内扫描多个 p_ε_w 子目录；
+#   前者是遍历【多个】结果目录（每个 d 一个），各取其中固定的那个参数目录。
+# =====================================================================================
+# 维度实验结果的根目录，与主实验的 INPUT_BASIC_PATH 分开
+# （对应 deployment/_4_domain_size_scripts/*.sh 里的 result_output_dir_name，
+#   由后处理 MainLDPPosterRun 的 -Dexp.result.dir 指定）
+DOMAIN_INPUT_BASIC_PATH = r"E:\MainFiles\1.Research\dataset\3-2_stream_ldp\2.domain_change_ldp_result"
+# 要绘制的 d 列表，需与脚本中的 domain_size_list 以及
+# parameter_config.xml 中 independentVariables/DomainSize 的 fixed 标签一致
+DOMAIN_SIZE_LIST = [2, 5, 10, 25, 50]
+# 结果目录名模板：数据集目录 + "_d" + d（与脚本里的 mv 保持一致）
+DOMAIN_RESULT_DIR_FORMAT = "%s_d%s"
+# 只有合成数据集能改取值域大小，两个真实数据集没有这组实验
+DOMAIN_DATASET_DIRS = ["3.tlns_result", "4.sin_result", "5.log_result"]
+DOMAIN_OUTPUT_DATASET_NAMES = ["tlns", "sin", "log"]
+# 画 d 变化图时固定的隐私预算与窗口大小，与 fixed 标签下的 single 值一致
+DOMAIN_FIXED_BUDGET = 1.5
+DOMAIN_FIXED_WINDOW_SIZE = 120
 
 # =====================================================================================
 # 3. 固定参数（对应 b_*/c_* 中的 default_window_size / default_budget）
@@ -378,6 +408,7 @@ SAVE_TIGHT = False
 #   r"$\epsilon$"    -> ϵ（弯月形的"变体"，不要）
 X_LABEL_BUDGET = r"$\epsilon$"    # 隐私预算
 X_LABEL_WINDOW_SIZE = r"$w$"         # 窗口大小
+X_LABEL_DOMAIN_SIZE = r"$d$"         # 取值域大小（维度可扩展性实验）
 
 # 是否显示图例：MATLAB 各脚本最后都调用了 legend('off')，
 # 即"只生成图例句柄但不显示"，图例单独由 bar_main/bar_ablation 导出，因此这里默认 False。

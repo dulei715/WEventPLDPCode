@@ -31,6 +31,18 @@ def _iter_datasets(input_basic_path):
         yield os.path.join(str(input_basic_path), dir_name), output_name
 
 
+def _iter_domain_datasets():
+    """遍历参加维度可扩展性实验的数据集（只有合成数据集能改取值域大小）
+
+    与 _iter_datasets 的区别：这里产出的是"目录名"而不是绝对路径，
+    因为 d 变化的图需要按 {目录名}_d{d} 逐个拼出结果目录。
+
+    :return: 生成器，元素为 (数据集结果目录名, 数据集输出名)
+    """
+    for dir_name, output_name in zip(config.DOMAIN_DATASET_DIRS, config.DOMAIN_OUTPUT_DATASET_NAMES):
+        yield dir_name, output_name
+
+
 def b_1_plot_budget_change_for_time(input_basic_path, output_basic_path, show_legend=None):
     """b_1：时间开销随隐私预算 ε 变化（固定窗口大小）
 
@@ -116,6 +128,49 @@ def b_4_plot_main_window_size_change_for_error(input_basic_path, output_basic_pa
     return outputs
 
 
+def b_5_plot_domain_change_for_error(input_basic_path, output_basic_path, show_legend=None):
+    """b_5：主实验误差/散度随取值域大小 d 变化（AMSE 与 AJSD 各一组图）
+
+    无 MATLAB 对应脚本。只遍历合成数据集（tlns / sin / log），
+    输出到 figures/experiment_result_add/domain_size_fig/。
+    """
+    outputs = []
+    for metric in (config.METRIC_AMSE, config.METRIC_AJSD):
+        for dataset_dir, dataset_name in _iter_domain_datasets():
+            output_file = build_output_path(
+                output_basic_path,
+                config.OUTPUT_SUB_DIR_DOMAIN,
+                "%s_domain_size_change_%s_main_ldp" % (dataset_name, metric["display_name"]),
+            )
+            result = plot_a.a_7_plot_domain_change_for_single_ds(
+                input_basic_path, dataset_dir, metric, output_file, show_legend
+            )
+            if result:
+                outputs.append(result)
+    return outputs
+
+
+def b_6_plot_domain_change_for_time(input_basic_path, output_basic_path, show_legend=None):
+    """b_6：时间开销随取值域大小 d 变化
+
+    无 MATLAB 对应脚本。与 b_5 同样的取数方式，指标换成时间开销。
+    """
+    metric = config.METRIC_TIME_COST
+    outputs = []
+    for dataset_dir, dataset_name in _iter_domain_datasets():
+        output_file = build_output_path(
+            output_basic_path,
+            config.OUTPUT_SUB_DIR_DOMAIN,
+            "%s_domain_size_change_%s" % (dataset_name, metric["file_name"]),
+        )
+        result = plot_a.a_8_plot_domain_change_time_cost_for_single_ds(
+            input_basic_path, dataset_dir, metric, output_file, show_legend
+        )
+        if result:
+            outputs.append(result)
+    return outputs
+
+
 if __name__ == "__main__":
     # 简单用法：python b_plot_main.py <input_basic_path> <output_basic_path>
     input_path = sys.argv[1] if len(sys.argv) > 1 else config.INPUT_BASIC_PATH
@@ -124,3 +179,5 @@ if __name__ == "__main__":
     b_2_plot_window_size_change_for_time(input_path, output_path)
     b_3_plot_main_budget_change_for_error(input_path, output_path)
     b_4_plot_main_window_size_change_for_error(input_path, output_path)
+    b_5_plot_domain_change_for_error(input_path, output_path)
+    b_6_plot_domain_change_for_time(input_path, output_path)

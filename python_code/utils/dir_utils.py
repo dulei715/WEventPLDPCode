@@ -91,6 +91,48 @@ def extract_ratio_and_others_from_dir_name(dir_name):
     return ratio, budget, window_size
 
 
+def build_domain_result_dir_name(dataset_dir, domain_size):
+    """拼接某个取值域大小 d 对应的结果目录名
+
+    对应 deployment/_4_domain_size_scripts/*.sh 中的改名操作：
+        mv ../2.domain_change_ldp_result/3.tlns_result ../2.domain_change_ldp_result/3.tlns_result_d5
+    即 "3.tlns_result" + d=5 -> "3.tlns_result_d5"。
+
+    :param dataset_dir: 数据集结果目录名，如 "3.tlns_result"
+    :param domain_size: 取值域大小 d
+    :return: 带 d 后缀的目录名
+    """
+    return config.DOMAIN_RESULT_DIR_FORMAT % (str(dataset_dir), str(domain_size))
+
+
+def find_param_dir(basic_path, budget=None, window_size=None):
+    """在结果目录下定位参数目录（形如 p_1-5_w_120）
+
+    用于维度可扩展性实验：每个 d 的结果目录下只有一个参数目录，
+    因此这里既支持"直接取唯一的那个"，也支持"按 ε / w 精确匹配"。
+
+    :param basic_path: 单个结果目录（如 ".../3.tlns_result_d5"）
+    :param budget: 期望的隐私预算；为 None 时不校验
+    :param window_size: 期望的窗口大小；为 None 时不校验
+    :return: 参数目录名；找不到时返回 None
+    """
+    dir_names = list_dir_name(basic_path)
+    if not dir_names:
+        return None
+    if budget is None and window_size is None:
+        return dir_names[0] if len(dir_names) == 1 else None
+    for dir_name in dir_names:
+        current_budget, current_window = extract_budget_and_w_size_from_dir_name(dir_name)
+        if current_budget is None or current_window is None:
+            continue
+        if budget is not None and abs(float(current_budget) - float(budget)) > 1e-6:
+            continue
+        if window_size is not None and abs(float(current_window) - float(window_size)) > 1e-6:
+            continue
+        return dir_name
+    return None
+
+
 def get_parent_and_file_name(path):
     """拆分路径为父目录与文件名（对应 getParentAndFileName.m）
 

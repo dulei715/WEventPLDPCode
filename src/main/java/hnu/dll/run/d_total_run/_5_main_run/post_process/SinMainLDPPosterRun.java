@@ -17,7 +17,7 @@ public class SinMainLDPPosterRun {
         String finalResultDirName = "4.sin_result";
         String configDatasetFileHandleName = "sin";
 
-        String basicOutputFileString = "../1.main_ldp_result";
+        String basicOutputFileString = ConfigureUtils.getResultOutputDirName();
         String roundPattern = "round_%d_main_ldp";
         String outputDir = Constant.GroupOutputDirName; // "group_output"
         String extractDir = "extract_result";

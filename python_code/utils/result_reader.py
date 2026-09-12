@@ -17,7 +17,12 @@ import sys
 # 保证可以直接以脚本方式运行（python xxx.py）时也能找到 config / utils 包
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.dir_utils import list_dir_name, extract_budget_and_w_size_from_dir_name  # noqa: E402
+from utils.dir_utils import (  # noqa: E402
+    build_domain_result_dir_name,
+    extract_budget_and_w_size_from_dir_name,
+    find_param_dir,
+    list_dir_name,
+)
 
 
 def read_result_table(result_file):
@@ -244,4 +249,69 @@ def collect_metric_series(basic_path, x_type, fixed_value, metric, method_keys,
 
     x_list = [item[0] for item in records]
     y_series = {key: [item[1][key] for item in records] for key in method_keys}
+    return x_list, y_series
+
+
+def collect_metric_series_by_domain(input_basic_path, dataset_dir, domain_size_list,
+                                    budget, window_size, metric, method_keys,
+                                    method_row_keys, first_data_row=2,
+                                    name_to_method_key=None, match_by_name=False):
+    """扫描各取值域大小 d 的结果目录，取出"某指标随 d 变化"的曲线数据
+
+    维度可扩展性实验的产物结构与主实验不同：
+        主实验：1.trajectory_result/{p_0-5_w_120, p_1-0_w_120, ...}/result.txt
+                -> 一个目录内按 ε / w 扫描（collect_metric_series）
+        维度实验：3.tlns_result_d2/p_1-5_w_120/result.txt
+                  3.tlns_result_d5/p_1-5_w_120/result.txt
+                  ...
+                -> 每个 d 一个目录，各取其中固定的那个参数目录（本函数）
+
+    :param input_basic_path: 实验结果根目录（其下含 3.tlns_result_d5 等）
+    :param dataset_dir: 数据集结果目录名（不带 d 后缀），如 "3.tlns_result"
+    :param domain_size_list: 要读取的 d 列表，如 [2, 5, 10, 25, 50]
+    :param budget: 固定的隐私预算（用于定位参数目录）
+    :param window_size: 固定的窗口大小（用于定位参数目录）
+    :param metric: config 中的指标字典
+    :param method_keys: 要绘制的方案 key 列表
+    :param method_row_keys: config.RESULT_ROW_KEYS
+    :param first_data_row: 第一个方案行在 MATLAB 语义下的行号
+    :param name_to_method_key: 方案名 -> key 映射
+    :param match_by_name: 是否按名字匹配方案
+    :return: (x_list, {method_key: y_list})；x_list 为实际读到数据的 d 列表
+    """
+    x_list = []
+    y_values_list = []
+    for domain_size in domain_size_list:
+        dataset_path = os.path.join(
+            str(input_basic_path), build_domain_result_dir_name(dataset_dir, domain_size)
+        )
+        param_dir = find_param_dir(dataset_path, budget, window_size)
+        if param_dir is None:
+            print("[WARN] 未找到参数目录（期望 p_%s_w_%s），跳过 d=%s：%s"
+                  % (str(budget).replace(".", "-"), window_size, domain_size, dataset_path))
+            continue
+
+        result_file = os.path.join(dataset_path, param_dir, "result.txt")
+        if not os.path.isfile(result_file):
+            print("[WARN] 未找到 result.txt，跳过 d=%s：%s" % (domain_size, result_file))
+            continue
+
+        table = read_result_table(result_file)
+        y_values = {}
+        valid = True
+        for method_key in method_keys:
+            raw_value = get_metric_value(
+                table, method_key, metric, method_row_keys, first_data_row,
+                name_to_method_key, match_by_name,
+            )
+            value = transform_value(raw_value, metric)
+            if value is None:
+                valid = False
+                break
+            y_values[method_key] = value
+        if valid:
+            x_list.append(domain_size)
+            y_values_list.append(y_values)
+
+    y_series = {key: [item[key] for item in y_values_list] for key in method_keys}
     return x_list, y_series

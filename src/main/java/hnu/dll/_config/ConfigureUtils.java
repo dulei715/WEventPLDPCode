@@ -230,6 +230,22 @@ public class ConfigureUtils {
     }
 
     /**
+     * 实验结果的输出根目录（相对于数据集根目录），优先级：
+     * 1) JVM 参数 -Dexp.result.dir（维度可扩展性实验用它把结果写到独立目录，
+     *    避免与主实验的结果混在同一个 1.main_ldp_result 下）；
+     * 2) 默认值 "../1.main_ldp_result"（与改造前完全一致）。
+     *
+     * @return 结果输出根目录的相对路径
+     */
+    public static String getResultOutputDirName() {
+        String override = System.getProperty("exp.result.dir");
+        if (override == null || override.trim().isEmpty()) {
+            return "../1.main_ldp_result";
+        }
+        return override.trim();
+    }
+
+    /**
      * 读取指定标签下的取值域大小列表 d（逗号分隔，如 "2,5,10,25,50"）。
      * 未配置该标签时返回 null。
      */

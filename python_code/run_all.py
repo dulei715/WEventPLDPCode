@@ -12,7 +12,13 @@
     # 3) 只画主实验误差图，输出 png，并在图内显示图例
     python run_all.py -i D:/exp/1.main_ldp_result -o D:/exp --tasks b3,b4 --ext .png --show-legend
 
-    # 4) 路径也可以直接写在 config.py 的 INPUT_BASIC_PATH / OUTPUT_BASIC_PATH 中，之后只需
+    # 4) 维度可扩展性实验：结果默认从 config.DOMAIN_INPUT_BASIC_PATH 读取
+    #    （即 2.domain_change_ldp_result，由 _4_domain_size_scripts 产出），不需要 -i
+    python run_all.py -o D:/exp --tasks b5,b6
+    #    也可以临时指定别的结果目录
+    python run_all.py -o D:/exp --tasks b5,b6 --domain-input-path D:/exp/2.domain_change_ldp_result
+
+    # 5) 路径也可以直接写在 config.py 的 INPUT_BASIC_PATH / OUTPUT_BASIC_PATH 中，之后只需
     python run_all.py
 
 注意：所有方法名（图例文字）都集中在 config.py 的 METHOD_DISPLAY_NAMES 中，
@@ -37,10 +43,17 @@ TASKS = {
     "b2": ("时间开销随窗口大小变化", "b_plot_main", "b_2_plot_window_size_change_for_time"),
     "b3": ("主实验误差随隐私预算变化", "b_plot_main", "b_3_plot_main_budget_change_for_error"),
     "b4": ("主实验误差随窗口大小变化", "b_plot_main", "b_4_plot_main_window_size_change_for_error"),
+    "b5": ("主实验误差随取值域大小 d 变化", "b_plot_main", "b_5_plot_domain_change_for_error"),
+    "b6": ("时间开销随取值域大小 d 变化", "b_plot_main", "b_6_plot_domain_change_for_time"),
     "c1": ("消融实验误差随隐私预算变化", "c_plot_ablation", "c_1_plot_ablation_budget_change_for_error"),
     "c2": ("消融实验误差随窗口大小变化", "c_plot_ablation", "c_2_plot_ablation_window_size_change_for_error"),
 }
 TASK_LEGEND = ("单独导出主实验/消融实验图例", "legend_only", "")
+# 执行 "all" 时包含的任务：b5/b6 需要维度实验的结果目录（*_d{d}），
+# 没跑过维度实验时它们只会打印 [WARN] 跳过，因此默认不放进 all。
+TASK_ALL = ["b1", "b2", "b3", "b4", "c1", "c2", "legend"]
+# 读取维度实验结果根目录（config.DOMAIN_INPUT_BASIC_PATH）的任务
+DOMAIN_TASKS = ("b5", "b6")
 
 
 def run_task(task_name, input_basic_path, output_basic_path, show_legend=None):
@@ -139,10 +152,17 @@ def parse_args(argv=None):
         description="WEventPLDP 实验结果绘图（Python 版，与 matlab_code 一一对应）",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("-i", "--input-basic-path", default=config.INPUT_BASIC_PATH,
-                        help="实验结果根目录（其下含 1.trajectory_result 等数据集目录）")
+    # 默认置为 None：这样才能区分"用户有没有显式给 -i"，
+    # 从而让 -i 同时也能驱动 b5/b6（见 main 中的 domain_input_path 取值顺序）
+    parser.add_argument("-i", "--input-basic-path", default=None,
+                        help="实验结果根目录（其下含 1.trajectory_result 等数据集目录）；"
+                             "未显式给出时取 config.INPUT_BASIC_PATH；"
+                             "显式给出时 b5/b6 也会用它，除非另给 --domain-input-path")
     parser.add_argument("-o", "--output-basic-path", default=config.OUTPUT_BASIC_PATH,
                         help="图片输出根目录")
+    parser.add_argument("--domain-input-path", default=None,
+                        help="维度实验结果的根目录（b5/b6 专用，其下含 3.tlns_result_d5 等）；"
+                             "优先级高于 -i，未给出时依次回退到 -i 与 config.DOMAIN_INPUT_BASIC_PATH")
     parser.add_argument("-t", "--tasks", default="b1,b2,b3,b4,c1,c2,legend",
                         help="要执行的任务，逗号分隔，可选：b1,b2,b3,b4,c1,c2,legend,all")
     parser.add_argument("--ext", default=config.OUTPUT_EXT,
@@ -166,6 +186,12 @@ def main(argv=None):
         print("%-4s %s" % ("legend", TASK_LEGEND[0]))
         return 0
 
+    # 先记录 -i 是否由用户显式给出（必须在下面的回退填充之前判断），
+    # b5/b6 要靠它决定"该不该听 -i 的话"
+    input_explicit = args.input_basic_path is not None
+    # -i 没显式给出时回退到 config.INPUT_BASIC_PATH（保持原有行为）
+    args.input_basic_path = args.input_basic_path or config.INPUT_BASIC_PATH
+
     if not args.input_basic_path:
         print("[ERROR] 请先通过 -i 指定结果路径，或在 config.py 中填写 INPUT_BASIC_PATH")
         return 1
@@ -188,12 +214,23 @@ def main(argv=None):
 
     task_names = [item.strip() for item in args.tasks.split(",") if item.strip()]
     if "all" in [name.lower() for name in task_names]:
-        task_names = ["b1", "b2", "b3", "b4", "c1", "c2", "legend"]
+        task_names = list(TASK_ALL)
 
     show_legend = True if args.show_legend else None
+    # b5/b6 的输入根目录取值顺序：
+    #   --domain-input-path  >  -i（仅当显式给出）  >  config.DOMAIN_INPUT_BASIC_PATH
+    # 这样既保留"维度结果默认放独立目录"，又能让习惯用 -i 的用法照常生效
+    domain_input_path = args.domain_input_path
+    if not domain_input_path and input_explicit:
+        domain_input_path = args.input_basic_path
+    if not domain_input_path:
+        domain_input_path = config.DOMAIN_INPUT_BASIC_PATH
     for task_name in task_names:
         print("[RUN ] 任务 %s 开始 ..." % task_name)
-        outputs = run_task(task_name, args.input_basic_path, args.output_basic_path, show_legend)
+        if task_name.lower() in DOMAIN_TASKS:
+            outputs = run_task(task_name, domain_input_path, args.output_basic_path, show_legend)
+        else:
+            outputs = run_task(task_name, args.input_basic_path, args.output_basic_path, show_legend)
         for output in outputs:
             if output:
                 print("        -> %s" % output)
