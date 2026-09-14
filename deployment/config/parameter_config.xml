@@ -108,13 +108,16 @@
             <single name="default">120</single>
             <single name="case1">30</single>
             <single name="1">120</single>
-            <!-- fixed：维度可扩展性实验专用，只跑默认窗口大小 -->
-            <single name="fixed">120</single>
+            <!-- fixed：维度可扩展性实验专用。
+                 窗口从 120 降到 40，使采样量 samplingSize = userSize/(2w) 提高到原来的 3 倍，
+                 缓解大 d 下"采样噪声淹没信号"导致的自适应失效。
+                 注意：只影响 -Dexp.tag=fixed 的维度实验，主实验仍用 default 的 120。 -->
+            <single name="fixed">40</single>
             <variance name="default">40,80,120,160,200</variance>
             <variance name="case1">10,20,30,40,50</variance>
             <variance name="1">40,80,120,160,200</variance>
-            <!-- fixed：单值，与 PrivacyBudget 的 fixed 搭配，只产生 p_1-5_w_120 -->
-            <variance name="fixed">120</variance>
+            <!-- fixed：单值，与 PrivacyBudget 的 fixed 搭配，只产生 p_1-5_w_40 -->
+            <variance name="fixed">40</variance>
         </attribute>
         <attribute name="SegmentUnitSize">
             <dataType>java.lang.Integer</dataType>
@@ -142,6 +145,17 @@
                  未配置该标签（或 -Dexp.tag 指向的标签不存在）时回退到
                  fileHandle 中的 locationTypeSize。 -->
             <single name="fixed">2,5,10,25,50</single>
+        </attribute>
+        <attribute name="UserSize">
+            <dataType>java.lang.Integer</dataType>
+            <!-- 维度可扩展性实验的用户规模。
+                 采样量 samplingSize = userSize/(2*w)，大 d 下需要更大的采样量才能检测分布变化：
+                   10000 用户 + w=40  -> 采样量 125，只支撑到 d≈18
+                   70000 用户 + w=40  -> 采样量 875，支撑到 d≈56
+                  120000 用户 + w=40  -> 采样量 1500，支撑到 d≈74（d=50 有 2 倍余量）
+                 这里只配置 fixed 标签；未配置某个标签（如 default）时回退到
+                 fileHandle 中的 userSize（10000），因此主实验不受影响。 -->
+            <single name="fixed">120000</single>
         </attribute>
         <attribute name="ZipfAlpha">
             <dataType>java.lang.Double</dataType>

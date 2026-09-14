@@ -81,8 +81,9 @@ DOMAIN_RESULT_DIR_FORMAT = "%s_d%s"
 DOMAIN_DATASET_DIRS = ["3.tlns_result", "4.sin_result", "5.log_result"]
 DOMAIN_OUTPUT_DATASET_NAMES = ["tlns", "sin", "log"]
 # 画 d 变化图时固定的隐私预算与窗口大小，与 fixed 标签下的 single 值一致
+# 注意与 parameter_config.xml 中 WindowSize 的 fixed 标签保持同步（已从 120 改为 40）
 DOMAIN_FIXED_BUDGET = 1.5
-DOMAIN_FIXED_WINDOW_SIZE = 120
+DOMAIN_FIXED_WINDOW_SIZE = 40
 
 # =====================================================================================
 # 3. 固定参数（对应 b_*/c_* 中的 default_window_size / default_budget）

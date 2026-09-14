@@ -290,6 +290,32 @@ public class ConfigureUtils {
     }
 
     /**
+     * 当前实验实际使用的用户数（对应 independentVariables 中的 UserSize），优先级：
+     * 1) 当前标签（-Dexp.tag）下的 UserSize；
+     * 2) 都没有则返回 null，由调用方回退到 fileHandle 中的 userSize。
+     *
+     * 之所以不读 fileHandle：userSize 是数据集级别的配置，主实验与维度实验共用，
+     * 直接在 fileHandle 上改会连带影响主实验。这里让维度实验可以按标签单独指定。
+     *
+     * @param tagName 实验标签，如 "default" / "fixed"
+     * @return 用户数；未配置时返回 null
+     */
+    public static Integer getIndependentSingleUserSize(String tagName) {
+        try {
+            Document document = Constant.xmlConfigure.getDocument();
+            Element element = (Element) document.selectNodes(
+                    "//independentVariables/attribute[@name='UserSize']/single[@name='" + tagName + "']").get(0);
+            String textTrim = element.getTextTrim();
+            if (textTrim.isEmpty()) {
+                return null;
+            }
+            return Integer.valueOf(textTrim);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * 读取指定标签下的 Zipf 指数 alpha（对应 independentVariables 中的 ZipfAlpha）。
      * 未配置时返回 0，表示"除主状态外其余状态均分"（均匀分布）。
      */

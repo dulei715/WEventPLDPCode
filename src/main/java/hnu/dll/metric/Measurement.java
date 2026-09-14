@@ -46,16 +46,22 @@ public class Measurement {
         return sum;
     }
 
+    /**
+     * 计算两个"分布"之间的 JS 散度。
+     *
+     * 注意：JS 散度是对两个分布整体定义的量（JSD(P||Q) <= ln2），不能按元素逐个计算再求和。
+     * 这里原先写成 for 循环累加，但循环体里传的是整个 rawData / sanitizedData 而不是第 i 个分量，
+     * 导致结果被放大了 domainSize 倍，JSD 会随 d 虚假膨胀并突破 ln2 的理论上界。
+     *
+     * @param rawData       真实分布（一次发布的 d 维频率分布）
+     * @param sanitizedData 估计分布
+     * @return 两个分布的 JS 散度
+     */
     public static Double getJSDivergence(List<Double> rawData, List<Double> sanitizedData) {
-        int size = rawData.size();
-        if (sanitizedData.size() != size) {
+        if (sanitizedData.size() != rawData.size()) {
             throw new RuntimeException("The lengths of rawData and sanitizedData are not equal!");
         }
-        Double jsSum = 0D;
-        for (int i = 0; i < size; i++) {
-            jsSum += StatisticTool.getJSStatisticDivergence(rawData, sanitizedData);
-        }
-        return jsSum;
+        return StatisticTool.getJSStatisticDivergence(rawData, sanitizedData);
     }
 
     public static Double getJSDivergenceErrorSum(List<List<Double>> rawDataList, List<List<Double>> sanitizedDataList) {

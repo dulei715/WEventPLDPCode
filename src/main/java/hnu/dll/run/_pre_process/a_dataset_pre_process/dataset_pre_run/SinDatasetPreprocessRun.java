@@ -34,7 +34,11 @@ public class SinDatasetPreprocessRun {
         generateProbabilityParameters();
 
         // 3. 生成userID.txt
-        Integer userSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "userSize"));
+        // 用户数优先取 -Dexp.tag 对应标签下的 UserSize；未配置时回退到 fileHandle 的 userSize
+        Integer userSize = ConfigureUtils.getIndependentSingleUserSize(ConfigureUtils.getExperimentTag());
+        if (userSize == null) {
+            userSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "userSize"));
+        }
         SyntheticGenerationUtils.generateUserID(datasetPath, userSize);
 
         // 4. 生成位置 status.txt
