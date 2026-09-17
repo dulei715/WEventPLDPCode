@@ -2,7 +2,9 @@
 # 维度可扩展性实验（log）
 # 取值域大小列表，需与 config/parameter_config.xml 中 DomainSize 的 fixed 标签一致
 domain_size_list="2 5 10 25 50"
-# 每个 d 跑几轮；改成 1 可快速验证（趋势图 1~3 轮就够，正式结果建议 10 轮）
+# 每个 d 跑几轮；改成 1 可快速验证（趋势图 1~3 轮就够，正式结果 10 轮）
+# 说明：改到 cn2（磁盘 /home 14T）后不再受虚拟机 164G 限制，恢复 10 轮。
+#       三个数据集并行峰值约 570G，14T 完全够。
 repeat_round=10
 dataset_dir_name="Log"
 main_java_file_name="Log"
@@ -10,8 +12,11 @@ final_output_dir_name="5.log_result"
 basic_path="../0.dataset/${dataset_dir_name}"
 # 维度实验的结果单独放一个根目录，不混进主实验的 1.main_ldp_result
 result_output_dir_name="2.domain_change_ldp_result"
-totalMem="-Xms8g"
-maxMem="-Xmx28g"
+# 维度实验用户数放大到 1200000（单时刻记录数 ×10），内存需求较大。
+# 现在改到 cn2 上与 sin、tlns 三个并行，因此不再独占：
+# 三个各 40g，堆合计 120G、含堆外约 150G < 179G 可用。
+totalMem="-Xms16g"
+maxMem="-Xmx40g"
 for d in ${domain_size_list}; do
   # 1. 跑 repeat_round 轮（数据集由 MainRun 内部按 -Dexp.domain 自动生成，无需单独生成）
   for i in $(seq 1 ${repeat_round}); do

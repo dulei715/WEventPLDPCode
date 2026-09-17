@@ -316,6 +316,30 @@ public class ConfigureUtils {
     }
 
     /**
+     * 读取指定标签下的时刻数 timeStampSize（对应 independentVariables 中的 TimeStampSize）。
+     * 之所以不读 fileHandle：维度实验需要"用户数放大 N 倍、时刻数同比缩小 N 倍"，
+     * 使总数据量（userSize × timeStampSize）保持不变，同时把采样量提上去；
+     * 直接在 fileHandle 上改会连带影响主实验。
+     *
+     * @param tagName 实验标签，如 "default" / "fixed"
+     * @return 时刻数；未配置时返回 null
+     */
+    public static Integer getIndependentSingleTimeStampSize(String tagName) {
+        try {
+            Document document = Constant.xmlConfigure.getDocument();
+            Element element = (Element) document.selectNodes(
+                    "//independentVariables/attribute[@name='TimeStampSize']/single[@name='" + tagName + "']").get(0);
+            String textTrim = element.getTextTrim();
+            if (textTrim.isEmpty()) {
+                return null;
+            }
+            return Integer.valueOf(textTrim);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * 读取指定标签下的 Zipf 指数 alpha（对应 independentVariables 中的 ZipfAlpha）。
      * 未配置时返回 0，表示"除主状态外其余状态均分"（均匀分布）。
      */

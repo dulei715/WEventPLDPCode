@@ -16,7 +16,11 @@ public class TLNSDatasetPreprocessRun {
         Double gaussStandardVariance = 0.0025;
         String datasetName = "tlns";
         TLNSFunction TLNSFunction = new TLNSFunction(p0, gaussAverage, gaussStandardVariance);
-        int timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));
+        // 时刻数优先取 -Dexp.tag 对应标签下的 TimeStampSize；未配置时回退到 fileHandle 的 timeStampSize
+        Integer timeStampSize = ConfigureUtils.getIndependentSingleTimeStampSize(ConfigureUtils.getExperimentTag());
+        if (timeStampSize == null) {
+            timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));
+        }
         SyntheticGenerationUtils.generateProbability(TLNSFunction, timeStampSize, true);
 
     }
@@ -27,7 +31,11 @@ public class TLNSDatasetPreprocessRun {
         String positionFileName = "status.txt";
 
         // 1. 生成时刻文件 time_stamp.txt
-        Integer timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));
+        // 时刻数优先取 -Dexp.tag 对应标签下的 TimeStampSize；未配置时回退到 fileHandle 的 timeStampSize
+        Integer timeStampSize = ConfigureUtils.getIndependentSingleTimeStampSize(ConfigureUtils.getExperimentTag());
+        if (timeStampSize == null) {
+            timeStampSize = Integer.valueOf(ConfigureUtils.getFileHandleInfo(datasetName, "timeStampSize"));
+        }
         SyntheticGenerationUtils.generateTimeStamp(datasetPath, timeStampSize);
 
         // 2. 生成每个时刻的概率参数到 basic_info/probability.txt

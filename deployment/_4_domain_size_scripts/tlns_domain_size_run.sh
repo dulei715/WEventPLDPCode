@@ -10,8 +10,12 @@ final_output_dir_name="3.tlns_result"
 basic_path="../0.dataset/${dataset_dir_name}"
 # 维度实验的结果单独放一个根目录，不混进主实验的 1.main_ldp_result
 result_output_dir_name="2.domain_change_ldp_result"
-totalMem="-Xms8g"
-maxMem="-Xmx28g"
+# 维度实验用户数放大到 1200000（单时刻记录数 ×10），内存需求较大。
+# cn2 服务器（内存 187G / 可用 179G，磁盘 /home 14T）：与 sin、log 三个脚本并行。
+# 三个进程各 40g：堆合计 120G，含堆外约 150G，留 ~29G 余量给系统。
+# 若运行中出现 OOM，把三个脚本统一降到 32g（堆合计 96G，约 120G）。
+totalMem="-Xms16g"
+maxMem="-Xmx40g"
 for d in ${domain_size_list}; do
   # 1. 跑 repeat_round 轮（数据集由 MainRun 内部按 -Dexp.domain 自动生成，无需单独生成）
   for i in $(seq 1 ${repeat_round}); do

@@ -43,6 +43,10 @@
             <userSize>10000</userSize>
             <locationTypeSize>5</locationTypeSize> <!-- 取值域大小 d，状态取值为 0 ~ d-1 -->
             <timeStampSize>10000</timeStampSize>
+            <!-- 注意：必须等于实际跑的轮数！
+                 CombineForEachRound.combineAllRound 是硬循环 1..combineRound，
+                 若某个 round_i_main_ldp 目录不存在，PostProcessUtils.listFiles 返回 null 会 NPE。
+                 log 维度实验现与 sin、tlns 一起在 cn2 上跑 10 轮，故这里为 10（与主实验一致）。 -->
             <combineRound>10</combineRound>
         </fileHandle>
     </datasets>
@@ -149,13 +153,23 @@
         <attribute name="UserSize">
             <dataType>java.lang.Integer</dataType>
             <!-- 维度可扩展性实验的用户规模。
-                 采样量 samplingSize = userSize/(2*w)，大 d 下需要更大的采样量才能检测分布变化：
-                   10000 用户 + w=40  -> 采样量 125，只支撑到 d≈18
-                   70000 用户 + w=40  -> 采样量 875，支撑到 d≈56
-                  120000 用户 + w=40  -> 采样量 1500，支撑到 d≈74（d=50 有 2 倍余量）
+                 采样量 samplingSize = userSize/(2*w)，但采样量会按隐私组数（当前 9 组）分摊，
+                 决定估计质量的是"每组采样量" = 总采样量 / 组数，以及"每组每类样本数" = 每组采样量 / d：
+                   120000 用户 -> 总采样量 1500 -> 每组约 167 人 -> 每类 167/d，只支撑到 d≈8
+                  1200000 用户 -> 总采样量 15000 -> 每组约 1667 人 -> 每类 1667/d，支撑到 d≈80
                  这里只配置 fixed 标签；未配置某个标签（如 default）时回退到
                  fileHandle 中的 userSize（10000），因此主实验不受影响。 -->
-            <single name="fixed">120000</single>
+            <single name="fixed">1200000</single>
+        </attribute>
+        <attribute name="TimeStampSize">
+            <dataType>java.lang.Integer</dataType>
+            <!-- 维度可扩展性实验的时刻数。
+                 与 UserSize 反向同比缩放（用户 ×10、时刻 ÷10），使总数据量
+                 userSize × timeStampSize 保持不变，从而不增加硬盘占用与单轮耗时；
+                 采样量只与 userSize、w 有关，不受时刻数影响，因此估计质量照常提升。
+                 default 与 fileHandle 保持一致（主实验不受影响），只有 fixed 生效于维度实验。 -->
+            <single name="default">10000</single>
+            <single name="fixed">1000</single>
         </attribute>
         <attribute name="ZipfAlpha">
             <dataType>java.lang.Double</dataType>
