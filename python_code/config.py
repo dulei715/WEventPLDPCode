@@ -421,6 +421,8 @@ LEGEND_LOCATION = "best"
 # 列数越多图越宽；想让图例更窄就把列数调小（行数会自动增加）
 LEGEND_ONLY_NCOL_MAIN = 5
 LEGEND_ONLY_NCOL_ABLATION = 6
+# 消融图例单栏版：每行 4 个（12 条 -> 4 列 × 3 行），适合较窄的版面
+LEGEND_ONLY_NCOL_ABLATION_SINGLE = 4
 # 以下与 MATLAB bar_main.m / bar_ablation.m 一致
 LEGEND_ONLY_MARKER_SIZE = 15         # MATLAB: figure_MarkerSize = 15
 LEGEND_ONLY_LINE_WIDTH = 2           # MATLAB: 'LineWidth', 2

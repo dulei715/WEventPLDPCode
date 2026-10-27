@@ -50,6 +50,44 @@ def draw_ablation_legend(output_basic_path, file_name="legend_ablation"):
         ncol=config.LEGEND_ONLY_NCOL_ABLATION,
     )
 
+def draw_ablation_legend_single_column(output_basic_path, file_name="legend_ablation_single_column"):
+    """导出消融实验图例（每行 4 个，12 条排成 4 列 × 3 行，画布按图例实际宽度收缩、不留白）
+
+    与 draw_ablation_legend 的唯一区别是列数与去白边，图例项、字号、标记样式完全一致。
+
+    :param output_basic_path: 输出根目录
+    :param file_name: 输出文件名（不含扩展名）
+    :return: 输出文件路径
+    """
+    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_FIGURES, file_name)
+    plot_utils.setup_matplotlib()
+    return plot_utils.create_legend_only(
+        config.ABLATION_METHOD_KEYS,
+        output_file,
+        ncol=config.LEGEND_ONLY_NCOL_ABLATION_SINGLE,
+        # fit_width=True,
+    )
+
+def draw_ablation_legend_horizontal(output_basic_path, file_name="legend_ablation_horizontal"):
+    """导出消融实验图例（4 列 × 3 行，按行横向阅读）
+
+    matplotlib 图例默认按列填充，这里把方案顺序重排后再交给 create_legend_only，
+    使其显示为“先填满一行再换行”的横向排列。不修改任何已有函数。
+
+    :param output_basic_path: 输出根目录
+    :param file_name: 输出文件名（不含扩展名）
+    :return: 输出文件路径
+    """
+    ncol = config.LEGEND_ONLY_NCOL_ABLATION_SINGLE
+    keys = config.ABLATION_METHOD_KEYS
+    nrow = -(-len(keys) // ncol)  # 向上取整，12/4 = 3
+    # 列填充下，输入下标 k 落在 (row=k%nrow, col=k//nrow)；
+    # 要让该位置显示“行优先”顺序的第 (row*ncol+col) 项，故按此重排输入列表。
+    ordered = [keys[(k % nrow) * ncol + (k // nrow)] for k in range(len(keys))]
+
+    output_file = build_output_path(output_basic_path, config.OUTPUT_SUB_DIR_FIGURES, file_name)
+    plot_utils.setup_matplotlib()
+    return plot_utils.create_legend_only(ordered, output_file, ncol=ncol)
 
 if __name__ == "__main__":
     # 简单用法：python legend_only.py <output_basic_path>

@@ -228,5 +228,17 @@ def create_legend_only(method_keys, output_file, ncol=None, font_size=None, mark
         text.set_fontfamily("serif")
         text.set_color("black")
 
+    # if fit_width:
+    #     # 用渲染器量出图例的实际边界（英寸），把画布宽度收缩到"图例宽 + 两侧 pad"，
+    #     # 避免按 ncol 估的画布宽度远大于图例导致左右留白
+    #     fig.canvas.draw()
+    #     legend_bbox = legend.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    #     pad = 2 * config.OUTPUT_PAD_INCHES + 0.05
+    #     if legend_bbox.width > 0:
+    #         fig.set_size_inches(legend_bbox.width + pad, fig.get_size_inches()[1], forward=True)
+    #         legend.set_loc("center left")
+    #         legend.set_bbox_to_anchor((0, 0.5))
+    #     fig.canvas.draw()
+
     # 图例图按内容裁剪（宽度由字号与列数决定），与数据图的固定尺寸策略不同
     return save_figure(fig, output_file, tight=True)
