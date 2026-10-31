@@ -104,7 +104,7 @@
             <variance name="default">0.5,1.0,1.5,2,2.5</variance>
             <variance name="case1">0.5,1,1.5,2,2.5</variance>
             <variance name="1">0.1,0.325,0.55,0.775,1.0</variance>
-            <!-- fixed：单值，配合 single 使用，使每个 d 只产生一个参数目录 p_1-5_w_120 -->
+            <!-- fixed：单值，配合 single 使用，使每个 d 只产生一个参数目录 p_1-5_w_40 -->
             <variance name="fixed">1.5</variance>
         </attribute>
         <attribute name="WindowSize">

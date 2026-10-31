@@ -114,17 +114,22 @@ public class ResultTest {
 //        String datasetOrderName = "3.tlns_result";
 //        String datasetOrderName = "4.sin_result";
         String datasetOrderName = "5.log_result";
-//        String originalMethodName = "BD";
-//        String improveMethodName = "PBD";
-//        String furtherImproveMethodName = "PDBD";
-        String originalMethodName = "LPA";
-        String improveMethodName = "PLPA";
-        String furtherImproveMethodName = "PLPA+";
+
+//        String originalMethodName = "PLPD-Direct-Scheme";
+//        String improveMethodName = "PLPD-Basic-Scheme";
+//        String furtherImproveMethodName = "PLPD-Plus-Post-Scheme";
+
+
+        String originalMethodName = "PLPA-Direct-Scheme";
+        String improveMethodName = "PLPA-Basic-Scheme";
+        String furtherImproveMethodName = "PLPA-Plus-Post-Scheme";
+
+
         Integer defaultWindowSize = 120;
         boolean whetherLog = false;
 //        boolean whetherLog = true;
 //        String datasetPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "..", "1.result", datasetOrderName);
-        String datasetPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "..", "1.main_ldp_result", datasetOrderName);
+        String datasetPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "..", "version-8-final-final", "1.main_ldp_result", datasetOrderName);
         File file = new File(datasetPath);
         File[] totalDirFileArray = file.listFiles(new DirectoryFileFilter());
         List<File> dirFileList;
@@ -163,16 +168,22 @@ public class ResultTest {
 //        String datasetOrderName = "3.tlns_result";
 //        String datasetOrderName = "4.sin_result";
         String datasetOrderName = "5.log_result";
-//        String originalMethodName = "BD";
-//        String improveMethodName = "PBD";
-//        String furtherImproveMethodName = "PDBD";
-        String originalMethodName = "LPA";
-        String improveMethodName = "PLPA";
-        String furtherImproveMethodName = "PLPA+";
+
+
+//        String originalMethodName = "PLPD-Direct-Scheme";
+//        String improveMethodName = "PLPD-Basic-Scheme";
+//        String furtherImproveMethodName = "PLPD-Plus-Post-Scheme";
+
+
+        String originalMethodName = "PLPA-Direct-Scheme";
+        String improveMethodName = "PLPA-Basic-Scheme";
+        String furtherImproveMethodName = "PLPA-Plus-Post-Scheme";
+
+
         Double defaultEpsilon = 1.5;
         boolean whetherLog = false;
 //        boolean whetherLog = true;
-        String datasetPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "..", "1.main_ldp_result", datasetOrderName);
+        String datasetPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, "..", "version-8-final-final", "1.main_ldp_result", datasetOrderName);
         File file = new File(datasetPath);
         File[] totalDirFileArray = file.listFiles(new DirectoryFileFilter());
         List<File> dirFileList;
