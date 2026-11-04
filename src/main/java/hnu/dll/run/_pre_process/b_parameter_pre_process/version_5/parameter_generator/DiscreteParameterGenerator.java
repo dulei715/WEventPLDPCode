@@ -10,6 +10,7 @@ import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.Constant;
 import hnu.dll._config.ParameterUtils;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.utils.PreprocessRunUtils;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftUtils;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread.DiscretePrivacyBudgetWithinTimeRangeGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.sub_thread.DiscreteWindowSizeWithinTimeRangeGenerator;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
@@ -196,6 +197,38 @@ public class DiscreteParameterGenerator {
             tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT, tempDir.getAbsolutePath(), Constant.PersonalizedParameterFileName);
             UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, tempUserParameterList);
         }
+    }
+
+    /**
+     * 为 group shift 实验生成固定的两组用户参数。
+     * 用户下标划分必须与 runInputGeneratorThread 中的数据分布划分完全一致。
+     */
+    public static void generateGroupShiftParameters(String dirPath, String parameterFileNameForPerson,
+                                                     Integer userSize) {
+        Double defaultPrivacyBudget = ConfigureUtils.getIndependentSinglePrivacyBudget("shift");
+        Integer defaultWindowSize = ConfigureUtils.getIndependentSingleWindowSize("shift");
+        File tempDir = new File(dirPath, ParameterGroupInitializeUtils.toPathName(defaultPrivacyBudget, defaultWindowSize));
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
+
+        Double highPrivacyBudget = ConfigureUtils.getGroupShiftHighPrivacyBudget();
+        Integer highPrivacyWindowSize = ConfigureUtils.getGroupShiftHighPrivacyWindowSize();
+        Double lowPrivacyBudget = ConfigureUtils.getGroupShiftLowPrivacyBudget();
+        Integer lowPrivacyWindowSize = ConfigureUtils.getGroupShiftLowPrivacyWindowSize();
+        Integer highPrivacyGroupSize = GroupShiftUtils.getHighPrivacyGroupSize(userSize);
+
+        List<UserParameter> userParameterList = new ArrayList<>(userSize);
+        for (int userIndex = 0; userIndex < userSize; userIndex++) {
+            if (GroupShiftUtils.isHighPrivacyGroup(userIndex, highPrivacyGroupSize)) {
+                userParameterList.add(new UserParameter(userIndex, highPrivacyBudget, highPrivacyWindowSize));
+            } else {
+                userParameterList.add(new UserParameter(userIndex, lowPrivacyBudget, lowPrivacyWindowSize));
+            }
+        }
+        String tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT,
+                tempDir.getAbsolutePath(), parameterFileNameForPerson);
+        UserParameterIOUtils.writeUserParameters(tempFileAbsolutePath, userParameterList);
     }
 
     public static void generatePrivacyBudget(String dirPath, String privacyBudgetFileNameForPersonalized, final List<Integer> userTypeIDList,

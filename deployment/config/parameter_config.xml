@@ -106,6 +106,9 @@
             <variance name="1">0.1,0.325,0.55,0.775,1.0</variance>
             <!-- fixed：单值，配合 single 使用，使每个 d 只产生一个参数目录 p_1-5_w_40 -->
             <variance name="fixed">1.5</variance>
+            <!-- shift：隐私相关分布实验只生成一组参数目录，具体用户参数由 Java 分成两组写入 -->
+            <single name="shift">0.5</single>
+            <variance name="shift">0.5</variance>
         </attribute>
         <attribute name="WindowSize">
             <dataType>java.lang.Integer</dataType>
@@ -122,6 +125,9 @@
             <variance name="1">40,80,120,160,200</variance>
             <!-- fixed：单值，与 PrivacyBudget 的 fixed 搭配，只产生 p_1-5_w_40 -->
             <variance name="fixed">40</variance>
+            <!-- shift：高隐私组使用 w=200，低隐私组使用 w=40 -->
+            <single name="shift">200</single>
+            <variance name="shift">200</variance>
         </attribute>
         <attribute name="SegmentUnitSize">
             <dataType>java.lang.Integer</dataType>
@@ -149,6 +155,7 @@
                  未配置该标签（或 -Dexp.tag 指向的标签不存在）时回退到
                  fileHandle 中的 locationTypeSize。 -->
             <single name="fixed">2,5,10,25,50</single>
+            <single name="shift">5</single>
         </attribute>
         <attribute name="UserSize">
             <dataType>java.lang.Integer</dataType>
@@ -179,6 +186,42 @@
                  主实验用 default(0)，维度可扩展性实验用 fixed(1.2)。 -->
             <single name="default">0</single>
             <single name="fixed">1.2</single>
+            <single name="shift">0</single>
+        </attribute>
+        <!--
+            隐私参数与数据分布相关实验：高隐私组和低隐私组各占一半用户。
+            高隐私组 (epsilon=0.5, w=200) 使用 p(t)+delta，
+            低隐私组 (epsilon=2.5, w=40) 使用 p(t)-delta；
+            通过 -Dexp.shift.direction=reverse 可交换两个方向。
+        -->
+        <attribute name="GroupShiftProbabilityDelta">
+            <dataType>java.lang.Double</dataType>
+            <single name="shift">0.1</single>
+            <variance name="shift">0,0.05,0.10,0.15,0.20</variance>
+        </attribute>
+        <attribute name="GroupShiftDirection">
+            <dataType>java.lang.String</dataType>
+            <single name="shift">positive</single>
+        </attribute>
+        <attribute name="GroupShiftHighPrivacyRatio">
+            <dataType>java.lang.Double</dataType>
+            <single name="shift">0.5</single>
+        </attribute>
+        <attribute name="GroupShiftHighPrivacyBudget">
+            <dataType>java.lang.Double</dataType>
+            <single name="shift">0.5</single>
+        </attribute>
+        <attribute name="GroupShiftHighPrivacyWindowSize">
+            <dataType>java.lang.Integer</dataType>
+            <single name="shift">200</single>
+        </attribute>
+        <attribute name="GroupShiftLowPrivacyBudget">
+            <dataType>java.lang.Double</dataType>
+            <single name="shift">2.5</single>
+        </attribute>
+        <attribute name="GroupShiftLowPrivacyWindowSize">
+            <dataType>java.lang.Integer</dataType>
+            <single name="shift">40</single>
         </attribute>
     </independentVariables>
 

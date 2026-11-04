@@ -1,7 +1,10 @@
 package hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_pre_run;
 
+import cn.edu.dll.basic.StringUtil;
+import cn.edu.dll.constant_values.ConstantValues;
 import hnu.dll._config.ConfigureUtils;
 import hnu.dll._config.Constant;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftUtils;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.DiscreteParameterGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.LocationGroupGenerator;
 import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_generator.UserGroupGenerator;
@@ -28,6 +31,15 @@ public class GenerateParameters {
             LocationGroupGenerator.generateLocationToIndex(basicDataPath, locationFileName, domainSize, random);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+
+        if (GroupShiftUtils.isEnabled()) {
+            DiscreteParameterGenerator.generateGroupShiftParameters(
+                    StringUtil.join(ConstantValues.FILE_SPLIT, basicDataPath, Constant.GroupParameterDirectoryName),
+                    Constant.PersonalizedParameterFileName,
+                    userSize);
+            GroupShiftUtils.writeGroupShiftInfo(basicDataPath, userSize);
+            return;
         }
 
         DiscreteParameterGenerator.generateParametersForDataset(basicDataPath,

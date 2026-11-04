@@ -24,6 +24,10 @@ public class SinMainLDPPosterRun {
         String basicOutputPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, basicOutputFileString);
 
         int roundSize = Integer.parseInt(ConfigureUtils.getFileHandleInfo(configDatasetFileHandleName, "combineRound"));
+        String repeatRoundOverride = System.getProperty("exp.repeat.round");
+        if (repeatRoundOverride != null && !repeatRoundOverride.trim().isEmpty()) {
+            roundSize = Integer.parseInt(repeatRoundOverride.trim());
+        }
 
         // 3. 后处理
         CombineForEachRound.combineAllRound(datasetPath, finalResultDirName, roundSize, roundPattern, outputDir, extractDir);

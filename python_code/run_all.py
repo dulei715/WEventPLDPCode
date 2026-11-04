@@ -18,6 +18,9 @@
     #    也可以临时指定别的结果目录
     python run_all.py -o D:/exp --tasks b5,b6 --domain-input-path D:/exp/2.domain_change_ldp_result
 
+    # 5) 隐私参数与数据分布相关实验（positive/reverse 两个方向）
+    python run_all.py -o D:/exp --tasks s1 --shift-input-path D:/exp/3.group_shift_ldp_result
+
     # 5) 路径也可以直接写在 config.py 的 INPUT_BASIC_PATH / OUTPUT_BASIC_PATH 中，之后只需
     python run_all.py
 
@@ -47,6 +50,7 @@ TASKS = {
     "b6": ("时间开销随取值域大小 d 变化", "b_plot_main", "b_6_plot_domain_change_for_time"),
     "c1": ("消融实验误差随隐私预算变化", "c_plot_ablation", "c_1_plot_ablation_budget_change_for_error"),
     "c2": ("消融实验误差随窗口大小变化", "c_plot_ablation", "c_2_plot_ablation_window_size_change_for_error"),
+    "s1": ("隐私参数与数据分布相关时的误差变化", "f_plot_group_shift", "f_1_plot_group_shift_for_error"),
 }
 TASK_LEGEND = ("单独导出主实验/消融实验图例", "legend_only", "")
 # 执行 "all" 时包含的任务：b5/b6 需要维度实验的结果目录（*_d{d}），
@@ -54,6 +58,7 @@ TASK_LEGEND = ("单独导出主实验/消融实验图例", "legend_only", "")
 TASK_ALL = ["b1", "b2", "b3", "b4", "c1", "c2", "legend"]
 # 读取维度实验结果根目录（config.DOMAIN_INPUT_BASIC_PATH）的任务
 DOMAIN_TASKS = ("b5", "b6")
+SHIFT_TASKS = ("s1",)
 
 
 def run_task(task_name, input_basic_path, output_basic_path, show_legend=None):
@@ -163,8 +168,10 @@ def parse_args(argv=None):
     parser.add_argument("--domain-input-path", default=None,
                         help="维度实验结果的根目录（b5/b6 专用，其下含 3.tlns_result_d5 等）；"
                              "优先级高于 -i，未给出时依次回退到 -i 与 config.DOMAIN_INPUT_BASIC_PATH")
+    parser.add_argument("--shift-input-path", default=None,
+                        help="group shift 实验结果根目录（s1 专用）；未给出时使用 config.GROUP_SHIFT_INPUT_BASIC_PATH")
     parser.add_argument("-t", "--tasks", default="b1,b2,b3,b4,c1,c2,legend",
-                        help="要执行的任务，逗号分隔，可选：b1,b2,b3,b4,c1,c2,legend,all")
+                        help="要执行的任务，逗号分隔，可选：b1,b2,b3,b4,c1,c2,s1,legend,all")
     parser.add_argument("--ext", default=config.OUTPUT_EXT,
                         help="输出图片扩展名，如 .pdf / .png / .eps")
     parser.add_argument("--show-legend", action="store_true",
@@ -225,10 +232,13 @@ def main(argv=None):
         domain_input_path = args.input_basic_path
     if not domain_input_path:
         domain_input_path = config.DOMAIN_INPUT_BASIC_PATH
+    shift_input_path = args.shift_input_path or config.GROUP_SHIFT_INPUT_BASIC_PATH
     for task_name in task_names:
         print("[RUN ] 任务 %s 开始 ..." % task_name)
         if task_name.lower() in DOMAIN_TASKS:
             outputs = run_task(task_name, domain_input_path, args.output_basic_path, show_legend)
+        elif task_name.lower() in SHIFT_TASKS:
+            outputs = run_task(task_name, shift_input_path, args.output_basic_path, show_legend)
         else:
             outputs = run_task(task_name, args.input_basic_path, args.output_basic_path, show_legend)
         for output in outputs:

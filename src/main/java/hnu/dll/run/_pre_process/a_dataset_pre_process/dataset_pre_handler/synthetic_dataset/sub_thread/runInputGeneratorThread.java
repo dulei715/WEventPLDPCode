@@ -3,6 +3,7 @@ package hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synth
 import cn.edu.dll.basic.RandomUtil;
 import cn.edu.dll.basic.StringUtil;
 import cn.edu.dll.constant_values.ConstantValues;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftUtils;
 import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.ProbabilityDistributionUtils;
 import hnu.dll.utils.FormatFileName;
 import hnu.dll.utils.io.ListWriteUtils;
@@ -42,14 +43,39 @@ public class runInputGeneratorThread implements Runnable {
         List<String> tempWritingDataList;
         Integer totalTimeStampSize = this.probabilityStrList.size();
         String[] tempProbabilityDataStringArray;
+        boolean groupShiftEnabled = GroupShiftUtils.isEnabled();
+        Integer highPrivacyGroupSize = groupShiftEnabled
+                ? GroupShiftUtils.getHighPrivacyGroupSize(userIDList.size()) : 0;
+        Double highPrivacyProbabilityOffset = groupShiftEnabled
+                ? GroupShiftUtils.getProbabilityOffset(true) : 0D;
+        Double lowPrivacyProbabilityOffset = groupShiftEnabled
+                ? GroupShiftUtils.getProbabilityOffset(false) : 0D;
         for (int ind = startIndex; ind <= endIndex; ++ind) {
             tempProbabilityDataStringArray = probabilityStrList.get(ind).split(",");
             tempTimeStampStr = tempProbabilityDataStringArray[0];
             outputFilePath = StringUtil.join(ConstantValues.FILE_SPLIT, basicOutputDir, "timestamp_"+ FormatFileName.getFormatNumberString(Integer.valueOf(tempTimeStampStr), 0, totalTimeStampSize) +".txt");
-            tempProbabilityDistribution = ProbabilityDistributionUtils.getDistribution(Double.valueOf(tempProbabilityDataStringArray[1]), domainSize);
-            cumulativeArray = ProbabilityDistributionUtils.getCumulativeDistribution(tempProbabilityDistribution);
+            Double mainStatusProbability = Double.valueOf(tempProbabilityDataStringArray[1]);
+            if (groupShiftEnabled) {
+                // 高隐私组与低隐私组使用相反方向的偏移，保证全体用户的边际分布仍为 p(t)。
+                tempProbabilityDistribution = ProbabilityDistributionUtils.getDistribution(
+                        GroupShiftUtils.getShiftedMainStatusProbability(mainStatusProbability, highPrivacyProbabilityOffset), domainSize);
+                cumulativeArray = ProbabilityDistributionUtils.getCumulativeDistribution(tempProbabilityDistribution);
+            } else {
+                tempProbabilityDistribution = ProbabilityDistributionUtils.getDistribution(mainStatusProbability, domainSize);
+                cumulativeArray = ProbabilityDistributionUtils.getCumulativeDistribution(tempProbabilityDistribution);
+            }
+            Double[] lowPrivacyCumulativeArray = null;
+            if (groupShiftEnabled) {
+                tempProbabilityDistribution = ProbabilityDistributionUtils.getDistribution(
+                        GroupShiftUtils.getShiftedMainStatusProbability(mainStatusProbability, lowPrivacyProbabilityOffset), domainSize);
+                lowPrivacyCumulativeArray = ProbabilityDistributionUtils.getCumulativeDistribution(tempProbabilityDistribution);
+            }
             tempWritingDataList = new ArrayList<>();
-            for (String userID : userIDList) {
+            for (int userIndex = 0; userIndex < userIDList.size(); userIndex++) {
+                String userID = userIDList.get(userIndex);
+                if (groupShiftEnabled && !GroupShiftUtils.isHighPrivacyGroup(userIndex, highPrivacyGroupSize)) {
+                    cumulativeArray = lowPrivacyCumulativeArray;
+                }
                 // RandomUtil 内部按 array.length 处理并做归一化，取值域大小任意
                 chosenIndex = RandomUtil.getRandomIndexGivenCumulativeCountPoint(cumulativeArray);
                 tempData = StringUtil.join(",", userID, positionStringList.get(chosenIndex), tempTimeStampStr);

@@ -86,6 +86,26 @@ DOMAIN_FIXED_BUDGET = 1.5
 DOMAIN_FIXED_WINDOW_SIZE = 40
 
 # =====================================================================================
+# 2.2 隐私参数与数据分布相关实验（group shift）
+#
+# 由 deployment/_1_main_run_scripts/sin_group_shift_run.sh 产出：
+#   4.sin_result_positive_delta0
+#   4.sin_result_positive_delta0-05
+#   4.sin_result_positive_delta0-1
+#   4.sin_result_positive_delta0-15
+#   4.sin_result_positive_delta0-20
+#   4.sin_result_reverse_delta0-10
+# 每个目录下面只有一个参数目录 p_0-5_w_200。
+# =====================================================================================
+GROUP_SHIFT_INPUT_BASIC_PATH = r"E:\MainFiles\1.Research\dataset\3-2_stream_ldp\3.group_shift_ldp_result"
+GROUP_SHIFT_OUTPUT_SUB_DIR = os.path.join("figures", "group_shift")
+GROUP_SHIFT_DATASET_DIR = "4.sin_result"
+GROUP_SHIFT_OUTPUT_DATASET_NAME = "sin"
+GROUP_SHIFT_DIRECTION_LIST = ["positive", "reverse"]
+GROUP_SHIFT_DELTA_LIST = [0.0, 0.05, 0.10, 0.15, 0.20]
+X_LABEL_GROUP_SHIFT = r"$\delta$"
+
+# =====================================================================================
 # 3. 固定参数（对应 b_*/c_* 中的 default_window_size / default_budget）
 # =====================================================================================
 # 1) 画"隐私预算 ε 变化"的图时，固定窗口大小 w

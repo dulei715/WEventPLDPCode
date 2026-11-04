@@ -301,6 +301,14 @@ public class ConfigureUtils {
      * @return 用户数；未配置时返回 null
      */
     public static Integer getIndependentSingleUserSize(String tagName) {
+        String override = System.getProperty("exp.user.size");
+        if (override != null && !override.trim().isEmpty()) {
+            try {
+                return Integer.valueOf(override.trim());
+            } catch (NumberFormatException ignored) {
+                // 解析失败时继续走配置
+            }
+        }
         try {
             Document document = Constant.xmlConfigure.getDocument();
             Element element = (Element) document.selectNodes(
@@ -325,6 +333,14 @@ public class ConfigureUtils {
      * @return 时刻数；未配置时返回 null
      */
     public static Integer getIndependentSingleTimeStampSize(String tagName) {
+        String override = System.getProperty("exp.timestamp.size");
+        if (override != null && !override.trim().isEmpty()) {
+            try {
+                return Integer.valueOf(override.trim());
+            } catch (NumberFormatException ignored) {
+                // 解析失败时继续走配置
+            }
+        }
         try {
             Document document = Constant.xmlConfigure.getDocument();
             Element element = (Element) document.selectNodes(
@@ -352,6 +368,96 @@ public class ConfigureUtils {
         } catch (Exception e) {
             return 0D;
         }
+    }
+
+    /**
+     * 当前实验是否启用"隐私参数与数据分布相关"的合成数据模式。
+     */
+    public static boolean isGroupShiftExperiment() {
+        return "shift".equals(getExperimentTag());
+    }
+
+    /**
+     * 读取独立变量下某个属性的单值配置。
+     * 这里专门给 group shift 实验的附加配置使用，未配置时返回 null，
+     * 这样旧实验不需要增加任何配置也不会受到影响。
+     */
+    private static String getIndependentSingleText(String attributeName, String tagName) {
+        try {
+            Document document = Constant.xmlConfigure.getDocument();
+            Element element = (Element) document.selectNodes(
+                    "//independentVariables/attribute[@name='" + attributeName + "']/single[@name='" + tagName + "']").get(0);
+            String textTrim = element.getTextTrim();
+            if (textTrim.isEmpty()) {
+                return null;
+            }
+            return textTrim;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * group shift 中两组主状态概率的绝对偏移量 δ。
+     * 可以通过 -Dexp.shift 覆盖配置文件中的默认值。
+     */
+    public static Double getGroupShiftProbabilityDelta() {
+        String override = System.getProperty("exp.shift");
+        String value = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftProbabilityDelta", "shift")
+                : override.trim();
+        Double result = value == null ? 0D : Double.valueOf(value);
+        if (result < 0D || result > 1D) {
+            throw new IllegalArgumentException("group shift probability delta must be in [0, 1], but got " + result);
+        }
+        return result;
+    }
+
+    /**
+     * group shift 的相关方向：positive 表示高隐私组使用 p(t)+δ，
+     * reverse 表示高隐私组使用 p(t)-δ。
+     */
+    public static String getGroupShiftDirection() {
+        String override = System.getProperty("exp.shift.direction");
+        String result = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftDirection", "shift")
+                : override.trim();
+        if (result == null || result.isEmpty()) {
+            return "positive";
+        }
+        if (!"reverse".equalsIgnoreCase(result) && !"positive".equalsIgnoreCase(result)) {
+            throw new IllegalArgumentException("group shift direction must be positive or reverse, but got " + result);
+        }
+        return result.toLowerCase();
+    }
+
+    public static Double getGroupShiftHighPrivacyRatio() {
+        String value = getIndependentSingleText("GroupShiftHighPrivacyRatio", "shift");
+        Double result = value == null ? 0.5D : Double.valueOf(value);
+        if (result < 0D || result > 1D) {
+            throw new IllegalArgumentException("high privacy group ratio must be in [0, 1], but got " + result);
+        }
+        return result;
+    }
+
+    public static Double getGroupShiftHighPrivacyBudget() {
+        String value = getIndependentSingleText("GroupShiftHighPrivacyBudget", "shift");
+        return value == null ? 0.5D : Double.valueOf(value);
+    }
+
+    public static Integer getGroupShiftHighPrivacyWindowSize() {
+        String value = getIndependentSingleText("GroupShiftHighPrivacyWindowSize", "shift");
+        return value == null ? 200 : Integer.valueOf(value);
+    }
+
+    public static Double getGroupShiftLowPrivacyBudget() {
+        String value = getIndependentSingleText("GroupShiftLowPrivacyBudget", "shift");
+        return value == null ? 2.5D : Double.valueOf(value);
+    }
+
+    public static Integer getGroupShiftLowPrivacyWindowSize() {
+        String value = getIndependentSingleText("GroupShiftLowPrivacyWindowSize", "shift");
+        return value == null ? 40 : Integer.valueOf(value);
     }
 
     public static List<Double> getIndependentUserRatioList(String varianceName) {
