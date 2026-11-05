@@ -113,9 +113,10 @@ def draw_lines_for_single_ds(x_list, y_series, method_keys, output_file,
     plot_utils.set_axis_labels(ax, x_label, y_label)
     plot_utils.style_axes(ax)
 
-    # 对应 MATLAB 的 xlim([round(x(1),1) x(end)]) 与 set(gca,'XTick',round(x,1))
-    # 只有一个数据点时 set_xlim(同值) 会退化，这里只设刻度不设范围
-    x_ticks = [round(value, 1) for value in x_list]
+    # 保留原始 x 值作为刻度。group shift 的 δ 包含 0.05 和 0.15，
+    # 若统一 round(..., 1)，这些点会与相邻刻度合并，图上看起来像少了实验点。
+    # 只有一个数据点时 set_xlim(同值) 会退化，这里只设刻度不设范围。
+    x_ticks = list(x_list)
     if len(x_ticks) >= 2:
         ax.set_xlim(x_ticks[0], x_ticks[-1])
     ax.set_xticks(x_ticks)

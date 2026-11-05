@@ -441,23 +441,43 @@ public class ConfigureUtils {
     }
 
     public static Double getGroupShiftHighPrivacyBudget() {
-        String value = getIndependentSingleText("GroupShiftHighPrivacyBudget", "shift");
+        String override = System.getProperty("exp.shift.high.epsilon");
+        String value = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftHighPrivacyBudget", "shift")
+                : override.trim();
         return value == null ? 0.5D : Double.valueOf(value);
     }
 
     public static Integer getGroupShiftHighPrivacyWindowSize() {
-        String value = getIndependentSingleText("GroupShiftHighPrivacyWindowSize", "shift");
-        return value == null ? 200 : Integer.valueOf(value);
+        String override = System.getProperty("exp.shift.high.window");
+        String value = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftHighPrivacyWindowSize", "shift")
+                : override.trim();
+        Integer result = value == null ? 40 : Integer.valueOf(value);
+        if (result <= 0) {
+            throw new IllegalArgumentException("high privacy group window size must be positive, but got " + result);
+        }
+        return result;
     }
 
     public static Double getGroupShiftLowPrivacyBudget() {
-        String value = getIndependentSingleText("GroupShiftLowPrivacyBudget", "shift");
+        String override = System.getProperty("exp.shift.low.epsilon");
+        String value = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftLowPrivacyBudget", "shift")
+                : override.trim();
         return value == null ? 2.5D : Double.valueOf(value);
     }
 
     public static Integer getGroupShiftLowPrivacyWindowSize() {
-        String value = getIndependentSingleText("GroupShiftLowPrivacyWindowSize", "shift");
-        return value == null ? 40 : Integer.valueOf(value);
+        String override = System.getProperty("exp.shift.low.window");
+        String value = (override == null || override.trim().isEmpty())
+                ? getIndependentSingleText("GroupShiftLowPrivacyWindowSize", "shift")
+                : override.trim();
+        Integer result = value == null ? 40 : Integer.valueOf(value);
+        if (result <= 0) {
+            throw new IllegalArgumentException("low privacy group window size must be positive, but got " + result);
+        }
+        return result;
     }
 
     public static List<Double> getIndependentUserRatioList(String varianceName) {

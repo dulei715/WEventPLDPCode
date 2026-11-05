@@ -19,7 +19,11 @@ public class SinMainLDPPosterRun {
 
         String basicOutputFileString = ConfigureUtils.getResultOutputDirName();
         String roundPattern = "round_%d_main_ldp";
-        String outputDir = Constant.GroupOutputDirName; // "group_output"
+        // 并行运行写入 group_output；串行运行为了保留可比较的时间开销，
+        // 写入 group_output_time_cost。后处理必须读取与运行模式一致的目录。
+        String runMode = System.getProperty("exp.run.mode");
+        String outputDir = "serial".equalsIgnoreCase(runMode)
+                ? "group_output_time_cost" : Constant.GroupOutputDirName;
         String extractDir = "extract_result";
         String basicOutputPath = StringUtil.join(ConstantValues.FILE_SPLIT, Constant.basicDatasetPath, basicOutputFileString);
 

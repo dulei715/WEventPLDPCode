@@ -190,7 +190,7 @@
         </attribute>
         <!--
             隐私参数与数据分布相关实验：高隐私组和低隐私组各占一半用户。
-            高隐私组 (epsilon=0.5, w=200) 使用 p(t)+delta，
+            高隐私组 (epsilon=0.5, w=40) 使用 p(t)+delta，
             低隐私组 (epsilon=2.5, w=40) 使用 p(t)-delta；
             通过 -Dexp.shift.direction=reverse 可交换两个方向。
         -->
@@ -213,7 +213,12 @@
         </attribute>
         <attribute name="GroupShiftHighPrivacyWindowSize">
             <dataType>java.lang.Integer</dataType>
-            <single name="shift">200</single>
+            <!--
+                主实验使用 40，避免高隐私组在 GA-OPS 中退化到接近
+                PopulationLowerBound 的采样量。极端 w=200 的压力测试
+                可通过 -Dexp.shift.high.window=200 单独运行。
+            -->
+            <single name="shift">40</single>
         </attribute>
         <attribute name="GroupShiftLowPrivacyBudget">
             <dataType>java.lang.Double</dataType>
