@@ -200,7 +200,7 @@ public class DiscreteParameterGenerator {
     }
 
     /**
-     * 为 group shift 实验生成固定的两组用户参数。
+     * 为 group shift 实验生成固定的多组用户参数。
      * 用户下标划分必须与 runInputGeneratorThread 中的数据分布划分完全一致。
      */
     public static void generateGroupShiftParameters(String dirPath, String parameterFileNameForPerson,
@@ -212,19 +212,15 @@ public class DiscreteParameterGenerator {
             tempDir.mkdirs();
         }
 
-        Double highPrivacyBudget = ConfigureUtils.getGroupShiftHighPrivacyBudget();
-        Integer highPrivacyWindowSize = ConfigureUtils.getGroupShiftHighPrivacyWindowSize();
-        Double lowPrivacyBudget = ConfigureUtils.getGroupShiftLowPrivacyBudget();
-        Integer lowPrivacyWindowSize = ConfigureUtils.getGroupShiftLowPrivacyWindowSize();
-        Integer highPrivacyGroupSize = GroupShiftUtils.getHighPrivacyGroupSize(userSize);
+        List<GroupShiftUtils.GroupSpec> groupSpecList = GroupShiftUtils.getGroupSpecList();
+        int[] userGroupIndexArray = GroupShiftUtils.getGroupIndexArray(userSize);
 
         List<UserParameter> userParameterList = new ArrayList<>(userSize);
         for (int userIndex = 0; userIndex < userSize; userIndex++) {
-            if (GroupShiftUtils.isHighPrivacyGroup(userIndex, highPrivacyGroupSize)) {
-                userParameterList.add(new UserParameter(userIndex, highPrivacyBudget, highPrivacyWindowSize));
-            } else {
-                userParameterList.add(new UserParameter(userIndex, lowPrivacyBudget, lowPrivacyWindowSize));
-            }
+            int groupIndex = userGroupIndexArray[userIndex];
+            GroupShiftUtils.GroupSpec groupSpec = groupSpecList.get(groupIndex);
+            userParameterList.add(new UserParameter(
+                    userIndex, groupSpec.getPrivacyBudget(), groupSpec.getWindowSize()));
         }
         String tempFileAbsolutePath = StringUtil.join(ConstantValues.FILE_SPLIT,
                 tempDir.getAbsolutePath(), parameterFileNameForPerson);

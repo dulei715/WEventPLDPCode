@@ -7,11 +7,13 @@ import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
+import hnu.dll.schemes._basic_struct.GroupEstimationProvider;
 import hnu.dll.schemes._scheme_utils.AdvancedSchemeUtils;
 import hnu.dll.schemes._scheme_utils.BasicSchemeUtils;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.BasicMethodUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.ProposedSchemeUtils;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftUtils;
 import hnu.dll.special_tools.FOUtils;
 import hnu.dll.special_tools.PFOUtils;
 import hnu.dll.structure.HistoryPopulationQueue;
@@ -22,7 +24,8 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class AblationPLPMechanismContainingBAPUEOnly extends PersonalizedMechanism {
+public abstract class AblationPLPMechanismContainingBAPUEOnly extends PersonalizedMechanism
+        implements GroupEstimationProvider {
 
 
     protected Random random;
@@ -64,6 +67,7 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
     protected List<SimplePrivacyGroup> privacyGroupList;
     protected List<Double> piList;
     protected Map<Integer, List<Integer>> sourceMap;
+    protected List<Map<Integer, Double>> lastGroupEstimationList;
 
     protected List<Map<Integer, Double>> currentDisEstimationMapList;
     protected List<List<Double>> currentDisEstimationListList;
@@ -79,6 +83,25 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
     @Override
     public List<Integer> getDistinctWindowSizeList() {
         return distinctWindowSizeList;
+    }
+
+    @Override
+    public List<Map<Integer, Double>> getLastGroupEstimationList() {
+        return lastGroupEstimationList;
+    }
+
+    @Override
+    public List<Double> getGroupProportionList() {
+        return piList;
+    }
+
+    @Override
+    public List<Set<Integer>> getGroupUserIndexSetList() {
+        List<Set<Integer>> result = new ArrayList<>(privacyGroupList.size());
+        for (SimplePrivacyGroup group : privacyGroupList) {
+            result.add(group.getUserIDSet());
+        }
+        return result;
     }
 
     @Override
@@ -104,6 +127,11 @@ public abstract class AblationPLPMechanismContainingBAPUEOnly extends Personaliz
         this.distinctWindowSizeList = BasicArrayUtil.getUniqueList(this.originalWindowSizeList);
         this.privacyGroupList = AdvancedSchemeUtils.getGroupSamplingSizeList(this.originalWindowSizeList, this.originalPrivacyBudgetList);
         this.sourceMap = BasicMethodUtils.constructDominatingGroupsAsIndex(this.privacyGroupList);
+        if (GroupShiftUtils.isCrossGroupBorrowingDisabled()) {
+            for (int groupIndex = 0; groupIndex < this.privacyGroupList.size(); groupIndex++) {
+                this.sourceMap.put(groupIndex, new ArrayList<>());
+            }
+        }
         initializeOptimalParameters();
     }
 

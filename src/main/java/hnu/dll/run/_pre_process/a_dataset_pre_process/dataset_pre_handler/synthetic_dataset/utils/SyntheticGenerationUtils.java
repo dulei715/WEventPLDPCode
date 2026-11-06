@@ -60,6 +60,8 @@ public class SyntheticGenerationUtils {
         List<String> probabilityStrList = ListReadUtils.readAllDataList(probabilityListPath, ",");
         List<String> positionStringList = ListReadUtils.readAllDataList(positionPath, ",");
         List<String> userIDList = ListReadUtils.readAllDataList(userIDPath, ",");
+        GroupShiftUtils.writeGroupShiftTruth(
+                datasetPath, probabilityStrList, positionStringList.size());
         Integer threadSize = 10;
         Integer totalTimeStampSize = probabilityStrList.size();
         List<Integer> threadStartIndexList = ThreadUtils.getThreadStartIndexList(threadSize, 0, totalTimeStampSize);

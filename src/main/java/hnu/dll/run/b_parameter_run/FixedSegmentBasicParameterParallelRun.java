@@ -10,6 +10,7 @@ import hnu.dll.run.a_mechanism_run.*;
 import hnu.dll.run.b_parameter_run.utils.ParameterGroupInitializeUtils;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.run.utils.structs.UserParameter;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftMetricUtils;
 import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbsorption;
@@ -181,6 +182,7 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
         List<Integer> dataList;
         File file;
         List<List<Integer>> batchDataList = new ArrayList<>();
+        List<Integer> batchTimestampList = new ArrayList<>();
         List<ExperimentResult> experimentResultList = new ArrayList<>();
         ExperimentResult tempResult;
 
@@ -199,10 +201,13 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
             dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), userToIndexMap, locationToMappedStrMap);
 
             batchDataList.add(dataList);
+            batchTimestampList.add(GroupShiftMetricUtils.parseTimestamp(file));
 
 
 
             if ((i+1) % singleBatchSize == 0 || i == timeStampDataFiles.length - 1) {
+                GroupShiftMetricUtils.setBatchContext(basicPath, segmentID, batchTimestampList,
+                        userParameterList.size());
                 NonPrivacyMechanism nonPrivacyMechanism = (NonPrivacyMechanism) this.mechanismMap.get(Constant.NonPrivacySchemeName);
                 CombinePair<ExperimentResult, List<Map<Integer, Double>>> nonPrivacySchemeResultPair = _0_NonPrivacyMechanismRun.runBatch(nonPrivacyMechanism, batchID, batchDataList);
                 List<Map<Integer, Double>> rawPublicationBatchList = nonPrivacySchemeResultPair.getValue();
@@ -278,7 +283,9 @@ public class FixedSegmentBasicParameterParallelRun implements Runnable {
 
                 ++batchID;
                 batchDataList.clear();
+                batchTimestampList.clear();
                 experimentResultList.clear();
+                GroupShiftMetricUtils.clearBatchContext();
             }
         }
 

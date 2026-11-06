@@ -112,6 +112,7 @@ public class PLPDPlus extends AdvancedPLPMechanism {
             }
 
             List<Map<Integer, Double>> finalGroupEstimateList = ProposedSchemeUtils.biasedAwarePersonalizedUtilityEnhancement(super.sourceMap, this.currentPubEstimationMapList, finalWeightList);
+            super.lastGroupEstimationList = finalGroupEstimateList;
             finalEstimateMap = StatisticTool.getWeightedStatisticMap(finalGroupEstimateList, super.piList);
             super.lastCombinedRawEstimation = finalEstimateMap;
             finalEstimateNormalizedMap = BasicUtils.normalizeValues(finalEstimateMap);

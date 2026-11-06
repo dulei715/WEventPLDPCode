@@ -7,6 +7,7 @@ import hnu.dll._config.Constant;
 import hnu.dll.metric.Measurement;
 import hnu.dll.schemes.main_scheme._1_simple_scheme.BasicPLPMechanism;
 import hnu.dll.schemes.main_scheme._2_ablation_scheme.containing_ba_pue_only.AblationPLPMechanismContainingBAPUEOnly;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftMetricUtils;
 import hnu.dll.utils.BasicUtils;
 
 import java.util.ArrayList;
@@ -32,10 +33,13 @@ public class _4_2_PersonalizedWEventLDPAblateContainingBAPUEMechanismRun {
         CombinePair<Boolean, Map<Integer, Double>> estimationPair;
 
         List<Map<Integer, Double>> publicationList = new ArrayList<>(timeBatchSize);
+        List<List<Map<Integer, Double>>> groupEstimationBatchList = new ArrayList<>(timeBatchSize);
         startTime = System.currentTimeMillis();
         for (int i = 0; i < timeBatchSize; i++) {
             estimationPair = scheme.updateNextPublicationResult(batchDataList.get(i));
             publicationList.add(estimationPair.getValue());
+            groupEstimationBatchList.add(GroupShiftMetricUtils.copyGroupEstimationList(
+                    scheme.getLastGroupEstimationList()));
         }
         endTime = System.currentTimeMillis();
         timeCost = endTime - startTime;
@@ -54,6 +58,8 @@ public class _4_2_PersonalizedWEventLDPAblateContainingBAPUEMechanismRun {
         }
         experimentResult.addPair(Constant.BRE, String.valueOf(batchTotalNormSquare));
         experimentResult.addPair(Constant.BJSD, String.valueOf(batchTotalDivergence));
+        GroupShiftMetricUtils.recordBatch(scheme.getSimpleName(), batchID, publicationList,
+                groupEstimationBatchList, scheme.getGroupUserIndexSetList(), domainIndexList);
         return experimentResult;
     }
 }

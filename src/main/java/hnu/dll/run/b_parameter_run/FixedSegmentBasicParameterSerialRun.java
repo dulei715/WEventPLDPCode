@@ -11,6 +11,7 @@ import hnu.dll.run._pre_process.b_parameter_pre_process.version_5.parameter_gene
 import hnu.dll.run.a_mechanism_run.*;
 import hnu.dll.run.c_dataset_run.utils.DatasetParameterUtils;
 import hnu.dll.run.utils.structs.UserParameter;
+import hnu.dll.run._pre_process.a_dataset_pre_process.dataset_pre_handler.synthetic_dataset.utils.GroupShiftMetricUtils;
 import hnu.dll.schemes._basic_struct.Mechanism;
 import hnu.dll.schemes.compare_scheme._0_non_privacy.NonPrivacyMechanism;
 import hnu.dll.schemes.compare_scheme._1_non_personalized.impl.LDPPopulationAbsorption;
@@ -162,6 +163,7 @@ public class FixedSegmentBasicParameterSerialRun {
         List<Integer> dataList;
         File file;
         List<List<Integer>> batchDataList = new ArrayList<>();
+        List<Integer> batchTimestampList = new ArrayList<>();
         List<ExperimentResult> experimentResultList = new ArrayList<>();
         ExperimentResult tempResult;
 
@@ -182,10 +184,13 @@ public class FixedSegmentBasicParameterSerialRun {
             file = timeStampDataFiles[i];
             dataList = DatasetParameterUtils.getDataMappedToIndex(file.getAbsolutePath(), new ArrayList<>(dataType), this.userToIndexMap, this.locationToMappedStrMap);
             batchDataList.add(dataList);
+            batchTimestampList.add(GroupShiftMetricUtils.parseTimestamp(file));
 
 
 
             if ((i+1) % singleBatchSize == 0 || i == timeStampDataFiles.length - 1) {
+                GroupShiftMetricUtils.setBatchContext(basicPath, segmentID, batchTimestampList,
+                        userParameterList.size());
                 NonPrivacyMechanism nonPrivacyMechanism = (NonPrivacyMechanism) this.mechanismMap.get(Constant.NonPrivacySchemeName);
                 CombinePair<ExperimentResult, List<Map<Integer, Double>>> nonPrivacySchemeResultPair = _0_NonPrivacyMechanismRun.runBatch(nonPrivacyMechanism, batchID, batchDataList);
 
@@ -261,7 +266,9 @@ public class FixedSegmentBasicParameterSerialRun {
 
                 ++batchID;
                 batchDataList.clear();
+                batchTimestampList.clear();
                 experimentResultList.clear();
+                GroupShiftMetricUtils.clearBatchContext();
             }
         }
 

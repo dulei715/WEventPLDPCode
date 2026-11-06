@@ -480,6 +480,66 @@ public class ConfigureUtils {
         return result;
     }
 
+    private static String getGroupShiftListOverride(String propertyName, String attributeName) {
+        String override = System.getProperty(propertyName);
+        if (override != null && !override.trim().isEmpty()) {
+            return override.trim();
+        }
+        String configured = getIndependentSingleText(attributeName, "shift");
+        return configured == null ? null : configured.trim();
+    }
+
+    private static List<String> getGroupShiftStringList(String propertyName, String attributeName) {
+        String value = getGroupShiftListOverride(propertyName, attributeName);
+        List<String> result = new ArrayList<>();
+        if (value == null || value.isEmpty()) {
+            return result;
+        }
+        for (String item : value.split(",")) {
+            String trimmed = item.trim();
+            if (!trimmed.isEmpty()) {
+                result.add(trimmed);
+            }
+        }
+        return result;
+    }
+
+    public static List<Double> getGroupShiftGroupRatios() {
+        List<Double> result = new ArrayList<>();
+        for (String item : getGroupShiftStringList(
+                "exp.shift.group.ratios", "GroupShiftGroupRatios")) {
+            result.add(Double.valueOf(item));
+        }
+        return result;
+    }
+
+    public static List<Double> getGroupShiftGroupBudgets() {
+        List<Double> result = new ArrayList<>();
+        for (String item : getGroupShiftStringList(
+                "exp.shift.group.epsilons", "GroupShiftGroupBudgets")) {
+            result.add(Double.valueOf(item));
+        }
+        return result;
+    }
+
+    public static List<Integer> getGroupShiftGroupWindowSizes() {
+        List<Integer> result = new ArrayList<>();
+        for (String item : getGroupShiftStringList(
+                "exp.shift.group.windows", "GroupShiftGroupWindowSizes")) {
+            result.add(Integer.valueOf(item));
+        }
+        return result;
+    }
+
+    public static List<Double> getGroupShiftGroupOffsetScales() {
+        List<Double> result = new ArrayList<>();
+        for (String item : getGroupShiftStringList(
+                "exp.shift.group.offsets", "GroupShiftGroupOffsetScales")) {
+            result.add(Double.valueOf(item));
+        }
+        return result;
+    }
+
     public static List<Double> getIndependentUserRatioList(String varianceName) {
         Document document = Constant.xmlConfigure.getDocument();;
         Element element = (Element) document.selectNodes("//independentVariables/attribute[@name='TwoFixedUserRatio']/variance[@name='" + varianceName + "']").get(0);

@@ -107,8 +107,8 @@
             <!-- fixed：单值，配合 single 使用，使每个 d 只产生一个参数目录 p_1-5_w_40 -->
             <variance name="fixed">1.5</variance>
             <!-- shift：隐私相关分布实验只生成一组参数目录，具体用户参数由 Java 分成两组写入 -->
-            <single name="shift">0.5</single>
-            <variance name="shift">0.5</variance>
+            <single name="shift">1.5</single>
+            <variance name="shift">1.5</variance>
         </attribute>
         <attribute name="WindowSize">
             <dataType>java.lang.Integer</dataType>
@@ -125,9 +125,9 @@
             <variance name="1">40,80,120,160,200</variance>
             <!-- fixed：单值，与 PrivacyBudget 的 fixed 搭配，只产生 p_1-5_w_40 -->
             <variance name="fixed">40</variance>
-            <!-- shift：高隐私组使用 w=200，低隐私组使用 w=40 -->
-            <single name="shift">200</single>
-            <variance name="shift">200</variance>
+            <!-- shift：四组实验的默认窗口统一为 40 -->
+            <single name="shift">40</single>
+            <variance name="shift">40</variance>
         </attribute>
         <attribute name="SegmentUnitSize">
             <dataType>java.lang.Integer</dataType>
@@ -167,6 +167,8 @@
                  这里只配置 fixed 标签；未配置某个标签（如 default）时回退到
                  fileHandle 中的 userSize（10000），因此主实验不受影响。 -->
             <single name="fixed">1200000</single>
+            <!-- shift：扩大用户数、缩短时间轴，降低组级估计方差；d=5 不需要 1200000 用户。 -->
+            <single name="shift">120000</single>
         </attribute>
         <attribute name="TimeStampSize">
             <dataType>java.lang.Integer</dataType>
@@ -177,6 +179,7 @@
                  default 与 fileHandle 保持一致（主实验不受影响），只有 fixed 生效于维度实验。 -->
             <single name="default">10000</single>
             <single name="fixed">1000</single>
+            <single name="shift">1000</single>
         </attribute>
         <attribute name="ZipfAlpha">
             <dataType>java.lang.Double</dataType>
@@ -189,10 +192,10 @@
             <single name="shift">0</single>
         </attribute>
         <!--
-            隐私参数与数据分布相关实验：高隐私组和低隐私组各占一半用户。
-            高隐私组 (epsilon=0.5, w=40) 使用 p(t)+delta，
-            低隐私组 (epsilon=2.5, w=40) 使用 p(t)-delta；
-            通过 -Dexp.shift.direction=reverse 可交换两个方向。
+            隐私参数与数据分布相关实验。四组用户分别使用不同的隐私需求和分布偏移，
+            各组比例、预算、窗口和偏移系数按相同下标对应。
+            p_r(t) = clip(p(t) + delta * offsetScale_r)。
+            通过 -Dexp.shift.direction=reverse 可以整体反转偏移方向。
         -->
         <attribute name="GroupShiftProbabilityDelta">
             <dataType>java.lang.Double</dataType>
@@ -213,11 +216,7 @@
         </attribute>
         <attribute name="GroupShiftHighPrivacyWindowSize">
             <dataType>java.lang.Integer</dataType>
-            <!--
-                主实验使用 40，避免高隐私组在 GA-OPS 中退化到接近
-                PopulationLowerBound 的采样量。极端 w=200 的压力测试
-                可通过 -Dexp.shift.high.window=200 单独运行。
-            -->
+            <!-- 仅在未提供四组数组时作为兼容的两组配置使用 -->
             <single name="shift">40</single>
         </attribute>
         <attribute name="GroupShiftLowPrivacyBudget">
@@ -227,6 +226,22 @@
         <attribute name="GroupShiftLowPrivacyWindowSize">
             <dataType>java.lang.Integer</dataType>
             <single name="shift">40</single>
+        </attribute>
+        <attribute name="GroupShiftGroupRatios">
+            <dataType>java.lang.String</dataType>
+            <single name="shift">0.25,0.25,0.25,0.25</single>
+        </attribute>
+        <attribute name="GroupShiftGroupBudgets">
+            <dataType>java.lang.String</dataType>
+            <single name="shift">0.5,1.0,1.5,2.5</single>
+        </attribute>
+        <attribute name="GroupShiftGroupWindowSizes">
+            <dataType>java.lang.String</dataType>
+            <single name="shift">40,40,40,40</single>
+        </attribute>
+        <attribute name="GroupShiftGroupOffsetScales">
+            <dataType>java.lang.String</dataType>
+            <single name="shift">1.0,0.3333333333333333,-0.3333333333333333,-1.0</single>
         </attribute>
     </independentVariables>
 

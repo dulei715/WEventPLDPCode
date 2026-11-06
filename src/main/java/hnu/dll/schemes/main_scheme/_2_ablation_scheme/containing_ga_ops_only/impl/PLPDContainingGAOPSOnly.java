@@ -91,6 +91,7 @@ public class PLPDContainingGAOPSOnly extends AblationPLPMechanismContainingGAOPS
             }
 
             finalEstimateMap = StatisticTool.getWeightedStatisticMap(this.currentPubEstimationMapList, super.piList);
+            super.lastGroupEstimationList = this.currentPubEstimationMapList;
             super.lastCombinedRawEstimation = finalEstimateMap;
             finalEstimateNormalizedMap = BasicUtils.normalizeValues(finalEstimateMap);
             super.lastCombinedEstimation = finalEstimateNormalizedMap;

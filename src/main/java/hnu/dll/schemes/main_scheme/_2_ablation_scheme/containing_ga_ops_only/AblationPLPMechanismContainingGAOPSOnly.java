@@ -7,6 +7,7 @@ import cn.edu.dll.map.MapUtils;
 import cn.edu.dll.statistic.StatisticTool;
 import cn.edu.dll.struct.pair.CombinePair;
 import hnu.dll.schemes._basic_struct.PersonalizedMechanism;
+import hnu.dll.schemes._basic_struct.GroupEstimationProvider;
 import hnu.dll.schemes._scheme_utils.AdvancedSchemeUtils;
 import hnu.dll.schemes._scheme_utils.MechanismUtils;
 import hnu.dll.schemes.main_scheme._0_proposed_tools.BasicMethodUtils;
@@ -20,7 +21,8 @@ import hnu.dll.utils.BasicUtils;
 
 import java.util.*;
 
-public abstract class AblationPLPMechanismContainingGAOPSOnly extends PersonalizedMechanism {
+public abstract class AblationPLPMechanismContainingGAOPSOnly extends PersonalizedMechanism
+        implements GroupEstimationProvider {
 
 
     protected Random random;
@@ -58,6 +60,7 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
     protected List<SimplePrivacyGroup> privacyGroupList;
     protected List<Double> piList;
     protected Map<Integer, List<Integer>> sourceMap;
+    protected List<Map<Integer, Double>> lastGroupEstimationList;
 
     protected List<Map<Integer, Double>> currentDisEstimationMapList;
     protected List<List<Double>> currentDisEstimationListList;
@@ -73,6 +76,25 @@ public abstract class AblationPLPMechanismContainingGAOPSOnly extends Personaliz
     @Override
     public List<Integer> getDistinctWindowSizeList() {
         return distinctWindowSizeList;
+    }
+
+    @Override
+    public List<Map<Integer, Double>> getLastGroupEstimationList() {
+        return lastGroupEstimationList;
+    }
+
+    @Override
+    public List<Double> getGroupProportionList() {
+        return piList;
+    }
+
+    @Override
+    public List<Set<Integer>> getGroupUserIndexSetList() {
+        List<Set<Integer>> result = new ArrayList<>(privacyGroupList.size());
+        for (SimplePrivacyGroup group : privacyGroupList) {
+            result.add(group.getUserIDSet());
+        }
+        return result;
     }
 
     @Override

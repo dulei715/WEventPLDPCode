@@ -17,6 +17,7 @@ import hnu.dll.utils.filters.NumberTxtFilter;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -46,10 +47,19 @@ public class DatasetSegmentRunUtils {
          * groupParameterFileName + / + {p_{budget}_w_{windowsize}} + / + personalizedParameterFileName 构成用户参数文件目录
          */
         String experimentTag = getExperimentTag();
-        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
-        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
         Double budgetDefault = ConfigureUtils.getIndependentSinglePrivacyBudget(experimentTag);
         Integer windowSizeDefault = ConfigureUtils.getIndependentSingleWindowSize(experimentTag);
+        List<Double> budgetChangeList;
+        List<Integer> windowSizeChangeList;
+        if (ConfigureUtils.isGroupShiftExperiment()) {
+            // Shift generates one parameter file containing all privacy groups.
+            // Always use the configured single-value directory for this mode.
+            budgetChangeList = Collections.singletonList(budgetDefault);
+            windowSizeChangeList = Collections.singletonList(windowSizeDefault);
+        } else {
+            budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
+            windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
+        }
 
         String inputDataFileName, parameterFileName;
         List<UserParameter> userParameterList;
@@ -139,11 +149,18 @@ public class DatasetSegmentRunUtils {
 
     public static void seriallyDatasetRun(String basicPath, String dataTypeFileName, Integer singleBatchSize, Integer userSize, Random random) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String experimentTag = getExperimentTag();
-        List<Double> budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
-        List<Integer> windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
         // 用 single 配置取默认值，而不是取 variance 的第 3 个元素（单值 variance 时会越界）
         Double budgetDefault = ConfigureUtils.getIndependentSinglePrivacyBudget(experimentTag);
         Integer windowSizeDefault = ConfigureUtils.getIndependentSingleWindowSize(experimentTag);
+        List<Double> budgetChangeList;
+        List<Integer> windowSizeChangeList;
+        if (ConfigureUtils.isGroupShiftExperiment()) {
+            budgetChangeList = Collections.singletonList(budgetDefault);
+            windowSizeChangeList = Collections.singletonList(windowSizeDefault);
+        } else {
+            budgetChangeList = ConfigureUtils.getIndependentPrivacyBudgetList(experimentTag);
+            windowSizeChangeList = ConfigureUtils.getIndependentWindowSizeList(experimentTag);
+        }
 
         File dirFile = new File(basicPath, "runInput");
         File[] timeStampDataFiles = FileUtils.listFilesByFileName(dirFile, new NumberTxtFilter());
