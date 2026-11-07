@@ -85,7 +85,7 @@ def collect_group_shift_metric_series(input_basic_path, direction, metric, metho
 def plot_group_shift_for_single_direction(input_basic_path, direction, metric,
                                           output_file, show_legend=None):
     x_list, y_series = collect_group_shift_metric_series(
-        input_basic_path, direction, metric, config.MAIN_METHOD_KEYS
+        input_basic_path, direction, metric, config.GROUP_SHIFT_METHOD_KEYS
     )
     if not x_list:
         print("[WARN] 未读取到 group shift 结果，跳过绘图：%s (%s)" %
@@ -94,7 +94,7 @@ def plot_group_shift_for_single_direction(input_basic_path, direction, metric,
     return plot_a.draw_lines_for_single_ds(
         x_list,
         y_series,
-        config.MAIN_METHOD_KEYS,
+        config.GROUP_SHIFT_METHOD_KEYS,
         output_file,
         config.X_LABEL_GROUP_SHIFT,
         plot_a.build_y_label(metric),

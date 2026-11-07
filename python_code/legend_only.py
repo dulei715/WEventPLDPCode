@@ -89,6 +89,20 @@ def draw_ablation_legend_horizontal(output_basic_path, file_name="legend_ablatio
     plot_utils.setup_matplotlib()
     return plot_utils.create_legend_only(ordered, output_file, ncol=ncol)
 
+
+def draw_group_shift_legend(output_basic_path, file_name="legend_group_shift"):
+    """单独导出 group shift 实验图例（方案集合见 config.GROUP_SHIFT_METHOD_KEYS）。"""
+    output_file = build_output_path(
+        output_basic_path, config.OUTPUT_SUB_DIR_FIGURES, file_name
+    )
+    plot_utils.setup_matplotlib()
+    return plot_utils.create_legend_only(
+        config.GROUP_SHIFT_METHOD_KEYS,
+        output_file,
+        ncol=config.LEGEND_ONLY_NCOL_MAIN,
+    )
+
+
 if __name__ == "__main__":
     # 简单用法：python legend_only.py <output_basic_path>
     output_path = sys.argv[1] if len(sys.argv) > 1 else config.OUTPUT_BASIC_PATH

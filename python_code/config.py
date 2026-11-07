@@ -319,6 +319,19 @@ MAIN_METHOD_KEYS = [
     "plus_plpd_pre", "plus_plpd_post",
     "plus_plpa_pre", "plus_plpa_post",
 ]
+
+# group shift 实验（对应 s1，输出在 figures/group_shift）
+# 与主实验相比：去掉非个性化 LPD/LPA（δ 的零和偏移不改变总体分布，二者对实验变量免疫，
+# 且统一 ε 不满足部分用户的个性化隐私要求），加入两个 GAOPS-only 消融方案，
+# 作为"不跨组融合"的对照。共 10 条线，配 LEGEND_ONLY_NCOL_MAIN=5 正好 5 列 × 2 行。
+GROUP_SHIFT_METHOD_KEYS = [
+    "direct_plpd", "direct_plpa",
+    "basic_plpd", "basic_plpa",
+    "gaops_plpd", "gaops_plpa",
+    "plus_plpd_pre", "plus_plpd_post",
+    "plus_plpa_pre", "plus_plpa_post",
+]
+
 # 时间开销图（对应 a_1、a_2，输出在 experiment_result_add/time_cost_fig）
 # 原先直接复用 MAIN_METHOD_KEYS，因此画不出 Basic；这里单独列一份，加入两个 Basic 方案。
 # 如果想让时间开销图和消融图完全一致（12 条），把下面这行改成：
