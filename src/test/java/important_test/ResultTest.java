@@ -153,21 +153,21 @@ public class ResultTest {
         File[] dirFileArray = dirFileList.toArray(new File[0]);
         List[] result = getAverageImprovementForBudgetChange(dirFileArray, furtherImproveMethodName, improveMethodName, originalMethodName, whetherLog);
         MyPrint.showList(result[0]);
-        MyPrint.showList(result[1]);
+        MyPrint.showList(result[1], "\t");
         double sum = BasicArrayUtil.getDoubleSum(result[1]);
         System.out.println(sum / result[1].size());
         double sum2 = BasicArrayUtil.getDoubleSum(result[2]);
-        MyPrint.showList(result[2]);
+        MyPrint.showList(result[2], "\t");
         System.out.println(sum2 / result[2].size());
     }
 
     @Test
     public void testWindowSizeImprove() {
-//        String datasetOrderName = "1.trajectory_result";
+        String datasetOrderName = "1.trajectory_result";
 //        String datasetOrderName = "2.checkIn_result";
 //        String datasetOrderName = "3.tlns_result";
 //        String datasetOrderName = "4.sin_result";
-        String datasetOrderName = "5.log_result";
+//        String datasetOrderName = "5.log_result";
 
 
 //        String originalMethodName = "PLPD-Direct-Scheme";
@@ -207,11 +207,11 @@ public class ResultTest {
         File[] dirFileArray = dirFileList.toArray(new File[0]);
         List[] result = getAverageImprovementForWindowSizeChange(dirFileArray, furtherImproveMethodName, improveMethodName, originalMethodName, whetherLog);
         MyPrint.showList(result[0]);
-        MyPrint.showList(result[1]);
+        MyPrint.showList(result[1], "\t");
         double sum = BasicArrayUtil.getDoubleSum(result[1]);
         System.out.println(sum / result[1].size());
         double sum2 = BasicArrayUtil.getDoubleSum(result[2]);
-        MyPrint.showList(result[2]);
+        MyPrint.showList(result[2], "\t");
         System.out.println(sum2 / result[2].size());
     }
 
